@@ -14,23 +14,28 @@
 	<body>
 		<div class="container grid-xl" style="padding-top: 15px; padding-bottom: 30px;">
 			<div class="row columns md:flex">
-				<div class='col-8 col-md-8 w-8/12'>
+				<div class='col-7 col-md-7 w-7/12'>
 					<h2>JSON Editor</h2>
 					<p>This page is modified version of the original JSON Editor interactive demo. You can learn more about JSON Editor on the <a href="https://github.com/json-editor/json-editor" title="github" target="_blank">official GitHub</a> repository.</p>
 					<div>
-						<a class="btn btn-primary" id="direct-link" title="preserves schema, value, and options">Direct Link</a>
-						<a class="btn btn-secondary" href="?" title="reload editor with default example settings">Reset</a>
+						<a class="btn btn-primary" id="direct-link" title="Saves schema, output, and options in a link">Direct Link</a>
+						<a class="btn btn-secondary" href="?" title="Reload editor and reset all the forms and options">Reset</a>
 					</div>
 					<br>
 					<div id="json-editor-form"></div>
 				</div>
-				<div class='col-4 col-md-4 w-4/12'>
+				<div class='col-5 col-md-5 w-5/12'>
 					<h2>Output</h2>
-					<p>You can also make changes to the JSON here and set the value in the editor by clicking "Update" or download JSON output by clicking "Download".</p>
-					<button class='btn btn-secondary' id='setvalue'>Update</button>
-					<button class='btn btn-secondary' id='copyvalue'>Copy</button>
-					<button class='btn btn-primary' id='downloadvalue'>Download</button>
-					<textarea id='output-textarea' rows="15" style="width: 100%; font-family: monospace;" class='form-control'></textarea>
+					<p>You can also make changes to the JSON here and set the properties in the editor by clicking "Update" or download JSON output by clicking "Download".</p>
+					<button class='btn btn-secondary' id='set-output'>Update</button>
+					<button class='btn btn-secondary' id='copy-output'>Copy</button>
+					<button class='btn btn-secondary' id='upload-output'>Upload</button>
+					<button class='btn btn-primary' id='download-output'>Download</button>
+					<br><br>
+					<label>Filename of the downloadable output (without ".json")</label>
+					<input id='output-filename' class='form-control' type='text'></input>
+					<br>
+					<textarea id='output-textarea' style="width: 100%; font-family: monospace;" class='form-control'></textarea>
 					<h2>Validation</h2>
 					<label for="validate-textarea">This will update whenever the form changes to show validation errors if there are any.</label><br>
 					<textarea id='validate-textarea' readonly disabled class='form-control'></textarea>
@@ -38,15 +43,19 @@
 			</div>
 			<h2>Schema</h2>
 			<div class="row columns md:flex">
-				<div class='col-8 col-md-8 w-8/12'>
+				<div class='col-7 col-md-7 w-7/12'>
 					<label for="schema-textarea">You can change the schema and see how the generated form looks. After you make changes, click "Update". To upload schema from file, click "Upload".</label>
-					<button class='btn btn-secondary' id='copyschema'>Copy</button>
-					<button class='btn btn-secondary' id='uploadschema'>Upload</button>
-					<button class='btn btn-secondary' id='downloadschema'>Download</button>
-					<button class='btn btn-primary' id='setschema'>Update</button>
+					<button class='btn btn-primary' id='set-schema'>Update</button>
+					<button class='btn btn-secondary' id='copy-schema'>Copy</button>
+					<button class='btn btn-secondary' id='upload-schema'>Upload</button>
+					<button class='btn btn-secondary' id='download-schema'>Download</button>
+					<br><br>
+					<label>Filename of the downloadable schema (without ".json")</label>
+					<input id='schema-filename' class='form-control' type='text'></input>
+					<br>
 					<textarea id='schema-textarea' style="height: 100vh;"></textarea>
 				</div>
-				<div class='col-4 col-md-4 w-4/12'>
+				<div class='col-5 col-md-5 w-5/12'>
 					<label for="je-errors-textarea">
 						<span>AJV (JE meta-schema): </span>
 						<code id="je-errors-count"></code>

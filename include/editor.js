@@ -16,13 +16,16 @@ var iconlibLink = document.querySelector('#iconlib-link')
 var libSelect = document.querySelector('#lib-select')
 var jsonEditorForm = document.querySelector('#json-editor-form')
 var objectLayoutSelect = document.querySelector('#object-layout-select')
-var copySchema = document.querySelector('#copyschema')
-var uploadSchema = document.querySelector('#uploadschema')
-var downloadSchema = document.querySelector('#downloadschema')
-var setSchema = document.querySelector('#setschema')
-var setValue = document.querySelector('#setvalue')
-var copyValue = document.querySelector('#copyvalue')
-var downloadValue = document.querySelector('#downloadvalue')
+var setSchema = document.querySelector('#set-schema')
+var copySchema = document.querySelector('#copy-schema')
+var uploadSchema = document.querySelector('#upload-schema')
+var downloadSchema = document.querySelector('#download-schema')
+var schemaFilename = document.querySelector('#schema-filename')
+var setOutput = document.querySelector('#set-output')
+var copyOutput = document.querySelector('#copy-output')
+var uploadOutput = document.querySelector('#upload-output')
+var downloadOutput = document.querySelector('#download-output')
+var outputFilename = document.querySelector('#output-filename')
 var showErrorsSelect = document.querySelector('#show-errors-select')
 var themeSelect = document.querySelector('#theme-select')
 var themeLink = document.querySelector('#theme-link')
@@ -30,9 +33,10 @@ var validateTextarea = document.querySelector('#validate-textarea')
 var aceConfig = {
 	mode: 'ace/mode/json',
 	maxLines: Infinity,
-	minLines: 5,
+	minLines: 2,
 	showFoldWidgets: false,
-	showPrintMargin: false
+	showPrintMargin: false,
+	wrap: true
 }
 var outputTextarea = ace.edit('output-textarea', aceConfig)
 var schemaTextarea = ace.edit('schema-textarea', aceConfig)
@@ -63,16 +67,49 @@ function replaceSpacings(dataToReplace)
 	return dataToReplace.replaceAll("  ", "	")
 }
 
-async function saveJSON() {
-	const options = {
-		types: [
-			{
-				description: "JSON file",
-				accept: { "application/json": [".json"] },
-			},
-		],
-	};
-	return await window.showSaveFilePicker(options);
+function uploadFile(elementToSet, elementToClick)
+{
+	var tempInput = document.createElement('input')
+	tempInput.setAttribute('id', 'upload-input')
+	tempInput.type = 'file'
+	tempInput.click()
+	var content
+	
+	tempInput.onchange = e =>
+	{
+		var file = e.target.files[0]
+		var reader = new FileReader()
+		reader.readAsText(file, 'UTF-8')
+		reader.onload = readerEvent =>
+		{
+			elementToSet.setValue(readerEvent.target.result)
+			elementToSet.clearSelection(1)
+			elementToClick.click()
+			tempInput.remove()
+		}
+	}
+}
+
+function downloadFile(data, filename, type)
+{
+	var file = new Blob([data], {type: type})
+	
+	if (window.navigator.msSaveOrOpenBlob)
+		window.navigator.msSaveOrOpenBlob(file, filename)
+	else
+	{
+		var a = document.createElement("a"),
+		url = URL.createObjectURL(file)
+		a.href = url
+		a.download = filename
+		document.body.appendChild(a)
+		a.click()
+		setTimeout(function()
+		{
+			document.body.removeChild(a)
+			window.URL.revokeObjectURL(url)
+		}, 0);
+	}
 }
 
 const validateSchema = () =>
@@ -340,33 +377,23 @@ var updateDirectLink = function()
 	url += LZString.compressToBase64(JSON.stringify(data))
 	directLink.href = url
 }
-setValue.addEventListener('click', function()
+setOutput.addEventListener('click', function()
 {
 	jsoneditor.setValue(JSON.parse(outputTextarea.getValue()))
 })
-copyValue.addEventListener('click', function()
+copyOutput.addEventListener('click', function()
 {
 	copyToClipboard(outputTextarea.getValue())
 	document.documentElement.scrollTop = 0
 	document.body.scrollTop = 0
 })
-downloadValue.addEventListener('click', function()
+uploadOutput.addEventListener('click', function()
 {
-	saveJSON()
+	uploadFile(outputTextarea, setOutput)
 })
-copySchema.addEventListener('click', function()
+downloadOutput.addEventListener('click', function()
 {
-	copyToClipboard(schemaTextarea.getValue())
-	document.documentElement.scrollTop = 0
-	document.body.scrollTop = 0
-})
-uploadSchema.addEventListener('click', function()
-{
-	
-})
-downloadSchema.addEventListener('click', function()
-{
-	saveJSON()
+	downloadFile(outputTextarea.getValue(), outputFilename.value + '.json', 'application/json')
 })
 setSchema.addEventListener('click', function()
 {
@@ -381,6 +408,20 @@ setSchema.addEventListener('click', function()
 		return
 	}
 	refreshUI()
+})
+copySchema.addEventListener('click', function()
+{
+	copyToClipboard(schemaTextarea.getValue())
+	document.documentElement.scrollTop = 0
+	document.body.scrollTop = 0
+})
+uploadSchema.addEventListener('click', function()
+{
+	uploadFile(schemaTextarea, setSchema)
+})
+downloadSchema.addEventListener('click', function()
+{
+	downloadFile(schemaTextarea.getValue(), schemaFilename.value + '.json', 'application/json')
 })
 themeSelect.addEventListener('change', function()
 {
