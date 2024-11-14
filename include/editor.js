@@ -7,13 +7,19 @@ var defaultOptions = Object.assign({}, JSONEditor.defaults.options, {
 	disable_array_delete_last_row: true,
 	prompt_before_delete: false,
 	schema: defaultSchema,
-	theme: "bootstrap5",
+	theme: "bootstrap4",
 	iconlib: "fontawesome5",
 	object_layout: "normal",
 	show_errors: "interaction"
 })
+var copyScrollOptions = {
+	behavior: "instant",
+	block: "start",
+	inline: "nearest"
+}
 var jsoneditor = null
 var isExpanded = false
+var mainDiv = document.querySelector("#main-div")
 var editorDiv = document.querySelector("#editor-div")
 var outputDiv = document.querySelector("#output-div")
 var schemaDiv = document.querySelector("#schema-div")
@@ -80,8 +86,6 @@ function copyToClipboard(element)
 	tempArea.select()
 	document.execCommand("copy")
 	document.body.removeChild(tempArea)
-	document.documentElement.scrollTop = 0
-	document.body.scrollTop = 0
 }
 
 function openJSON(elementToSet, elementToClick)
@@ -402,6 +406,7 @@ directLink.addEventListener("click", function()
 	url += "?data="
 	url += LZString.compressToBase64(JSON.stringify(data))
 	copyToClipboard(url)
+	window.scrollTo(0, 0)
 })
 resetButton.addEventListener("click", function()
 {
@@ -440,6 +445,7 @@ clearOutput.addEventListener("click", function()
 copyOutput.addEventListener("click", function()
 {
 	copyToClipboard(outputTextarea.getValue())
+	window.scrollTo(0, 0)
 })
 openOutput.addEventListener("click", function()
 {
@@ -475,6 +481,7 @@ clearSchema.addEventListener("click", function()
 copySchema.addEventListener("click", function()
 {
 	copyToClipboard(schemaTextarea.getValue())
+	schemaDiv.scrollIntoView(copyScrollOptions)
 })
 openSchema.addEventListener("click", function()
 {

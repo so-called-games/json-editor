@@ -11,6 +11,21 @@
 		<link rel="stylesheet" id="theme-link">
 		<link rel="stylesheet" id="iconlib-link">
 		<style>
+			.btn-primary, .btn-primary:hover, .btn-primary:active, .btn-primary:visited
+			{
+				
+			}
+			
+			.btn-primary:hover, .btn-primary:visited
+			{
+				
+			}
+			
+			.btn-primary:active
+			{
+				
+			}
+			
 			#json-editor-form
 			{
 				zoom: 75%;
@@ -18,7 +33,7 @@
 		</style>
 	</head>
 	<body>
-		<div class="container grid-xl" style="padding-top: 15px; padding-bottom: 30px;">
+		<div id="main-div" class="container grid-xl" style="padding-top: 15px; padding-bottom: 30px;">
 			<div class="row columns md:flex">
 				<div id="editor-div" class="col-7 col-md-7 w-7/12">
 					<h2>JSON Editor</h2>
@@ -26,23 +41,22 @@
 					<div>
 						<button class="btn btn-primary" id="direct-link" title="Copy URL which contains JSON schema, output and the options"><i class="fas fa-link"></i> <span>Copy link</span></button>
 						<button class="btn btn-secondary" id="reset" title="Reload editor and reset all the forms and options"><i class="fas fa-redo"></i> <span>Reset</span></button>
-						<button class="btn btn-secondary" id="expand" title="Expand or collapse the editor"><i id="expand-icon" class="fas fa-expand"></i></button>
+						<button class="btn btn-secondary" id="expand" title="Expand editor and hide every other tab (or vice versa)"><i id="expand-icon" class="fas fa-expand"></i></button>
 					</div>
 					<br>
 					<div id="json-editor-form"></div>
 				</div>
 				<div id="output-div" class="col-5 col-md-5 w-5/12">
 					<h2>Output</h2>
-					<p>There you can make changes below and update properties in the editor using "Update" button, copy or download output using "Copy" and "Save" buttons and upload JSON file to the editor using "Open" button.</p>
-					<button class="btn btn-secondary" id="set-output"><i class="fas fa-redo"></i> <span>Update</span></button>
-					<button class="btn btn-secondary" id="clear-output"><i class="fas fa-eraser"></i> <span>Clear</span></button>
-					<button class="btn btn-secondary" id="copy-output"><i class="fas fa-copy"></i> <span>Copy</span></button>
-					<button class="btn btn-secondary" id="open-output"><i class="fas fa-folder-open"></i> <span>Open</span></button>
-					<button class="btn btn-primary" id="save-output"><i class="fas fa-save"></i> <span>Save</button>
-					<br><br>
 					<label>Filename of the downloadable output (without ".json")</label>
 					<input id="output-filename" class="form-control" type="text"></input>
 					<br>
+					<button class="btn btn-secondary" id="set-output" title="Update editor from output"><i class="fas fa-redo"></i> <span>Update</span></button>
+					<button class="btn btn-secondary" id="clear-output" title="Clear output"><i class="fas fa-eraser"></i> <span>Clear</span></button>
+					<button class="btn btn-secondary" id="copy-output" title="Copy output"><i class="fas fa-copy"></i> <span>Copy</span></button>
+					<button class="btn btn-secondary" id="open-output" title="Upload JSON file to the output"><i class="fas fa-folder-open"></i> <span>Open</span></button>
+					<button class="btn btn-primary" id="save-output" title="Download output as JSON file"><i class="fas fa-save"></i> <span>Save</button>
+					<br><br>
 					<textarea id="output-textarea" style="width: 100%; font-family: monospace;" class="form-control"></textarea>
 					<br>
 					<h2>Validation</h2>
@@ -54,16 +68,15 @@
 			<div id="schema-div" class="row columns md:flex">
 				<div class="col-7 col-md-7 w-7/12">
 					<h2>Schema</h2>
-					<p>There you can change the schema and see how the generated form looks. After you make changes, click "Update". To upload schema from file, click "Open", or click "Save" to download the schema.</p>
+					<label>Filename of the downloadable schema (without ".json")</label>
+					<input id="schema-filename" class="form-control" type="text"></input>
+					<br>
 					<button class="btn btn-primary" id="set-schema"><i class="fas fa-redo"></i> <span>Update</span></button>
 					<button class="btn btn-secondary" id="clear-schema"><i class="fas fa-eraser"></i> <span>Clear</span></button>
 					<button class="btn btn-secondary" id="copy-schema"><i class="fas fa-copy"></i> <span>Copy</span></button>
 					<button class="btn btn-secondary" id="open-schema"><i class="fas fa-folder-open"></i> <span>Open</span></button>
 					<button class="btn btn-secondary" id="save-schema"><i class="fas fa-save"></i> <span>Save</span></button>
 					<br><br>
-					<label>Filename of the downloadable schema (without ".json")</label>
-					<input id="schema-filename" class="form-control" type="text"></input>
-					<br>
 					<textarea id="schema-textarea" style="height: 100vh;"></textarea>
 				</div>
 				<div class="col-5 col-md-5 w-5/12">
