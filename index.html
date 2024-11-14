@@ -8,153 +8,166 @@
 		<script src="https://cdn.jsdelivr.net/npm/@json-editor/json-editor@latest/dist/jsoneditor.min.js"></script>
 		<script src="https://cdn.jsdelivr.net/npm/ace-builds@1.14.0/src-noconflict/ace.js"></script>
 		<script src="https://cdn.jsdelivr.net/npm/lz-string@1.4.4/libs/lz-string.min.js"></script>
-		<link rel='stylesheet' id='theme-link'>
-		<link rel='stylesheet' id='iconlib-link'>
+		<link rel="stylesheet" id="theme-link">
+		<link rel="stylesheet" id="iconlib-link">
+		<style>
+			#json-editor-form
+			{
+				zoom: 75%;
+			}
+		</style>
 	</head>
 	<body>
 		<div class="container grid-xl" style="padding-top: 15px; padding-bottom: 30px;">
 			<div class="row columns md:flex">
-				<div class='col-7 col-md-7 w-7/12'>
+				<div id="editor-div" class="col-7 col-md-7 w-7/12">
 					<h2>JSON Editor</h2>
 					<p>This page is modified version of the original JSON Editor interactive demo. You can learn more about JSON Editor on the <a href="https://github.com/json-editor/json-editor" title="github" target="_blank">official GitHub</a> repository.</p>
 					<div>
-						<button class="btn btn-primary" id="direct-link" title="Copy URL which contains JSON schema, output and the options">Copy link</button>
-						<button class="btn btn-secondary" id="reset" title="Reload editor and reset all the forms and options">Reset</button>
+						<button class="btn btn-primary" id="direct-link" title="Copy URL which contains JSON schema, output and the options"><i class="fas fa-link"></i> <span>Copy link</span></button>
+						<button class="btn btn-secondary" id="reset" title="Reload editor and reset all the forms and options"><i class="fas fa-redo"></i> <span>Reset</span></button>
+						<button class="btn btn-secondary" id="expand" title="Expand or collapse the editor"><i id="expand-icon" class="fas fa-expand"></i></button>
 					</div>
 					<br>
 					<div id="json-editor-form"></div>
 				</div>
-				<div class='col-5 col-md-5 w-5/12'>
+				<div id="output-div" class="col-5 col-md-5 w-5/12">
 					<h2>Output</h2>
 					<p>There you can make changes below and update properties in the editor using "Update" button, copy or download output using "Copy" and "Save" buttons and upload JSON file to the editor using "Open" button.</p>
-					<button class='btn btn-secondary' id='set-output'>Update</button>
-					<button class='btn btn-secondary' id='copy-output'>Copy</button>
-					<button class='btn btn-secondary' id='open-output'>Open</button>
-					<button class='btn btn-primary' id='save-output'>Save</button>
+					<button class="btn btn-secondary" id="set-output"><i class="fas fa-redo"></i> <span>Update</span></button>
+					<button class="btn btn-secondary" id="clear-output"><i class="fas fa-eraser"></i> <span>Clear</span></button>
+					<button class="btn btn-secondary" id="copy-output"><i class="fas fa-copy"></i> <span>Copy</span></button>
+					<button class="btn btn-secondary" id="open-output"><i class="fas fa-folder-open"></i> <span>Open</span></button>
+					<button class="btn btn-primary" id="save-output"><i class="fas fa-save"></i> <span>Save</button>
 					<br><br>
 					<label>Filename of the downloadable output (without ".json")</label>
-					<input id='output-filename' class='form-control' type='text'></input>
+					<input id="output-filename" class="form-control" type="text"></input>
 					<br>
-					<textarea id='output-textarea' style="width: 100%; font-family: monospace;" class='form-control'></textarea>
+					<textarea id="output-textarea" style="width: 100%; font-family: monospace;" class="form-control"></textarea>
 					<br>
 					<h2>Validation</h2>
 					<p>This will update whenever the form changes to show validation errors if there are any.</p>
-					<textarea id='validate-textarea' readonly disabled class='form-control'></textarea>
+					<textarea id="validate-textarea" readonly disabled class="form-control"></textarea>
 				</div>
 			</div>
-			<h2>Schema</h2>
-			<div class="row columns md:flex">
-				<div class='col-7 col-md-7 w-7/12'>
+			<br><br>
+			<div id="schema-div" class="row columns md:flex">
+				<div class="col-7 col-md-7 w-7/12">
+					<h2>Schema</h2>
 					<p>There you can change the schema and see how the generated form looks. After you make changes, click "Update". To upload schema from file, click "Open", or click "Save" to download the schema.</p>
-					<button class='btn btn-primary' id='set-schema'>Update</button>
-					<button class='btn btn-secondary' id='copy-schema'>Copy</button>
-					<button class='btn btn-secondary' id='open-schema'>Open</button>
-					<button class='btn btn-secondary' id='save-schema'>Save</button>
+					<button class="btn btn-primary" id="set-schema"><i class="fas fa-redo"></i> <span>Update</span></button>
+					<button class="btn btn-secondary" id="clear-schema"><i class="fas fa-eraser"></i> <span>Clear</span></button>
+					<button class="btn btn-secondary" id="copy-schema"><i class="fas fa-copy"></i> <span>Copy</span></button>
+					<button class="btn btn-secondary" id="open-schema"><i class="fas fa-folder-open"></i> <span>Open</span></button>
+					<button class="btn btn-secondary" id="save-schema"><i class="fas fa-save"></i> <span>Save</span></button>
 					<br><br>
 					<label>Filename of the downloadable schema (without ".json")</label>
-					<input id='schema-filename' class='form-control' type='text'></input>
+					<input id="schema-filename" class="form-control" type="text"></input>
 					<br>
-					<textarea id='schema-textarea' style="height: 100vh;"></textarea>
+					<textarea id="schema-textarea" style="height: 100vh;"></textarea>
 				</div>
-				<div class='col-5 col-md-5 w-5/12'>
+				<div class="col-5 col-md-5 w-5/12">
 					<label for="je-errors-textarea">
 						<span>AJV (JE meta-schema): </span>
 						<code id="je-errors-count"></code>
 					</label>
-					<textarea id='je-errors-textarea'></textarea>
+					<textarea id="je-errors-textarea"></textarea>
 					<br>
 					<label for="ajv-errors-textarea">
 						<span>AJV (meta-schema-2020-12): </span>
 						<code id="ajv-errors-count"></code>
 					</label>
-					<textarea id='ajv-errors-textarea'></textarea>
+					<textarea id="ajv-errors-textarea"></textarea>
 				</div>
 			</div>
-			<h2>Options</h2>
-			<div>
-				<label for="boolean-options-select">Boolean options</label><br>
-				<select multiple size="10" id="boolean-options-select" class="form-control browser-default">
-					<option value='use_default_values'>Default values based on the "type"</option>
-					<option value='use_name_attributes'>Use name attributes</option>
-					<option value='prompt_before_delete'>Prompt before delete</option>
-					<option value='case_sensitive_property_search'>Case sensitive property search</option>
-					<option value='required_by_default'>Object properties required by default</option>
-					<option value='display_required_only'>Only show required properties by default</option>
-					<option value='show_opt_in'>Show optional properties (with checkbox)</option>
-					<option value='no_additional_properties'>No additional object properties</option>
-					<option value='ajax'>Allow loading schemas via Ajax</option>
-					<option value='disable_edit_json'>Disable "Edit JSON" buttons</option>
-					<option value='disable_collapse'>Disable collapse buttons</option>
-					<option value='disable_properties'>Disable properties buttons</option>
-					<option value='disable_array_add'>Disable array add buttons</option>
-					<option value='disable_array_reorder'>Disable array move buttons</option>
-					<option value='disable_array_delete'>Disable array delete buttons</option>
-					<option value='enable_array_copy'>Add copy buttons to arrays</option>
-					<option value='array_controls_top'>Array controls will be displayed at top of list</option>
-					<option value='disable_array_delete_all_rows'>Disable array delete all rows buttons</option>
-					<option value='disable_array_delete_last_row'>Disable array delete last row buttons</option>
-				</select>
-			</div>
 			<br>
-			<div>
-				<label for="theme-select">Theme</label><br>
-				<select id='theme-select' name="theme" class='form-control browser-default'>
-					<option value='barebones'>Barebones</option>
-					<option value='bootstrap3'>Bootstrap 3</option>
-					<option value='bootstrap4'>Bootstrap 4</option>
-					<option value='bootstrap5'>Bootstrap 5</option>
-					<option value='html'>HTML</option>
-					<option value='spectre'>Spectre</option>
-					<option value='tailwind'>Tailwind</option>
-				</select>
+			<div id="options-div">
+				<h2>Options</h2>
+				<div>
+					<label for="boolean-options-select">Boolean options</label><br>
+					<select multiple size="10" id="boolean-options-select" class="form-control browser-default">
+						<option value="use_default_values">Default values based on the "type"</option>
+						<option value="use_name_attributes">Use name attributes</option>
+						<option value="prompt_before_delete">Prompt before delete</option>
+						<option value="case_sensitive_property_search">Case sensitive property search</option>
+						<option value="required_by_default">Object properties required by default</option>
+						<option value="display_required_only">Only show required properties by default</option>
+						<option value="show_opt_in">Show optional properties (with checkbox)</option>
+						<option value="no_additional_properties">No additional object properties</option>
+						<option value="ajax">Allow loading schemas via Ajax</option>
+						<option value="disable_edit_json">Disable "Edit JSON" buttons</option>
+						<option value="disable_collapse">Disable collapse buttons</option>
+						<option value="disable_properties">Disable properties buttons</option>
+						<option value="disable_array_add">Disable array add buttons</option>
+						<option value="disable_array_reorder">Disable array move buttons</option>
+						<option value="disable_array_delete">Disable array delete buttons</option>
+						<option value="enable_array_copy">Add copy buttons to arrays</option>
+						<option value="array_controls_top">Array controls will be displayed at top of list</option>
+						<option value="disable_array_delete_all_rows">Disable array delete all rows buttons</option>
+						<option value="disable_array_delete_last_row">Disable array delete last row buttons</option>
+					</select>
+				</div>
 				<br>
-			</div>
-			<div hidden>
-				<label for="iconlib-select">Icons</label><br>
-				<select id='iconlib-select' name="iconlib" class='form-control browser-default'>
-					<option value='fontawesome3'>fontawesome 3</option>
-					<option value='fontawesome4'>fontawesome 4</option>
-					<option value='fontawesome5'>fontawesome 5</option>
-					<option value='jqueryui'>jQuery UI</option>
-					<option value='openiconic'>Open Iconic</option>
-					<option value='spectre'>Spectre</option>
-					<option value='spectre'>Spectre</option>
-					<option value='bootstrap'>Bootstrap</option>
-				</select>
-				<br>
-			</div>
-			<div hidden>
-				<label for="object-layout-select">Object Layout</label><br>
-				<select id='object-layout-select' class='form-control browser-default'>
-					<option value='normal'>normal</option>
-					<option value='grid'>grid</option>
-				</select>
-				<br>
-			</div>
-			<div>
-				<label for="show-errors-select">Show Errors</label><br>
-				<select id='show-errors-select' class='form-control browser-default'>
-					<option value='interaction'>On Interaction</option>
-					<option value='change'>On Field Change</option>
-					<option value='always'>Always</option>
-					<option value='never'>Never</option>
-				</select>
-				<br>
-			</div>
-			<div hidden>
-				<label for="lib-select" title="It's recommended that you click the Direct Link after changing these options">Include External Library</label><br>
-				<select multiple size="10" id='lib-select' class='form-control browser-default' title="It's reccomended that you click the Direct Link after changing these options">
-					<option value='ace_editor'>Ace Editor</option>
-					<option value='choices'>Choices</option>
-					<option value='sceditor'>SCEditor</option>
-					<option value='simplemde'>SimpleMDE</option>
-					<option value='select2'>Select2</option>
-					<option value='selectize'>Selectize</option>
-					<option value='flatpickr'>Flatpickr</option>
-					<option value='signature_pad'>Signature Pad</option>
-					<option value='mathjs'>Math.js</option>
-					<option value='cleavejs'>Cleave.js</option>
-				</select>
+				<div>
+					<label for="theme-select">Theme</label><br>
+					<select id="theme-select" name="theme" class="form-control browser-default">
+						<option value="barebones">Barebones</option>
+						<option value="bootstrap3">Bootstrap 3</option>
+						<option value="bootstrap4">Bootstrap 4</option>
+						<option value="bootstrap5">Bootstrap 5</option>
+						<option value="html">HTML</option>
+						<option value="spectre">Spectre</option>
+						<option value="tailwind">Tailwind</option>
+					</select>
+					<br>
+				</div>
+				<div hidden>
+					<label for="iconlib-select">Icons</label><br>
+					<select id="iconlib-select" name="iconlib" class="form-control browser-default">
+						<option value="fontawesome3">fontawesome 3</option>
+						<option value="fontawesome4">fontawesome 4</option>
+						<option value="fontawesome5">fontawesome 5</option>
+						<option value="jqueryui">jQuery UI</option>
+						<option value="openiconic">Open Iconic</option>
+						<option value="spectre">Spectre</option>
+						<option value="spectre">Spectre</option>
+						<option value="bootstrap">Bootstrap</option>
+					</select>
+					<br>
+				</div>
+				<div hidden>
+					<label for="object-layout-select">Object Layout</label><br>
+					<select id="object-layout-select" class="form-control browser-default">
+						<option value="normal">normal</option>
+						<option value="grid">grid</option>
+					</select>
+					<br>
+				</div>
+				<div>
+					<label for="show-errors-select">Show Errors</label><br>
+					<select id="show-errors-select" class="form-control browser-default">
+						<option value="interaction">On Interaction</option>
+						<option value="change">On Field Change</option>
+						<option value="always">Always</option>
+						<option value="never">Never</option>
+					</select>
+					<br>
+				</div>
+				<div hidden>
+					<label for="lib-select" title="It"s recommended that you click the Direct Link after changing these options">Include External Library</label><br>
+					<select multiple size="10" id="lib-select" class="form-control browser-default" title="It"s reccomended that you click the Direct Link after changing these options">
+						<option value="ace_editor">Ace Editor</option>
+						<option value="choices">Choices</option>
+						<option value="sceditor">SCEditor</option>
+						<option value="simplemde">SimpleMDE</option>
+						<option value="select2">Select2</option>
+						<option value="selectize">Selectize</option>
+						<option value="flatpickr">Flatpickr</option>
+						<option value="signature_pad">Signature Pad</option>
+						<option value="mathjs">Math.js</option>
+						<option value="cleavejs">Cleave.js</option>
+					</select>
+				</div>
 			</div>
 		</div>
 	</body>

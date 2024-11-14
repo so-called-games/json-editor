@@ -1,16 +1,27 @@
-var defaultSchema = {}
+var defaultSchema = {
+	"type": "object"
+}
 var data = {}
 var defaultOptions = Object.assign({}, JSONEditor.defaults.options, {
+	disable_array_delete_all_rows: true,
+	disable_array_delete_last_row: true,
 	prompt_before_delete: false,
 	schema: defaultSchema,
-	theme: "bootstrap3",
+	theme: "bootstrap5",
 	iconlib: "fontawesome5",
 	object_layout: "normal",
 	show_errors: "interaction"
 })
 var jsoneditor = null
+var isExpanded = false
+var editorDiv = document.querySelector("#editor-div")
+var outputDiv = document.querySelector("#output-div")
+var schemaDiv = document.querySelector("#schema-div")
+var optionsDiv = document.querySelector("#options-div")
 var directLink = document.querySelector("#direct-link")
 var resetButton = document.querySelector("#reset")
+var expandButton = document.querySelector("#expand")
+var expandButtonIcon = document.querySelector("#expand-icon")
 var booleanOptionsSelect = document.querySelector("#boolean-options-select")
 var head = document.getElementsByTagName("head")[0]
 var iconlibSelect = document.querySelector("#iconlib-select")
@@ -19,11 +30,13 @@ var libSelect = document.querySelector("#lib-select")
 var jsonEditorForm = document.querySelector("#json-editor-form")
 var objectLayoutSelect = document.querySelector("#object-layout-select")
 var setOutput = document.querySelector("#set-output")
+var clearOutput = document.querySelector("#clear-output")
 var copyOutput = document.querySelector("#copy-output")
 var openOutput = document.querySelector("#open-output")
 var saveOutput = document.querySelector("#save-output")
 var outputFilename = document.querySelector("#output-filename")
 var setSchema = document.querySelector("#set-schema")
+var clearSchema = document.querySelector("#clear-schema")
 var copySchema = document.querySelector("#copy-schema")
 var openSchema = document.querySelector("#open-schema")
 var saveSchema = document.querySelector("#save-schema")
@@ -35,7 +48,7 @@ var validateTextarea = document.querySelector("#validate-textarea")
 var aceConfig = {
 	mode: "ace/mode/json",
 	minLines: 4,
-	maxLines: 64,
+	maxLines: 48,
 	showFoldWidgets: false,
 	showPrintMargin: false,
 	wrap: true
@@ -182,7 +195,6 @@ var refreshUI = function()
 			schemaFilename.value = data.filenames.schema
 	}
 	schemaTextarea.setValue(replaceSpacings(JSON.stringify(data.options.schema, null, 2)))
-	schemaTextarea.clearSelection(1)
 	validateSchema()
 	var themeMap = {
 		barebones: "",
@@ -357,6 +369,7 @@ var refreshUI = function()
 		})
 	}
 	initJsoneditor()
+	schemaTextarea.clearSelection(1)
 }
 
 var initJsoneditor = function()
@@ -394,9 +407,35 @@ resetButton.addEventListener("click", function()
 {
 	window.open("?", "_self")
 })
+expandButton.addEventListener("click", function()
+{
+	var isHidden
+	
+	if (!isExpanded)
+	{
+		isHidden = true
+		editorDiv.className = "col-12 col-md-12 w-12/12"
+		expandButtonIcon.className = "fas fa-compress"
+	}
+	else
+	{
+		isHidden = false
+		editorDiv.className = "col-7 col-md-7 w-7/12"
+		expandButtonIcon.className = "fas fa-expand"
+	}
+	outputDiv.hidden = isHidden
+	schemaDiv.hidden = isHidden
+	optionsDiv.hidden = isHidden
+	isExpanded = !isExpanded
+})
 setOutput.addEventListener("click", function()
 {
 	jsoneditor.setValue(JSON.parse(outputTextarea.getValue()))
+})
+clearOutput.addEventListener("click", function()
+{
+	outputTextarea.setValue("{}")
+	outputTextarea.clearSelection(1)
 })
 copyOutput.addEventListener("click", function()
 {
@@ -408,7 +447,7 @@ openOutput.addEventListener("click", function()
 })
 saveOutput.addEventListener("click", function()
 {
-	openJSON(outputTextarea.getValue(), outputFilename.value + ".json", "application/json")
+	saveJSON(outputTextarea.getValue(), outputFilename.value + ".json", "application/json")
 })
 outputFilename.addEventListener("change", function()
 {
@@ -427,6 +466,11 @@ setSchema.addEventListener("click", function()
 		return
 	}
 	refreshUI()
+})
+clearSchema.addEventListener("click", function()
+{
+	schemaTextarea.setValue(replaceSpacings(JSON.stringify(data.options.schema, null, 2)))
+	schemaTextarea.clearSelection(1)
 })
 copySchema.addEventListener("click", function()
 {
