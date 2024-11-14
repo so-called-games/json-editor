@@ -18,7 +18,7 @@
 					<h2>JSON Editor</h2>
 					<p>This page is modified version of the original JSON Editor interactive demo. You can learn more about JSON Editor on the <a href="https://github.com/json-editor/json-editor" title="github" target="_blank">official GitHub</a> repository.</p>
 					<div>
-						<button class="btn btn-primary" id="direct-link" title="Copy URL which contains schema, output, and options">Copy link</button>
+						<button class="btn btn-primary" id="direct-link" title="Copy URL which contains JSON schema, output and the options">Copy link</button>
 						<button class="btn btn-secondary" id="reset" title="Reload editor and reset all the forms and options">Reset</button>
 					</div>
 					<br>
@@ -26,7 +26,7 @@
 				</div>
 				<div class='col-5 col-md-5 w-5/12'>
 					<h2>Output</h2>
-					<p>You can make changes below and update properties ("Update"), copy or download ("Save") output with specified name to be set in field and upload ("Open") JSON file to the editor.</p>
+					<p>There you can make changes below and update properties in the editor using "Update" button, copy or download output using "Copy" and "Save" buttons and upload JSON file to the editor using "Open" button.</p>
 					<button class='btn btn-secondary' id='set-output'>Update</button>
 					<button class='btn btn-secondary' id='copy-output'>Copy</button>
 					<button class='btn btn-secondary' id='open-output'>Open</button>
@@ -36,15 +36,16 @@
 					<input id='output-filename' class='form-control' type='text'></input>
 					<br>
 					<textarea id='output-textarea' style="width: 100%; font-family: monospace;" class='form-control'></textarea>
+					<br>
 					<h2>Validation</h2>
-					<label for="validate-textarea">This will update whenever the form changes to show validation errors if there are any.</label><br>
+					<p>This will update whenever the form changes to show validation errors if there are any.</p>
 					<textarea id='validate-textarea' readonly disabled class='form-control'></textarea>
 				</div>
 			</div>
 			<h2>Schema</h2>
 			<div class="row columns md:flex">
 				<div class='col-7 col-md-7 w-7/12'>
-					<p>You can change the schema and see how the generated form looks. After you make changes, click "Update". To upload schema from file, click "Open", or click "Save" to download the schema.</p>
+					<p>There you can change the schema and see how the generated form looks. After you make changes, click "Update". To upload schema from file, click "Open", or click "Save" to download the schema.</p>
 					<button class='btn btn-primary' id='set-schema'>Update</button>
 					<button class='btn btn-secondary' id='copy-schema'>Copy</button>
 					<button class='btn btn-secondary' id='open-schema'>Open</button>
