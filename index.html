@@ -18,19 +18,19 @@
 					<h2>JSON Editor</h2>
 					<p>This page is modified version of the original JSON Editor interactive demo. You can learn more about JSON Editor on the <a href="https://github.com/json-editor/json-editor" title="github" target="_blank">official GitHub</a> repository.</p>
 					<div>
-						<a class="btn btn-primary" id="direct-link" title="Saves schema, output, and options in a link">Direct Link</a>
-						<a class="btn btn-secondary" href="?" title="Reload editor and reset all the forms and options">Reset</a>
+						<button class="btn btn-primary" id="direct-link" title="Copy URL which contains schema, output, and options">Copy link</button>
+						<button class="btn btn-secondary" id="reset" title="Reload editor and reset all the forms and options">Reset</button>
 					</div>
 					<br>
 					<div id="json-editor-form"></div>
 				</div>
 				<div class='col-5 col-md-5 w-5/12'>
 					<h2>Output</h2>
-					<p>You can also make changes to the JSON here and set the properties in the editor by clicking "Update" or download JSON output by clicking "Download".</p>
+					<p>You can make changes below and update properties ("Update"), copy or download ("Save") output with specified name to be set in field and upload ("Open") JSON file to the editor.</p>
 					<button class='btn btn-secondary' id='set-output'>Update</button>
 					<button class='btn btn-secondary' id='copy-output'>Copy</button>
-					<button class='btn btn-secondary' id='upload-output'>Upload</button>
-					<button class='btn btn-primary' id='download-output'>Download</button>
+					<button class='btn btn-secondary' id='open-output'>Open</button>
+					<button class='btn btn-primary' id='save-output'>Save</button>
 					<br><br>
 					<label>Filename of the downloadable output (without ".json")</label>
 					<input id='output-filename' class='form-control' type='text'></input>
@@ -44,11 +44,11 @@
 			<h2>Schema</h2>
 			<div class="row columns md:flex">
 				<div class='col-7 col-md-7 w-7/12'>
-					<label for="schema-textarea">You can change the schema and see how the generated form looks. After you make changes, click "Update". To upload schema from file, click "Upload".</label>
+					<p>You can change the schema and see how the generated form looks. After you make changes, click "Update". To upload schema from file, click "Open", or click "Save" to download the schema.</p>
 					<button class='btn btn-primary' id='set-schema'>Update</button>
 					<button class='btn btn-secondary' id='copy-schema'>Copy</button>
-					<button class='btn btn-secondary' id='upload-schema'>Upload</button>
-					<button class='btn btn-secondary' id='download-schema'>Download</button>
+					<button class='btn btn-secondary' id='open-schema'>Open</button>
+					<button class='btn btn-secondary' id='save-schema'>Save</button>
 					<br><br>
 					<label>Filename of the downloadable schema (without ".json")</label>
 					<input id='schema-filename' class='form-control' type='text'></input>
@@ -72,7 +72,7 @@
 			<h2>Options</h2>
 			<div>
 				<label for="boolean-options-select">Boolean options</label><br>
-				<select multiple size="15" id="boolean-options-select" class="form-control browser-default">
+				<select multiple size="10" id="boolean-options-select" class="form-control browser-default">
 					<option value='use_default_values'>Default values based on the "type"</option>
 					<option value='use_name_attributes'>Use name attributes</option>
 					<option value='prompt_before_delete'>Prompt before delete</option>
@@ -106,9 +106,9 @@
 					<option value='spectre'>Spectre</option>
 					<option value='tailwind'>Tailwind</option>
 				</select>
+				<br>
 			</div>
-			<br>
-			<div>
+			<div hidden>
 				<label for="iconlib-select">Icons</label><br>
 				<select id='iconlib-select' name="iconlib" class='form-control browser-default'>
 					<option value='fontawesome3'>fontawesome 3</option>
@@ -120,16 +120,16 @@
 					<option value='spectre'>Spectre</option>
 					<option value='bootstrap'>Bootstrap</option>
 				</select>
+				<br>
 			</div>
-			<br>
-			<div>
+			<div hidden>
 				<label for="object-layout-select">Object Layout</label><br>
 				<select id='object-layout-select' class='form-control browser-default'>
 					<option value='normal'>normal</option>
 					<option value='grid'>grid</option>
 				</select>
+				<br>
 			</div>
-			<br>
 			<div>
 				<label for="show-errors-select">Show Errors</label><br>
 				<select id='show-errors-select' class='form-control browser-default'>
@@ -138,9 +138,9 @@
 					<option value='always'>Always</option>
 					<option value='never'>Never</option>
 				</select>
+				<br>
 			</div>
-			<br>
-			<div>
+			<div hidden>
 				<label for="lib-select" title="It's recommended that you click the Direct Link after changing these options">Include External Library</label><br>
 				<select multiple size="10" id='lib-select' class='form-control browser-default' title="It's reccomended that you click the Direct Link after changing these options">
 					<option value='ace_editor'>Ace Editor</option>
