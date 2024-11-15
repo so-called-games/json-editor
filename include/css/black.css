@@ -1,0 +1,88 @@
+@import url('https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css');
+
+body, input, textarea, select
+{
+	background: black !important;
+}
+
+input, textarea, select
+{
+	background: #181818 !important;
+	border: none !important;
+}
+
+option:checked
+{
+	background: #333333 !important;
+}
+
+h1, h2, a, span, input, textarea, select, option
+{
+	color: white !important;
+}
+
+p, label
+{
+	color: #cccccc !important;
+}
+
+label
+{
+	margin-bottom: 6px !important;
+}
+
+.btn-primary, .btn-secondary
+{
+	background: #111111 !important;
+	margin-bottom: 8px !important;
+	margin-right: 8px !important;
+	--bs-btn-border-color: none !important;
+}
+
+.btn-primary
+{
+	background: #333333 !important;
+}
+
+.btn-secondary
+{
+	background: #1a1a1a !important;
+}
+
+.btn-primary:hover, .btn-primary:visited
+{
+	background: #2c2c2c !important;
+}
+
+.btn-primary:active
+{
+	background: #222222 !important;
+}
+
+.btn-secondary:hover, .btn-secondary:visited
+{
+	background: #181818 !important;
+}
+
+.btn-secondary:active
+{
+	background: #121212 !important;
+}
+
+.card
+{
+	background: black !important;
+	--bs-card-title-spacer-y: 1rem !important;
+}
+
+.card
+{
+	background: black !important;
+	--bs-card-title-spacer-y: 0.25rem !important;
+}
+
+.my-3
+{
+	margin-top: 0rem !important;
+	margin-bottom: 0rem !important;
+}

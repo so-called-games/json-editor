@@ -2,38 +2,25 @@
 <html lang="en">
 	<head>
 		<meta charset="utf-8"/>
+		<meta name="viewport" content="width=device-width, initial-scale=2">
 		<title>JSON Editor</title>
-		<script src="include/assign.js"></script>
-		<script src="include/ajv-validator.js"></script>
-		<script src="https://cdn.jsdelivr.net/npm/@json-editor/json-editor@latest/dist/jsoneditor.min.js"></script>
-		<script src="https://cdn.jsdelivr.net/npm/ace-builds@1.14.0/src-noconflict/ace.js"></script>
-		<script src="https://cdn.jsdelivr.net/npm/lz-string@1.4.4/libs/lz-string.min.js"></script>
+		<link rel="icon" type="image/x-icon" href="favicon.ico">
 		<link rel="stylesheet" id="theme-link">
 		<link rel="stylesheet" id="iconlib-link">
 		<style>
-			.btn-primary, .btn-primary:hover, .btn-primary:active, .btn-primary:visited
-			{
-				
-			}
-			
-			.btn-primary:hover, .btn-primary:visited
-			{
-				
-			}
-			
-			.btn-primary:active
-			{
-				
-			}
-			
 			#json-editor-form
 			{
 				zoom: 75%;
 			}
 		</style>
+		<script src="include/js/assign.js"></script>
+		<script src="include/js/ajv-validator.js"></script>
+		<script src="https://cdn.jsdelivr.net/npm/@json-editor/json-editor@latest/dist/jsoneditor.min.js"></script>
+		<script src="https://cdn.jsdelivr.net/npm/ace-builds@1.14.0/src-noconflict/ace.js"></script>
+		<script src="https://cdn.jsdelivr.net/npm/lz-string@1.4.4/libs/lz-string.min.js"></script>
 	</head>
 	<body>
-		<div id="main-div" class="container grid-xl" style="padding-top: 15px; padding-bottom: 30px;">
+		<div id="main-div" class="container grid-xl" style="padding-top: 32px; padding-bottom: 32px;">
 			<div class="row columns md:flex">
 				<div id="editor-div" class="col-7 col-md-7 w-7/12">
 					<h2>JSON Editor</h2>
@@ -122,29 +109,38 @@
 				</div>
 				<br>
 				<div>
-					<label for="theme-select">Theme</label><br>
-					<select id="theme-select" name="theme" class="form-control browser-default">
-						<option value="barebones">Barebones</option>
-						<option value="bootstrap3">Bootstrap 3</option>
-						<option value="bootstrap4">Bootstrap 4</option>
-						<option value="bootstrap5">Bootstrap 5</option>
-						<option value="html">HTML</option>
-						<option value="spectre">Spectre</option>
-						<option value="tailwind">Tailwind</option>
+					<label for="show-errors-select">Show Errors</label><br>
+					<select id="show-errors-select" class="form-control browser-default">
+						<option value="interaction">On Interaction</option>
+						<option value="change">On Field Change</option>
+						<option value="always">Always</option>
+						<option value="never">Never</option>
 					</select>
 					<br>
 				</div>
-				<div hidden>
+				<div>
+					<label for="theme-select">Theme</label><br>
+					<select id="theme-select" name="theme" class="form-control browser-default">
+						<option value="html">HTML</option>
+						<option value="bootstrap3">Bootstrap 3</option>
+						<option value="bootstrap4">Bootstrap 4</option>
+						<option value="bootstrap5">Bootstrap 5</option>
+						<option value="bootstrap5_custom">Bootstrap 5 (Customized)</option>
+						<option value="bootstrap5_dark">Bootstrap 5 (Dark)</option>
+						<option value="bootstrap5_black">Bootstrap 5 (Black)</option>
+					</select>
+					<br>
+				</div>
+				<div>
 					<label for="iconlib-select">Icons</label><br>
 					<select id="iconlib-select" name="iconlib" class="form-control browser-default">
-						<option value="fontawesome3">fontawesome 3</option>
-						<option value="fontawesome4">fontawesome 4</option>
-						<option value="fontawesome5">fontawesome 5</option>
 						<option value="jqueryui">jQuery UI</option>
 						<option value="openiconic">Open Iconic</option>
-						<option value="spectre">Spectre</option>
-						<option value="spectre">Spectre</option>
 						<option value="bootstrap">Bootstrap</option>
+						<option value="spectre">Spectre</option>
+						<option value="fontawesome3">Font Awesome 3</option>
+						<option value="fontawesome4">Font Awesome 4</option>
+						<option value="fontawesome5">Font Awesome 5</option>
 					</select>
 					<br>
 				</div>
@@ -153,16 +149,6 @@
 					<select id="object-layout-select" class="form-control browser-default">
 						<option value="normal">normal</option>
 						<option value="grid">grid</option>
-					</select>
-					<br>
-				</div>
-				<div>
-					<label for="show-errors-select">Show Errors</label><br>
-					<select id="show-errors-select" class="form-control browser-default">
-						<option value="interaction">On Interaction</option>
-						<option value="change">On Field Change</option>
-						<option value="always">Always</option>
-						<option value="never">Never</option>
 					</select>
 					<br>
 				</div>
@@ -184,5 +170,5 @@
 			</div>
 		</div>
 	</body>
-	<script src="include/editor.js"></script>
+	<script src="include/js/editor.js"></script>
 </html>

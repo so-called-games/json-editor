@@ -7,11 +7,16 @@ var defaultOptions = Object.assign({}, JSONEditor.defaults.options, {
 	disable_array_delete_last_row: true,
 	prompt_before_delete: false,
 	schema: defaultSchema,
-	theme: "bootstrap4",
+	theme: "bootstrap5_black",
 	iconlib: "fontawesome5",
 	object_layout: "normal",
 	show_errors: "interaction"
 })
+var customThemes = [
+	"_custom",
+	"_dark",
+	"_black"
+]
 var copyScrollOptions = {
 	behavior: "instant",
 	block: "start",
@@ -53,6 +58,7 @@ var themeLink = document.querySelector("#theme-link")
 var validateTextarea = document.querySelector("#validate-textarea")
 var aceConfig = {
 	mode: "ace/mode/json",
+	theme: "ace/theme/textmate",
 	minLines: 4,
 	maxLines: 48,
 	showFoldWidgets: false,
@@ -68,8 +74,17 @@ var jeErrorsCount = document.querySelector("#je-errors-count")
 var ajv = new AjvValidator()
 String.prototype.replaceAll = function(search, replacement)
 {
-	var target = this;
-	return target.replace(new RegExp(search, "g"), replacement);
+	var target = this
+	return target.replace(new RegExp(search, "g"), replacement)
+}
+
+String.prototype.replaceAllFromList = function(searchList, replacement)
+{
+	var target = this
+	
+	for (let i = 0; i < searchList.length; i++)
+		target = target.replaceAll(searchList[i], replacement)
+	return target
 }
 
 function replaceSpacings(dataToReplace)
@@ -201,24 +216,34 @@ var refreshUI = function()
 	schemaTextarea.setValue(replaceSpacings(JSON.stringify(data.options.schema, null, 2)))
 	validateSchema()
 	var themeMap = {
-		barebones: "",
+		html: "",
 		bootstrap3: "https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css",
 		bootstrap4: "https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css",
 		bootstrap5: "https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css",
-		html: "",
-		spectre: "https://unpkg.com/spectre.css/dist/spectre.min.css",
-		tailwind: "https://unpkg.com/tailwindcss@^1.0/dist/tailwind.min.css"
+		bootstrap5_custom: "./include/custom.css",
+		bootstrap5_dark: "./include/css/dark.css",
+		bootstrap5_black: "./include/css/black.css"
 	}
 	themeLink.href = themeMap[data.options.theme]
 	themeSelect.value = data.options.theme
+	var theme = aceConfig.theme
+
+	if (data.options.theme == "bootstrap5_dark")
+		theme = "ace/theme/ambiance"
+	else if (data.options.theme == "bootstrap5_black")
+		theme = "ace/theme/twilight"
+	outputTextarea.setTheme(theme)
+	schemaTextarea.setTheme(theme)
+	ajvErrorsTextarea.setTheme(theme)
+	jeErrorsTextarea.setTheme(theme)
 	var iconLibMap = {
-		fontawesome3: "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/3.2.1/css/font-awesome.css",
-		fontawesome4: "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.0.3/css/font-awesome.css",
-		fontawesome5: "https://use.fontawesome.com/releases/v5.6.1/css/all.css",
 		jqueryui: "https://code.jquery.com/ui/1.10.3/themes/south-street/jquery-ui.css",
 		openiconic: "https://cdnjs.cloudflare.com/ajax/libs/open-iconic/1.1.1/font/css/open-iconic.min.css",
 		spectre: "https://unpkg.com/spectre.css/dist/spectre-icons.min.css",
-		bootstrap: "https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css"
+		bootstrap: "https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css",
+		fontawesome3: "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/3.2.1/css/font-awesome.css",
+		fontawesome4: "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.0.3/css/font-awesome.css",
+		fontawesome5: "https://use.fontawesome.com/releases/v5.6.1/css/all.css"
 	}
 	iconlibLink.href = iconLibMap[data.options.iconlib]
 	iconlibSelect.value = data.options.iconlib
@@ -375,14 +400,15 @@ var refreshUI = function()
 	initJsoneditor()
 	schemaTextarea.clearSelection(1)
 }
-
 var initJsoneditor = function()
 {
 	if (jsoneditor)
 	{
 		jsoneditor.destroy()
 	}
-	jsoneditor = new window.JSONEditor(jsonEditorForm, data.options)
+	var modifiedOptions = Object.assign({}, data.options)
+	modifiedOptions.theme = modifiedOptions.theme.replaceAllFromList(customThemes, "")
+	jsoneditor = new window.JSONEditor(jsonEditorForm, modifiedOptions)
 	jsoneditor.on("change", function()
 	{
 		var json = jsoneditor.getValue()
