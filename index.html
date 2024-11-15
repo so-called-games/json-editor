@@ -2,15 +2,28 @@
 <html lang="en">
 	<head>
 		<meta charset="utf-8"/>
-		<meta name="viewport" content="width=device-width, initial-scale=2">
+		<meta name="viewport" content="width=device-width, initial-scale=4">
 		<title>JSON Editor</title>
 		<link rel="icon" type="image/x-icon" href="favicon.ico">
 		<link rel="stylesheet" id="theme-link">
 		<link rel="stylesheet" id="iconlib-link">
 		<style>
+			@media screen and (min-width: 800px)
+			{
+				#json-editor-form
+				{
+					zoom: 75%;
+				}
+			}
+			
+			#editor-buttons
+			{
+				display: inline;
+			}
+			
 			#json-editor-form
 			{
-				zoom: 75%;
+				margin-top: 24px;
 			}
 		</style>
 		<script src="include/js/assign.js"></script>
@@ -20,17 +33,16 @@
 		<script src="https://cdn.jsdelivr.net/npm/lz-string@1.4.4/libs/lz-string.min.js"></script>
 	</head>
 	<body>
-		<div id="main-div" class="container grid-xl" style="padding-top: 32px; padding-bottom: 32px;">
+		<div id="main-div" class="container grid-xl" style="padding: 32px;">
 			<div class="row columns md:flex">
 				<div id="editor-div" class="col-7 col-md-7 w-7/12">
-					<h2>JSON Editor</h2>
-					<p>This page is modified version of the original JSON Editor interactive demo. You can learn more about JSON Editor on the <a href="https://github.com/json-editor/json-editor" title="github" target="_blank">official GitHub</a> repository.</p>
-					<div>
+					<h2 style="display: inline;">JSON Editor </h2>
+					<p id="description">This page is modified version of the original JSON Editor interactive demo. You can learn more about JSON Editor on the <a href="https://github.com/json-editor/json-editor" title="github" target="_blank">official GitHub</a> repository.</p>
+					<div id="editor-buttons">
 						<button class="btn btn-primary" id="direct-link" title="Copy URL which contains JSON schema, output and the options"><i class="fas fa-link"></i> <span>Copy link</span></button>
 						<button class="btn btn-secondary" id="reset" title="Reload editor and reset all the forms and options"><i class="fas fa-redo"></i> <span>Reset</span></button>
 						<button class="btn btn-secondary" id="expand" title="Expand editor and hide every other tab (or vice versa)"><i id="expand-icon" class="fas fa-expand"></i></button>
 					</div>
-					<br>
 					<div id="json-editor-form"></div>
 				</div>
 				<div id="output-div" class="col-5 col-md-5 w-5/12">
@@ -51,8 +63,7 @@
 					<textarea id="validate-textarea" readonly disabled class="form-control"></textarea>
 				</div>
 			</div>
-			<br><br>
-			<div id="schema-div" class="row columns md:flex">
+			<div id="schema-div" class="row columns md:flex" style="margin-top: 64px;">
 				<div class="col-7 col-md-7 w-7/12">
 					<h2>Schema</h2>
 					<label>Filename of the downloadable schema (without ".json")</label>
@@ -66,7 +77,7 @@
 					<br><br>
 					<textarea id="schema-textarea" style="height: 100vh;"></textarea>
 				</div>
-				<div class="col-5 col-md-5 w-5/12">
+				<div class="col-5 col-md-5 w-5/12" style="margin-top: 64px;">
 					<label for="je-errors-textarea">
 						<span>AJV (JE meta-schema): </span>
 						<code id="je-errors-count"></code>
@@ -80,8 +91,7 @@
 					<textarea id="ajv-errors-textarea"></textarea>
 				</div>
 			</div>
-			<br>
-			<div id="options-div">
+			<div id="options-div" style="margin-top: 32px;">
 				<h2>Options</h2>
 				<div>
 					<label for="boolean-options-select">Boolean options</label><br>

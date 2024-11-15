@@ -1,5 +1,10 @@
 @import url('https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css');
 
+:focus
+{
+	box-shadow: none !important;
+}
+
 body, input, textarea, select
 {
 	background: black !important;
@@ -18,12 +23,12 @@ option:checked
 
 h1, h2, a, span, input, textarea, select, option
 {
-	color: white !important;
+	color: white;
 }
 
-p, label
+p, b, label
 {
-	color: #cccccc !important;
+	color: #cccccc;
 }
 
 label
@@ -33,7 +38,6 @@ label
 
 .btn-primary, .btn-secondary
 {
-	background: #111111 !important;
 	margin-bottom: 8px !important;
 	margin-right: 8px !important;
 	--bs-btn-border-color: none !important;
@@ -69,15 +73,30 @@ label
 	background: #121212 !important;
 }
 
-.card
+.form-control
 {
-	background: black !important;
-	--bs-card-title-spacer-y: 1rem !important;
+	color: white !important;
+}
+
+.form-control:focus
+{
+	box-shadow: 0px 3px 0px #222222 !important;
+}
+
+.form-check
+{
+	color: white !important;
+}
+
+.form-check-input:checked
+{
+	background-color: #cccccc !important; 
+	border: 4px solid #444444 !important;
 }
 
 .card
 {
-	background: black !important;
+	background: #0f0f0f !important;
 	--bs-card-title-spacer-y: 0.25rem !important;
 }
 
@@ -85,4 +104,25 @@ label
 {
 	margin-top: 0rem !important;
 	margin-bottom: 0rem !important;
+}
+
+.ms-3
+{
+	color: #cccccc !important;
+}
+
+.je-modal
+{
+	padding-left: 8px;
+	padding-bottom: 6px;
+}
+
+.je-modal, .property-selector
+{
+	background: #222222 !important;
+}
+
+.property-selector-input
+{
+	margin-right: 6px;
 }

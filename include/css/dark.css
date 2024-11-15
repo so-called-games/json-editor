@@ -1,31 +1,128 @@
 @import url('https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css');
 
-body
+:focus
 {
-	background: #222222;
+	box-shadow: none !important;
 }
 
-h1, h2, p, label
+body, input, textarea, select
+{
+	background: #161616 !important;
+}
+
+input, textarea, select
+{
+	background: #222222 !important;
+	border: none !important;
+}
+
+option:checked
+{
+	background: #333333 !important;
+}
+
+h1, h2, a, span, input, textarea, select, option
 {
 	color: white;
 }
 
-.btn-primary, .btn-primary:hover, .btn-primary:active, .btn-primary:visited
+p, b, label
 {
-	
+	color: #cccccc;
+}
+
+label
+{
+	margin-bottom: 6px !important;
+}
+
+.btn-primary, .btn-secondary
+{
+	margin-bottom: 8px !important;
+	margin-right: 8px !important;
+	--bs-btn-border-color: none !important;
+}
+
+.btn-primary
+{
+	background: #3d3d3d !important;
+}
+
+.btn-secondary
+{
+	background: #282828 !important;
 }
 
 .btn-primary:hover, .btn-primary:visited
 {
-	
+	background: #383838 !important;
 }
 
 .btn-primary:active
 {
-	
+	background: #323232 !important;
 }
 
-.form-control:
+.btn-secondary:hover, .btn-secondary:visited
 {
-	background: gray;
+	background: #242424 !important;
+}
+
+.btn-secondary:active
+{
+	background: #202020 !important;
+}
+
+.form-control
+{
+	color: white !important;
+}
+
+.form-control:focus
+{
+	box-shadow: 0px 3px 0px #343434 !important;
+}
+
+.form-check
+{
+	color: white !important;
+}
+
+.form-check-input:checked
+{
+	background-color: #dddddd !important; 
+	border: 4px solid #555555 !important;
+}
+
+.card
+{
+	background: #111111 !important;
+	--bs-card-title-spacer-y: 0.25rem !important;
+}
+
+.my-3
+{
+	margin-top: 0rem !important;
+	margin-bottom: 0rem !important;
+}
+
+.ms-3
+{
+	color: #cccccc !important;
+}
+
+.je-modal
+{
+	padding-left: 8px;
+	padding-bottom: 6px;
+}
+
+.je-modal, .property-selector
+{
+	background: #333333 !important;
+}
+
+.property-selector-input
+{
+	margin-right: 6px;
 }

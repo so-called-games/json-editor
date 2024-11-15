@@ -7,7 +7,7 @@ var defaultOptions = Object.assign({}, JSONEditor.defaults.options, {
 	disable_array_delete_last_row: true,
 	prompt_before_delete: false,
 	schema: defaultSchema,
-	theme: "bootstrap5_black",
+	theme: "bootstrap5_dark",
 	iconlib: "fontawesome5",
 	object_layout: "normal",
 	show_errors: "interaction"
@@ -29,6 +29,7 @@ var editorDiv = document.querySelector("#editor-div")
 var outputDiv = document.querySelector("#output-div")
 var schemaDiv = document.querySelector("#schema-div")
 var optionsDiv = document.querySelector("#options-div")
+var descriptionParagraph = document.querySelector("#description")
 var directLink = document.querySelector("#direct-link")
 var resetButton = document.querySelector("#reset")
 var expandButton = document.querySelector("#expand")
@@ -228,9 +229,7 @@ var refreshUI = function()
 	themeSelect.value = data.options.theme
 	var theme = aceConfig.theme
 
-	if (data.options.theme == "bootstrap5_dark")
-		theme = "ace/theme/ambiance"
-	else if (data.options.theme == "bootstrap5_black")
+	if (data.options.theme == "bootstrap5_dark" || data.options.theme == "bootstrap5_black")
 		theme = "ace/theme/twilight"
 	outputTextarea.setTheme(theme)
 	schemaTextarea.setTheme(theme)
@@ -432,7 +431,7 @@ directLink.addEventListener("click", function()
 	url += "?data="
 	url += LZString.compressToBase64(JSON.stringify(data))
 	copyToClipboard(url)
-	window.scrollTo(0, 0)
+	editorDiv.scrollIntoView(copyScrollOptions)
 })
 resetButton.addEventListener("click", function()
 {
@@ -454,6 +453,9 @@ expandButton.addEventListener("click", function()
 		editorDiv.className = "col-7 col-md-7 w-7/12"
 		expandButtonIcon.className = "fas fa-expand"
 	}
+	descriptionParagraph.hidden = isHidden
+	directLink.hidden = isHidden
+	resetButton.hidden = isHidden
 	outputDiv.hidden = isHidden
 	schemaDiv.hidden = isHidden
 	optionsDiv.hidden = isHidden
@@ -471,7 +473,7 @@ clearOutput.addEventListener("click", function()
 copyOutput.addEventListener("click", function()
 {
 	copyToClipboard(outputTextarea.getValue())
-	window.scrollTo(0, 0)
+	outputDiv.scrollIntoView(copyScrollOptions)
 })
 openOutput.addEventListener("click", function()
 {
