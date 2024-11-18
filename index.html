@@ -2,13 +2,13 @@
 <html lang="en">
 	<head>
 		<meta charset="utf-8"/>
-		<meta name="viewport" content="width=device-width, initial-scale=4">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
 		<title>JSON Editor</title>
 		<link rel="icon" type="image/x-icon" href="favicon.ico">
 		<link rel="stylesheet" id="theme-link">
 		<link rel="stylesheet" id="iconlib-link">
 		<style>
-			@media screen and (min-width: 800px)
+			@media screen and (min-width: 768px)
 			{
 				#json-editor-form
 				{
@@ -33,19 +33,19 @@
 		<script src="https://cdn.jsdelivr.net/npm/lz-string@1.4.4/libs/lz-string.min.js"></script>
 	</head>
 	<body>
-		<div id="main-div" class="container grid-xl" style="padding: 32px;">
-			<div class="row columns md:flex">
-				<div id="editor-div" class="col-7 col-md-7 w-7/12">
+		<div id="main-div" class="container-fluid grid" style="padding: 32px;">
+			<div class="row gy-5">
+				<div id="editor-div" class="col-md-7 w-12">
 					<h2 style="display: inline;">JSON Editor </h2>
 					<p id="description">This page is modified version of the original JSON Editor interactive demo. You can learn more about JSON Editor on the <a href="https://github.com/json-editor/json-editor" title="github" target="_blank">official GitHub</a> repository.</p>
 					<div id="editor-buttons">
-						<button class="btn btn-primary" id="direct-link" title="Copy URL which contains JSON schema, output and the options"><i class="fas fa-link"></i> <span>Copy link</span></button>
+						<button class="btn btn-primary" id="direct-link" title="Copy URL which contains JSON schema and options of this session"><i class="fas fa-link"></i> <span>Copy link</span></button>
 						<button class="btn btn-secondary" id="reset" title="Reload editor and reset all the forms and options"><i class="fas fa-redo"></i> <span>Reset</span></button>
 						<button class="btn btn-secondary" id="expand" title="Expand editor and hide every other tab (or vice versa)"><i id="expand-icon" class="fas fa-expand"></i></button>
 					</div>
 					<div id="json-editor-form"></div>
 				</div>
-				<div id="output-div" class="col-5 col-md-5 w-5/12">
+				<div id="output-div" class="col-md-5 w-12">
 					<h2>Output</h2>
 					<label>Filename of the downloadable output (without ".json")</label>
 					<input id="output-filename" class="form-control" type="text"></input>
@@ -63,8 +63,8 @@
 					<textarea id="validate-textarea" readonly disabled class="form-control"></textarea>
 				</div>
 			</div>
-			<div id="schema-div" class="row columns md:flex" style="margin-top: 64px;">
-				<div class="col-7 col-md-7 w-7/12">
+			<div id="schema-div" class="row gy-4" style="margin-top: 32px;">
+				<div class="col-md-7 w-12">
 					<h2>Schema</h2>
 					<label>Filename of the downloadable schema (without ".json")</label>
 					<input id="schema-filename" class="form-control" type="text"></input>
@@ -77,17 +77,14 @@
 					<br><br>
 					<textarea id="schema-textarea" style="height: 100vh;"></textarea>
 				</div>
-				<div class="col-5 col-md-5 w-5/12" style="margin-top: 64px;">
-					<label for="je-errors-textarea">
-						<span>AJV (JE meta-schema): </span>
-						<code id="je-errors-count"></code>
-					</label>
+				<div class="col-md-5 w-12">
+					<h2>Errors</h2>
+					<label for="je-errors-textarea">AJV (JE meta-schema): </label>
+					<code id="je-errors-count"></code>
 					<textarea id="je-errors-textarea"></textarea>
 					<br>
-					<label for="ajv-errors-textarea">
-						<span>AJV (meta-schema-2020-12): </span>
-						<code id="ajv-errors-count"></code>
-					</label>
+					<label for="ajv-errors-textarea">AJV (meta-schema-2020-12): </label>
+					<code id="ajv-errors-count"></code>
 					<textarea id="ajv-errors-textarea"></textarea>
 				</div>
 			</div>

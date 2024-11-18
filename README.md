@@ -1,6 +1,10 @@
 # JSON Editor
-This is a representation of the [JSON Editor interactive demo](https://json-editor.github.io/json-editor), reworked and updated for my game development purposes.
+This is a representation of the [JSON Editor interactive demo](https://json-editor.github.io/json-editor/), reworked and updated for my game development purposes.
 
+### Online demo
+You can check online [this new interactive demo](https://so-called-games.github.io/json-editor/).
+
+## Added and updated features
 There are following features which were added or changed in this version of the demo.
 
 ### Direct link copying

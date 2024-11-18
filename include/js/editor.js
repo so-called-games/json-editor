@@ -5,7 +5,9 @@ var data = {}
 var defaultOptions = Object.assign({}, JSONEditor.defaults.options, {
 	disable_array_delete_all_rows: true,
 	disable_array_delete_last_row: true,
+	disable_edit_json: true,
 	prompt_before_delete: false,
+	case_sensitive_property_search: false,
 	schema: defaultSchema,
 	theme: "bootstrap5_dark",
 	iconlib: "fontawesome5",

@@ -26,6 +26,16 @@ h1, h2, a, span, input, textarea, select, option
 	color: white;
 }
 
+a:hover
+{
+	color: #cccccc !important;
+}
+
+a:active
+{
+	color: #888888 !important;
+}
+
 p, b, label
 {
 	color: #cccccc;

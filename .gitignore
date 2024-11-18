@@ -1,3 +1,0 @@
-# Configuration to ignore most of the backend stuff on a server if you'll push to the repo from there
-**/.htaccess
-**/robots.txt
