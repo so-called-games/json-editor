@@ -48,8 +48,8 @@ label
 
 .btn-primary, .btn-secondary
 {
-	margin-bottom: 8px !important;
-	margin-right: 8px !important;
+	margin-bottom: 8px;
+	margin-right: 8px;
 	--bs-btn-border-color: none !important;
 }
 
@@ -98,22 +98,27 @@ label
 	color: white !important;
 }
 
-.form-check-input:checked
+.form-check-input:checked, .json-editor-opt-in:checked
 {
 	background-color: #dddddd !important; 
 	border: 4px solid #555555 !important;
 }
 
-.card
+.json-editor-opt-in
 {
-	background: #111111 !important;
-	--bs-card-title-spacer-y: 0.25rem !important;
+	
 }
 
-.my-3
+.json-editor-opt-in:checked
 {
-	margin-top: 0rem !important;
-	margin-bottom: 0rem !important;
+	
+}
+
+.card
+{
+	background: #121212 !important;
+	--bs-card-title-spacer-y: 0.25rem !important;
+	--bs-card-border-color: #222222 !important;
 }
 
 .ms-3
@@ -125,11 +130,13 @@ label
 {
 	padding-left: 8px;
 	padding-bottom: 6px;
+	box-shadow: #181818 4px 4px !important;
 }
 
 .je-modal, .property-selector
 {
 	background: #333333 !important;
+	border: none !important;
 }
 
 .property-selector-input

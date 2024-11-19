@@ -16,14 +16,14 @@
 				}
 			}
 			
-			#editor-buttons
-			{
-				display: inline;
-			}
-			
 			#json-editor-form
 			{
 				margin-top: 24px;
+			}
+			
+			.url
+			{
+				margin-bottom: -8px;
 			}
 		</style>
 		<script src="include/js/assign.js"></script>
@@ -36,9 +36,9 @@
 		<div id="main-div" class="container-fluid grid" style="padding: 32px;">
 			<div class="row gy-5">
 				<div id="editor-div" class="col-md-7 w-12">
-					<h2 style="display: inline;">JSON Editor </h2>
+					<h2 class="d-inline">JSON Editor </h2>
 					<p id="description">This page is modified version of the original JSON Editor interactive demo. You can learn more about JSON Editor on the <a href="https://github.com/json-editor/json-editor" title="github" target="_blank">official GitHub</a> repository.</p>
-					<div id="editor-buttons">
+					<div id="editor-buttons" class="d-inline">
 						<button class="btn btn-primary" id="direct-link" title="Copy URL which contains JSON schema and options of this session"><i class="fas fa-link"></i> <span>Copy link</span></button>
 						<button class="btn btn-secondary" id="reset" title="Reload editor and reset all the forms and options"><i class="fas fa-redo"></i> <span>Reset</span></button>
 						<button class="btn btn-secondary" id="expand" title="Expand editor and hide every other tab (or vice versa)"><i id="expand-icon" class="fas fa-expand"></i></button>
@@ -47,14 +47,22 @@
 				</div>
 				<div id="output-div" class="col-md-5 w-12">
 					<h2>Output</h2>
-					<label>Filename of the downloadable output (without ".json")</label>
-					<input id="output-filename" class="form-control" type="text"></input>
+					<label>URL from which output will be loaded on reload</label>
+					<div class="input-group url">
+						<input id="output-url" class="form-control" type="text"></input>
+						<button class="btn btn-primary w-25 m-0" id="load-output" title="Get output from URL"><i class="fas fa-download"></i> <span>Load</span></button>
+					</div>
 					<br>
-					<button class="btn btn-secondary" id="set-output" title="Update editor from output"><i class="fas fa-redo"></i> <span>Update</span></button>
+					<label>Filename of the downloadable output (without ".json")</label>
+					<div class="input-group">
+						<input id="output-filename" class="form-control" type="text"></input>
+						<button class="btn btn-primary w-25 m-0" id="save-output" title="Download output as JSON file"><i class="fas fa-save"></i> <span>Save</button>
+					</div>
+					<br>
+					<button class="btn btn-primary" id="set-output" title="Update editor from output"><i class="fas fa-redo"></i> <span>Update</span></button>
 					<button class="btn btn-secondary" id="clear-output" title="Clear output"><i class="fas fa-eraser"></i> <span>Clear</span></button>
 					<button class="btn btn-secondary" id="copy-output" title="Copy output"><i class="fas fa-copy"></i> <span>Copy</span></button>
 					<button class="btn btn-secondary" id="open-output" title="Upload JSON file to the output"><i class="fas fa-folder-open"></i> <span>Open</span></button>
-					<button class="btn btn-primary" id="save-output" title="Download output as JSON file"><i class="fas fa-save"></i> <span>Save</button>
 					<br><br>
 					<textarea id="output-textarea" style="width: 100%; font-family: monospace;" class="form-control"></textarea>
 					<br>
@@ -66,14 +74,22 @@
 			<div id="schema-div" class="row gy-4" style="margin-top: 32px;">
 				<div class="col-md-7 w-12">
 					<h2>Schema</h2>
+					<label>URL from which schema will be loaded on reload</label>
+					<div class="input-group url">
+						<input id="schema-url" class="form-control" type="text"></input>
+						<button class="btn btn-primary w-25 m-0" id="load-schema" title="Get output from URL"><i class="fas fa-download"></i> <span>Load</span></button>
+					</div>
+					<br>
 					<label>Filename of the downloadable schema (without ".json")</label>
-					<input id="schema-filename" class="form-control" type="text"></input>
+					<div class="input-group">
+						<input id="schema-filename" class="form-control" type="text"></input>
+						<button class="btn btn-primary w-25 m-0" id="save-schema"><i class="fas fa-save"></i> <span>Save</span></button>
+					</div>
 					<br>
 					<button class="btn btn-primary" id="set-schema"><i class="fas fa-redo"></i> <span>Update</span></button>
 					<button class="btn btn-secondary" id="clear-schema"><i class="fas fa-eraser"></i> <span>Clear</span></button>
 					<button class="btn btn-secondary" id="copy-schema"><i class="fas fa-copy"></i> <span>Copy</span></button>
 					<button class="btn btn-secondary" id="open-schema"><i class="fas fa-folder-open"></i> <span>Open</span></button>
-					<button class="btn btn-secondary" id="save-schema"><i class="fas fa-save"></i> <span>Save</span></button>
 					<br><br>
 					<textarea id="schema-textarea" style="height: 100vh;"></textarea>
 				</div>
@@ -123,22 +139,21 @@
 						<option value="always">Always</option>
 						<option value="never">Never</option>
 					</select>
-					<br>
 				</div>
 				<div>
+					<br>
 					<label for="theme-select">Theme</label><br>
 					<select id="theme-select" name="theme" class="form-control browser-default">
 						<option value="html">HTML</option>
 						<option value="bootstrap3">Bootstrap 3</option>
-						<option value="bootstrap4">Bootstrap 4</option>
 						<option value="bootstrap5">Bootstrap 5</option>
 						<option value="bootstrap5_custom">Bootstrap 5 (Customized)</option>
 						<option value="bootstrap5_dark">Bootstrap 5 (Dark)</option>
 						<option value="bootstrap5_black">Bootstrap 5 (Black)</option>
 					</select>
-					<br>
 				</div>
-				<div>
+				<div hidden>
+					<br>
 					<label for="iconlib-select">Icons</label><br>
 					<select id="iconlib-select" name="iconlib" class="form-control browser-default">
 						<option value="jqueryui">jQuery UI</option>
@@ -149,18 +164,18 @@
 						<option value="fontawesome4">Font Awesome 4</option>
 						<option value="fontawesome5">Font Awesome 5</option>
 					</select>
-					<br>
 				</div>
 				<div hidden>
+					<br>
 					<label for="object-layout-select">Object Layout</label><br>
 					<select id="object-layout-select" class="form-control browser-default">
 						<option value="normal">normal</option>
 						<option value="grid">grid</option>
 					</select>
-					<br>
 				</div>
 				<div hidden>
-					<label for="lib-select" title="It"s recommended that you click the Direct Link after changing these options">Include External Library</label><br>
+					<br>
+					<label for="lib-select" title="It's recommended that you click the &quot;Copy Link&quot; after changing these options">Include External Library</label><br>
 					<select multiple size="10" id="lib-select" class="form-control browser-default" title="It"s reccomended that you click the Direct Link after changing these options">
 						<option value="ace_editor">Ace Editor</option>
 						<option value="choices">Choices</option>

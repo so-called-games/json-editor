@@ -24,6 +24,7 @@ var copyScrollOptions = {
 	block: "start",
 	inline: "nearest"
 }
+var refreshUIDelay = 1000
 var jsoneditor = null
 var isExpanded = false
 var mainDiv = document.querySelector("#main-div")
@@ -43,17 +44,21 @@ var iconlibLink = document.querySelector("#iconlib-link")
 var libSelect = document.querySelector("#lib-select")
 var jsonEditorForm = document.querySelector("#json-editor-form")
 var objectLayoutSelect = document.querySelector("#object-layout-select")
+var loadOutput = document.querySelector("#load-output")
 var setOutput = document.querySelector("#set-output")
 var clearOutput = document.querySelector("#clear-output")
 var copyOutput = document.querySelector("#copy-output")
 var openOutput = document.querySelector("#open-output")
 var saveOutput = document.querySelector("#save-output")
+var outputURL = document.querySelector("#output-url")
 var outputFilename = document.querySelector("#output-filename")
+var loadSchema = document.querySelector("#load-schema")
 var setSchema = document.querySelector("#set-schema")
 var clearSchema = document.querySelector("#clear-schema")
 var copySchema = document.querySelector("#copy-schema")
 var openSchema = document.querySelector("#open-schema")
 var saveSchema = document.querySelector("#save-schema")
+var schemaURL = document.querySelector("#schema-url")
 var schemaFilename = document.querySelector("#schema-filename")
 var showErrorsSelect = document.querySelector("#show-errors-select")
 var themeSelect = document.querySelector("#theme-select")
@@ -75,6 +80,22 @@ var jeErrorsTextarea = ace.edit("je-errors-textarea", aceConfig)
 var ajvErrorsCount = document.querySelector("#ajv-errors-count")
 var jeErrorsCount = document.querySelector("#je-errors-count")
 var ajv = new AjvValidator()
+var outputXHR
+var schemaXHR
+var xhrProperties =
+{
+	output: {
+		xhr: outputXHR,
+		elementToSet: outputTextarea,
+		elementToClick: setOutput
+	},
+	schema: {
+		xhr: schemaXHR,
+		elementToSet: schemaTextarea,
+		elementToClick: setSchema
+	}
+}
+
 String.prototype.replaceAll = function(search, replacement)
 {
 	var target = this
@@ -104,6 +125,39 @@ function copyToClipboard(element)
 	tempArea.select()
 	document.execCommand("copy")
 	document.body.removeChild(tempArea)
+}
+
+function initXHR()
+{
+	outputXHR = new XMLHttpRequest()
+	
+	outputXHR.onreadystatechange = function ()
+	{
+		if (outputXHR.readyState === 4)
+		{
+			outputTextarea.setValue(outputXHR.responseText)
+			outputTextarea.clearSelection(1)
+			setOutput.click()
+		}
+	}
+	schemaXHR = new XMLHttpRequest()
+	
+	schemaXHR.onreadystatechange = function ()
+	{
+		if (schemaXHR.readyState === 4)
+		{
+			schemaTextarea.setValue(schemaXHR.responseText)
+			schemaTextarea.clearSelection(1)
+			setSchema.click()
+		}
+	}
+}
+
+function loadJSON(url, xhr)
+{
+	xhr.withCredentials = true
+	xhr.open("GET", url)
+	xhr.send()
 }
 
 function openJSON(elementToSet, elementToClick)
@@ -195,9 +249,13 @@ var parseUrl = function()
 		})
 	}
 	
+	if (!("urls" in data))
+		data.urls = {}
+	
 	if (!("filenames" in data))
 		data.filenames = {}
 	mergeOptions()
+	initXHR()
 }
 
 var mergeOptions = function()
@@ -208,6 +266,8 @@ var mergeOptions = function()
 
 var refreshUI = function()
 {
+	mainDiv.hidden = true
+	
 	if ("filenames" in data)
 	{
 		if ("output" in data.filenames)
@@ -215,6 +275,21 @@ var refreshUI = function()
 		
 		if ("schema" in data.filenames)
 			schemaFilename.value = data.filenames.schema
+	}
+	
+	if ("urls" in data)
+	{
+		if ("output" in data.urls)
+		{
+			outputURL.value = data.urls.output
+			loadJSON(data.urls.output, outputXHR)
+		}
+		
+		if ("schema" in data.urls)
+		{
+			schemaURL.value = data.urls.schema
+			loadJSON(data.urls.schema, schemaXHR)
+		}
 	}
 	schemaTextarea.setValue(replaceSpacings(JSON.stringify(data.options.schema, null, 2)))
 	validateSchema()
@@ -400,7 +475,12 @@ var refreshUI = function()
 	}
 	initJsoneditor()
 	schemaTextarea.clearSelection(1)
+	setTimeout(function()
+	{
+		mainDiv.hidden = false
+	}, refreshUIDelay)
 }
+
 var initJsoneditor = function()
 {
 	if (jsoneditor)
@@ -463,6 +543,10 @@ expandButton.addEventListener("click", function()
 	optionsDiv.hidden = isHidden
 	isExpanded = !isExpanded
 })
+loadOutput.addEventListener("click", function()
+{
+	loadJSON(outputURL.value, outputXHR)
+})
 setOutput.addEventListener("click", function()
 {
 	jsoneditor.setValue(JSON.parse(outputTextarea.getValue()))
@@ -485,9 +569,17 @@ saveOutput.addEventListener("click", function()
 {
 	saveJSON(outputTextarea.getValue(), outputFilename.value + ".json", "application/json")
 })
+outputURL.addEventListener("change", function()
+{
+	data.urls.output = outputURL.value
+})
 outputFilename.addEventListener("change", function()
 {
 	data.filenames.output = outputFilename.value
+})
+loadSchema.addEventListener("click", function()
+{
+	loadJSON(schemaURL.value, schemaXHR)
 })
 setSchema.addEventListener("click", function()
 {
@@ -520,6 +612,10 @@ openSchema.addEventListener("click", function()
 saveSchema.addEventListener("click", function()
 {
 	saveJSON(schemaTextarea.getValue(), schemaFilename.value + ".json", "application/json")
+})
+schemaURL.addEventListener("change", function()
+{
+	data.urls.schema = schemaURL.value
 })
 schemaFilename.addEventListener("change", function()
 {
