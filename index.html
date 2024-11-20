@@ -5,27 +5,9 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1">
 		<title>JSON Editor</title>
 		<link rel="icon" type="image/x-icon" href="favicon.ico">
-		<link rel="stylesheet" id="theme-link">
-		<link rel="stylesheet" id="iconlib-link">
-		<style>
-			@media screen and (min-width: 768px)
-			{
-				#json-editor-form
-				{
-					zoom: 75%;
-				}
-			}
-			
-			#json-editor-form
-			{
-				margin-top: 24px;
-			}
-			
-			.url
-			{
-				margin-bottom: -8px;
-			}
-		</style>
+		<link rel="stylesheet" href="include/css/general.css">
+		<link id="theme-link" rel="stylesheet">
+		<link id="iconlib-link" rel="stylesheet">
 		<script src="include/js/assign.js"></script>
 		<script src="include/js/ajv-validator.js"></script>
 		<script src="https://cdn.jsdelivr.net/npm/@json-editor/json-editor@latest/dist/jsoneditor.min.js"></script>
@@ -34,77 +16,87 @@
 	</head>
 	<body>
 		<div id="main-div" class="container-fluid grid" style="padding: 32px;">
-			<div class="row gy-5">
+			<div class="row gy-4">
 				<div id="editor-div" class="col-md-7 w-12">
 					<h2 class="d-inline">JSON Editor </h2>
-					<p id="description">This page is modified version of the original JSON Editor interactive demo. You can learn more about JSON Editor on the <a href="https://github.com/json-editor/json-editor" title="github" target="_blank">official GitHub</a> repository.</p>
+					<p id="description" class="mt-2">This is modified version of the original JSON Editor interactive demo. You can learn more about JSON Editor on the <a href="https://github.com/json-editor/json-editor" title="github" target="_blank">official GitHub</a> page.</p>
 					<div id="editor-buttons" class="d-inline">
-						<button class="btn btn-primary" id="direct-link" title="Copy URL which contains JSON schema and options of this session"><i class="fas fa-link"></i> <span>Copy link</span></button>
-						<button class="btn btn-secondary" id="reset" title="Reload editor and reset all the forms and options"><i class="fas fa-redo"></i> <span>Reset</span></button>
-						<button class="btn btn-secondary" id="expand" title="Expand editor and hide every other tab (or vice versa)"><i id="expand-icon" class="fas fa-expand"></i></button>
+						<button class="btn btn-primary action-button" id="direct-link" title="Copy URL which contains JSON schema and options of this session"><i class="fas fa-link"></i> <span>Copy link</span></button>
+						<button class="btn btn-secondary action-button" id="reset" title="Reload editor and reset all the forms and options"><i class="fas fa-redo"></i> <span>Reset</span></button>
+						<button class="btn btn-secondary action-button" id="expand" title="Expand editor and hide every other tab (or vice versa)"><i id="expand-icon" class="fas fa-expand"></i></button>
 					</div>
-					<div id="json-editor-form"></div>
+					<div id="json-editor-form" class="mt-3"></div>
 				</div>
 				<div id="output-div" class="col-md-5 w-12">
-					<h2>Output</h2>
-					<label>URL from which output will be loaded on reload</label>
-					<div class="input-group url">
-						<input id="output-url" class="form-control" type="text"></input>
-						<button class="btn btn-primary w-25 m-0" id="load-output" title="Get output from URL"><i class="fas fa-download"></i> <span>Load</span></button>
+					<h2 class="d-inline">Output</h2>
+					<p class="mt-2">JSON output that will be generated when properies in the editor will be changed.</p>
+					<div class="mt-2 mb-3">
+						<button class="btn btn-primary action-button" id="set-output" title="Update editor from output"><i class="fas fa-redo"></i> <span>Update</span></button>
+						<button class="btn btn-secondary action-button" id="clear-output" title="Clear output"><i class="fas fa-eraser"></i> <span>Clear</span></button>
+						<button class="btn btn-secondary action-button" id="copy-output" title="Copy output"><i class="fas fa-copy"></i> <span>Copy</span></button>
+						<button class="btn btn-secondary action-button" id="open-output" title="Upload JSON file to the output"><i class="fas fa-folder-open"></i> <span>Open</span></button>
 					</div>
-					<br>
-					<label>Filename of the downloadable output (without ".json")</label>
-					<div class="input-group">
-						<input id="output-filename" class="form-control" type="text"></input>
-						<button class="btn btn-primary w-25 m-0" id="save-output" title="Download output as JSON file"><i class="fas fa-save"></i> <span>Save</button>
+					<textarea id="output-textarea" class="form-control" style="width: 100%; font-family: monospace;"></textarea>
+					<span class="h4 d-inline-block mt-1">
+						<button id="output-additional-expand" title="Collapse" class="btn btn-sm btn-secondary" type="button"><i class="fas fa-caret-right"></i></button> <span>Extra options</span>
+					</span>
+					<div id="output-additional-div" class="card card-body mt-2 bg-light" hidden>
+						<label>URL from which output will be loaded (also on reload)</label>
+						<div class="input-group url">
+							<input id="output-url" class="form-control" type="text"></input>
+							<button id="load-output" class="btn btn-primary m-0 input-button" title="Get output from URL"><i class="fas fa-download"></i> <span>Load</span></button>
+						</div>
+						<br>
+						<label>Filename of the downloadable output (without ".json")</label>
+						<div class="input-group">
+							<input id="output-filename" class="form-control" type="text"></input>
+							<button id="save-output" class="btn btn-primary m-0 input-button" title="Download output as JSON file"><i class="fas fa-save"></i> <span>Save</button>
+						</div>
 					</div>
-					<br>
-					<button class="btn btn-primary" id="set-output" title="Update editor from output"><i class="fas fa-redo"></i> <span>Update</span></button>
-					<button class="btn btn-secondary" id="clear-output" title="Clear output"><i class="fas fa-eraser"></i> <span>Clear</span></button>
-					<button class="btn btn-secondary" id="copy-output" title="Copy output"><i class="fas fa-copy"></i> <span>Copy</span></button>
-					<button class="btn btn-secondary" id="open-output" title="Upload JSON file to the output"><i class="fas fa-folder-open"></i> <span>Open</span></button>
-					<br><br>
-					<textarea id="output-textarea" style="width: 100%; font-family: monospace;" class="form-control"></textarea>
-					<br>
-					<h2>Validation</h2>
+					<h2 class="mt-4">Validation</h2>
 					<p>This will update whenever the form changes to show validation errors if there are any.</p>
 					<textarea id="validate-textarea" readonly disabled class="form-control"></textarea>
 				</div>
 			</div>
-			<div id="schema-div" class="row gy-4" style="margin-top: 32px;">
+			<div id="schema-div" class="row gy-4" style="margin-top: 16px;">
 				<div class="col-md-7 w-12">
-					<h2>Schema</h2>
-					<label>URL from which schema will be loaded on reload</label>
-					<div class="input-group url">
-						<input id="schema-url" class="form-control" type="text"></input>
-						<button class="btn btn-primary w-25 m-0" id="load-schema" title="Get output from URL"><i class="fas fa-download"></i> <span>Load</span></button>
+					<h2 class="d-inline">Schema</h2>
+					<p class="mt-2">JSON schema that will be used to construct HTML form for editing output properties.</p>
+					<div class="mt-2 mb-3">
+						<button class="btn btn-primary action-button" id="set-schema"><i class="fas fa-redo"></i> <span>Update</span></button>
+						<button class="btn btn-secondary action-button" id="clear-schema"><i class="fas fa-eraser"></i> <span>Clear</span></button>
+						<button class="btn btn-secondary action-button" id="copy-schema"><i class="fas fa-copy"></i> <span>Copy</span></button>
+						<button class="btn btn-secondary action-button" id="open-schema"><i class="fas fa-folder-open"></i> <span>Open</span></button>
 					</div>
-					<br>
-					<label>Filename of the downloadable schema (without ".json")</label>
-					<div class="input-group">
-						<input id="schema-filename" class="form-control" type="text"></input>
-						<button class="btn btn-primary w-25 m-0" id="save-schema"><i class="fas fa-save"></i> <span>Save</span></button>
-					</div>
-					<br>
-					<button class="btn btn-primary" id="set-schema"><i class="fas fa-redo"></i> <span>Update</span></button>
-					<button class="btn btn-secondary" id="clear-schema"><i class="fas fa-eraser"></i> <span>Clear</span></button>
-					<button class="btn btn-secondary" id="copy-schema"><i class="fas fa-copy"></i> <span>Copy</span></button>
-					<button class="btn btn-secondary" id="open-schema"><i class="fas fa-folder-open"></i> <span>Open</span></button>
-					<br><br>
 					<textarea id="schema-textarea" style="height: 100vh;"></textarea>
+					<span class="h4 d-inline-block mt-1">
+						<button id="schema-additional-expand" title="Collapse" class="btn btn-sm btn-secondary" type="button"><i class="fas fa-caret-right"></i></button> <span>Extra options</span>
+					</span>
+					<div id="schema-additional-div" class="card card-body mt-2 bg-light" hidden>
+						<label>URL from which schema will be loaded (also on reload)</label>
+						<div class="input-group url">
+							<input id="schema-url" class="form-control" type="text"></input>
+							<button id="load-schema" class="btn btn-primary m-0 input-button" title="Get output from URL"><i class="fas fa-download"></i> <span>Load</span></button>
+						</div>
+						<br>
+						<label>Filename of the downloadable schema (without ".json")</label>
+						<div class="input-group">
+							<input id="schema-filename" class="form-control" type="text"></input>
+							<button id="save-schema" class="btn btn-primary m-0 input-button"><i class="fas fa-save"></i> <span>Save</span></button>
+						</div>
+					</div>
 				</div>
 				<div class="col-md-5 w-12">
 					<h2>Errors</h2>
 					<label for="je-errors-textarea">AJV (JE meta-schema): </label>
 					<code id="je-errors-count"></code>
 					<textarea id="je-errors-textarea"></textarea>
-					<br>
 					<label for="ajv-errors-textarea">AJV (meta-schema-2020-12): </label>
 					<code id="ajv-errors-count"></code>
 					<textarea id="ajv-errors-textarea"></textarea>
 				</div>
 			</div>
-			<div id="options-div" style="margin-top: 32px;">
+			<div id="options-div" style="margin-top: 24px;">
 				<h2>Options</h2>
 				<div>
 					<label for="boolean-options-select">Boolean options</label><br>

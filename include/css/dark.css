@@ -48,8 +48,6 @@ label
 
 .btn-primary, .btn-secondary
 {
-	margin-bottom: 8px;
-	margin-right: 8px;
 	--bs-btn-border-color: none !important;
 }
 

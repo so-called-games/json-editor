@@ -1,0 +1,23 @@
+@media screen and (min-width: 768px)
+{
+	#json-editor-form
+	{
+		zoom: 75%;
+	}
+}
+
+.action-button
+{
+	margin-bottom: 8px;
+	margin-right: 4px;
+}
+
+.input-button
+{
+	width: 80px;
+}
+
+.url
+{
+	margin-bottom: 16px;
+}

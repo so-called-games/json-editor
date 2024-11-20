@@ -36,7 +36,13 @@ var descriptionParagraph = document.querySelector("#description")
 var directLink = document.querySelector("#direct-link")
 var resetButton = document.querySelector("#reset")
 var expandButton = document.querySelector("#expand")
-var expandButtonIcon = document.querySelector("#expand-icon")
+var expandButtonIcon = expandButton.querySelector("i")
+var outputAdditionalButton = document.querySelector("#output-additional-expand")
+var outputAdditionalButtonIcon = outputAdditionalButton.querySelector("i")
+var outputAdditionalDiv = document.querySelector("#output-additional-div")
+var schemaAdditionalButton = document.querySelector("#schema-additional-expand")
+var schemaAdditionalButtonIcon = schemaAdditionalButton.querySelector("i")
+var schemaAdditionalDiv = document.querySelector("#schema-additional-div")
 var booleanOptionsSelect = document.querySelector("#boolean-options-select")
 var head = document.getElementsByTagName("head")[0]
 var iconlibSelect = document.querySelector("#iconlib-select")
@@ -155,9 +161,8 @@ function initXHR()
 
 function loadJSON(url, xhr)
 {
-	xhr.withCredentials = true
 	xhr.open("GET", url)
-	xhr.send()
+	xhr.send(null)
 }
 
 function openJSON(elementToSet, elementToClick)
@@ -542,6 +547,32 @@ expandButton.addEventListener("click", function()
 	schemaDiv.hidden = isHidden
 	optionsDiv.hidden = isHidden
 	isExpanded = !isExpanded
+})
+outputAdditionalButton.addEventListener("click", function()
+{
+	if (outputAdditionalDiv.hidden)
+	{
+		outputAdditionalDiv.hidden = false
+		outputAdditionalButtonIcon.className = "fas fa-caret-down"
+	}
+	else
+	{
+		outputAdditionalDiv.hidden = true
+		outputAdditionalButtonIcon.className = "fas fa-caret-right"
+	}
+})
+schemaAdditionalButton.addEventListener("click", function()
+{
+	if (schemaAdditionalDiv.hidden)
+	{
+		schemaAdditionalDiv.hidden = false
+		schemaAdditionalButtonIcon.className = "fas fa-caret-down"
+	}
+	else
+	{
+		schemaAdditionalDiv.hidden = true
+		schemaAdditionalButtonIcon.className = "fas fa-caret-right"
+	}
 })
 loadOutput.addEventListener("click", function()
 {
