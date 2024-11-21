@@ -15,7 +15,6 @@ var defaultOptions = Object.assign({}, JSONEditor.defaults.options, {
 	show_errors: "interaction"
 })
 var customThemes = [
-	"_custom",
 	"_dark",
 	"_black"
 ]
@@ -24,7 +23,6 @@ var copyScrollOptions = {
 	block: "start",
 	inline: "nearest"
 }
-var refreshUIDelay = 1000
 var jsoneditor = null
 var isExpanded = false
 var mainDiv = document.querySelector("#main-div")
@@ -271,8 +269,6 @@ var mergeOptions = function()
 
 var refreshUI = function()
 {
-	mainDiv.hidden = true
-	
 	if ("filenames" in data)
 	{
 		if ("output" in data.filenames)
@@ -301,9 +297,7 @@ var refreshUI = function()
 	var themeMap = {
 		html: "",
 		bootstrap3: "https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css",
-		bootstrap4: "https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css",
-		bootstrap5: "https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css",
-		bootstrap5_custom: "./include/custom.css",
+		bootstrap5: "./include/css/bootstrap5.css",
 		bootstrap5_dark: "./include/css/dark.css",
 		bootstrap5_black: "./include/css/black.css"
 	}
@@ -480,10 +474,6 @@ var refreshUI = function()
 	}
 	initJsoneditor()
 	schemaTextarea.clearSelection(1)
-	setTimeout(function()
-	{
-		mainDiv.hidden = false
-	}, refreshUIDelay)
 }
 
 var initJsoneditor = function()

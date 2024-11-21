@@ -6,15 +6,26 @@
 	}
 }
 
+label
+{
+	margin-bottom: 6px !important;
+}
+
 .action-button
 {
 	margin-bottom: 8px;
 	margin-right: 4px;
 }
 
+.toggle-button
+{
+	margin-top: -4px;
+	margin-right: 4px;
+}
+
 .input-button
 {
-	width: 80px;
+	width: 88px;
 }
 
 .url
