@@ -151,17 +151,13 @@ input::placeholder
 	border-radius: 6px !important;
 }
 
-.ace_gutter, .ace_content, .ace_active-layer
+.ace_gutter, .ace_content
 {
 	background-color: black !important;
 }
 
 .ace_gutter
 {
+	color: white !important;
 	border-right: 1px solid white !important;
-}
-
-.ace_active-layer
-{
-	border-bottom: 2px solid white !important;
 }

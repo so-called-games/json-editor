@@ -521,13 +521,13 @@ expandButton.addEventListener("click", function()
 	if (!isExpanded)
 	{
 		isHidden = true
-		editorDiv.className = "col-12 col-md-12 w-12/12"
+		editorDiv.className = "col-md-12 w-12"
 		expandButtonIcon.className = "fas fa-compress"
 	}
 	else
 	{
 		isHidden = false
-		editorDiv.className = "col-7 col-md-7 w-7/12"
+		editorDiv.className = "col-md-7 w-12"
 		expandButtonIcon.className = "fas fa-expand"
 	}
 	descriptionParagraph.hidden = isHidden

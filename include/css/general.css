@@ -11,6 +11,21 @@ label
 	margin-bottom: 6px !important;
 }
 
+#main-div
+{
+	padding: 32px;
+}
+
+#schema-div
+{
+	margin-top: 24px;
+}
+
+#options-div
+{
+	margin-top: 32px;
+}
+
 .action-button
 {
 	margin-bottom: 8px;
