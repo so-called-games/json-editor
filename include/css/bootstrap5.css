@@ -50,12 +50,24 @@ option
 
 .json-editor-btntype-toggle
 {
-	margin-right: 12px !important;
+	margin-top: -4px !important;
+	margin-right: 16px !important;
 }
 
-.json-editor-btntype-properties
+.json-editor-btntype-editjson, .json-editor-btntype-properties
 {
-	margin-top: -2px !important;
-	margin-left: 2px !important;
+	margin-top: -4px !important;
+	margin-left: 6px !important;
 	padding: 4px 12px !important;
+}
+
+.je-edit-json--textarea
+{
+	margin: 8px !important;
+	margin-left: 0 !important;
+}
+
+.json-editor-btntype-save, .json-editor-btntype-copy, .json-editor-btntype-cancel
+{
+	margin-right: 4px !important;
 }

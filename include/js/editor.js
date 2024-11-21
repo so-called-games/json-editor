@@ -14,6 +14,10 @@ var defaultOptions = Object.assign({}, JSONEditor.defaults.options, {
 	object_layout: "normal",
 	show_errors: "interaction"
 })
+const defaultExtras = {
+	output: "",
+	schema: ""
+}
 var customThemes = [
 	"_dark",
 	"_black"
@@ -86,18 +90,13 @@ var jeErrorsCount = document.querySelector("#je-errors-count")
 var ajv = new AjvValidator()
 var outputXHR
 var schemaXHR
-var xhrProperties =
+
+function isEmpty(object)
 {
-	output: {
-		xhr: outputXHR,
-		elementToSet: outputTextarea,
-		elementToClick: setOutput
-	},
-	schema: {
-		xhr: schemaXHR,
-		elementToSet: schemaTextarea,
-		elementToClick: setSchema
-	}
+	for (const property in object)
+		if (Object.hasOwn(object, property))
+		  return false
+	return true
 }
 
 String.prototype.replaceAll = function(search, replacement)
@@ -229,6 +228,9 @@ const validateSchema = () =>
 
 var parseUrl = function()
 {
+	data.filenames = Object.assign({}, defaultExtras)
+	data.urls = Object.assign({}, defaultExtras)
+	data.options = Object.assign({}, defaultOptions)
 	var url = window.location.search
 	var queryParamsString = url.substring(1, url.length)
 	var queryParams = queryParamsString.split("&")
@@ -245,30 +247,25 @@ var parseUrl = function()
 			{
 				try
 				{
-					data = JSON.parse(LZString.decompressFromBase64(value))
+					var parsedData = JSON.parse(LZString.decompressFromBase64(value))
+					
+					if ("filenames" in parsedData)
+						data.filenames = Object.assign({}, parsedData.filenames)
+					
+					if ("urls" in parsedData)
+						data.urls = Object.assign({}, parsedData.urls)
+					
+					if ("options" in parsedData)
+						data.options = Object.assign(data.options, parsedData.options)
 				}
-				catch (reason) {}
+				catch (reason)
+				{
+					console.log(reason)
+				}
 			}
 		})
 	}
 	
-	if (!("urls" in data))
-		data.urls = {}
-	
-	if (!("filenames" in data))
-		data.filenames = {}
-	mergeOptions()
-	initXHR()
-}
-
-var mergeOptions = function()
-{
-	data.options = Object.assign(defaultOptions, data.options)
-	refreshUI()
-}
-
-var refreshUI = function()
-{
 	if ("filenames" in data)
 	{
 		if ("output" in data.filenames)
@@ -277,21 +274,33 @@ var refreshUI = function()
 		if ("schema" in data.filenames)
 			schemaFilename.value = data.filenames.schema
 	}
+	initXHR()
 	
 	if ("urls" in data)
 	{
 		if ("output" in data.urls)
 		{
-			outputURL.value = data.urls.output
-			loadJSON(data.urls.output, outputXHR)
+			if (data.urls.output != "")
+			{
+				outputURL.value = data.urls.output
+				loadJSON(data.urls.output, outputXHR)
+			}
 		}
 		
 		if ("schema" in data.urls)
 		{
-			schemaURL.value = data.urls.schema
-			loadJSON(data.urls.schema, schemaXHR)
+			if (data.urls.schema != "")
+			{
+				schemaURL.value = data.urls.schema
+				loadJSON(data.urls.schema, schemaXHR)
+			}
 		}
 	}
+	refreshUI()
+}
+
+var refreshUI = function()
+{
 	schemaTextarea.setValue(replaceSpacings(JSON.stringify(data.options.schema, null, 2)))
 	validateSchema()
 	var themeMap = {
@@ -331,9 +340,7 @@ var refreshUI = function()
 		var booleanValue = booleanOptions[i]
 		
 		if (data.options[booleanValue.value])
-		{
 			booleanValue.selected = true
-		}
 	}
 	var libMapping = {
 		ace_editor: {
@@ -425,9 +432,7 @@ var refreshUI = function()
 			var booleanValue = booleanOptions[i]
 
 			if (data.options[booleanValue.value])
-			{
 				booleanValue.selected = true
-			}
 		}
 		var libSelectChildren = libSelect.children
 		
@@ -445,9 +450,7 @@ var refreshUI = function()
 				var toRemove = head.querySelector(className)
 				
 				if (toRemove)
-				{
 					toRemove.parentNode.removeChild(toRemove)
-				}
 			})
 		})
 		data.selectedLibs.forEach(function(selectedLib)
@@ -479,9 +482,7 @@ var refreshUI = function()
 var initJsoneditor = function()
 {
 	if (jsoneditor)
-	{
 		jsoneditor.destroy()
-	}
 	var modifiedOptions = Object.assign({}, data.options)
 	modifiedOptions.theme = modifiedOptions.theme.replaceAllFromList(customThemes, "")
 	jsoneditor = new window.JSONEditor(jsonEditorForm, modifiedOptions)
@@ -493,22 +494,50 @@ var initJsoneditor = function()
 		var validationErrors = jsoneditor.validate()
 		
 		if (validationErrors.length)
-		{
 			validateTextarea.value = replaceSpacings(JSON.stringify(validationErrors, null, 2))
-		}
 		else
-		{
 			validateTextarea.value = "valid"
-		}
 	})
 }
 directLink.addEventListener("click", function()
 {
+	var modifiedData = JSON.parse(JSON.stringify(data))
+	
+	if (modifiedData.filenames.output == "")
+		delete modifiedData.filenames.output
+	
+	if (modifiedData.filenames.schema == "")
+		delete modifiedData.filenames.schema
+	
+	if (isEmpty(modifiedData.filenames))
+		delete modifiedData.filenames
+	
+	if (modifiedData.urls.output == "")
+		delete modifiedData.urls.output
+	
+	if (modifiedData.urls.schema == "")
+		delete modifiedData.urls.schema
+	
+	if (isEmpty(modifiedData.urls))
+		delete modifiedData.urls
+	
+	for (const [key, value] of Object.entries(modifiedData.options))
+	{
+		if (JSON.stringify(value) == JSON.stringify(defaultOptions[key]) || defaultOptions[key] == undefined)
+			delete modifiedData.options[key]
+	}
+	
+	if (isEmpty(modifiedData.options))
+		delete modifiedData.options
 	var url = window.location.href.replace(/\?.*/, "")
-	url += "?data="
-	url += LZString.compressToBase64(JSON.stringify(data))
+	
+	if (!isEmpty(modifiedData))
+	{
+		url += "?data="
+		url += LZString.compressToBase64(JSON.stringify(modifiedData))
+	}
 	copyToClipboard(url)
-	editorDiv.scrollIntoView(copyScrollOptions)
+	document.body.scrollIntoView(copyScrollOptions)
 })
 resetButton.addEventListener("click", function()
 {
@@ -574,13 +603,13 @@ setOutput.addEventListener("click", function()
 })
 clearOutput.addEventListener("click", function()
 {
-	outputTextarea.setValue("{}")
+	outputTextarea.setValue("")
 	outputTextarea.clearSelection(1)
 })
 copyOutput.addEventListener("click", function()
 {
 	copyToClipboard(outputTextarea.getValue())
-	outputDiv.scrollIntoView(copyScrollOptions)
+	document.body.scrollIntoView(copyScrollOptions)
 })
 openOutput.addEventListener("click", function()
 {
@@ -618,7 +647,7 @@ setSchema.addEventListener("click", function()
 })
 clearSchema.addEventListener("click", function()
 {
-	schemaTextarea.setValue(replaceSpacings(JSON.stringify(data.options.schema, null, 2)))
+	schemaTextarea.setValue(replaceSpacings(JSON.stringify(defaultSchema, null, 2)))
 	schemaTextarea.clearSelection(1)
 })
 copySchema.addEventListener("click", function()

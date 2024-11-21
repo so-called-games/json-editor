@@ -41,7 +41,7 @@
 						<button id="output-additional-expand" title="Collapse" class="btn btn-sm btn-secondary toggle-button" type="button"><i class="fas fa-caret-right"></i></button> <span>Extra options</span>
 					</span>
 					<div id="output-additional-div" class="card card-body mt-2 bg-light" hidden>
-						<label>URL from which output will be loaded (also on reload)</label>
+						<label>URL from which output will be loaded (also on opening copied link)</label>
 						<div class="input-group url">
 							<input id="output-url" class="form-control" type="text"></input>
 							<button id="load-output" class="btn btn-primary m-0 input-button" title="Get output from URL"><i class="fas fa-download"></i> <span>Load</span></button>
@@ -73,7 +73,7 @@
 						<button id="schema-additional-expand" title="Collapse" class="btn btn-sm btn-secondary toggle-button" type="button"><i class="fas fa-caret-right"></i></button> <span>Extra options</span>
 					</span>
 					<div id="schema-additional-div" class="card card-body mt-2 bg-light" hidden>
-						<label>URL from which schema will be loaded (also on reload)</label>
+						<label>URL from which schema will be loaded (also on opening copied link)</label>
 						<div class="input-group url">
 							<input id="schema-url" class="form-control" type="text"></input>
 							<button id="load-schema" class="btn btn-primary m-0 input-button" title="Get output from URL"><i class="fas fa-download"></i> <span>Load</span></button>
@@ -100,7 +100,7 @@
 				<h2>Options</h2>
 				<div>
 					<label for="boolean-options-select">Boolean options</label><br>
-					<select multiple size="10" id="boolean-options-select" class="form-control browser-default">
+					<select id="boolean-options-select" class="form-control browser-default" size="10" multiple>
 						<option value="use_default_values">Default values based on the "type"</option>
 						<option value="use_name_attributes">Use name attributes</option>
 						<option value="prompt_before_delete">Prompt before delete</option>
