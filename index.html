@@ -25,7 +25,7 @@
 						<button class="btn btn-secondary action-button" id="reset" title="Reload editor and reset all the forms and options"><i class="fas fa-redo"></i> <span>Reset</span></button>
 						<button class="btn btn-secondary action-button" id="expand" title="Expand editor and hide every other tab (or vice versa)"><i id="expand-icon" class="fas fa-expand"></i></button>
 					</div>
-					<div id="json-editor-form" class="mt-3"></div>
+					<div id="json-editor-form" class="mt-3" spellcheck="false"></div>
 				</div>
 				<div id="output-div" class="col-md-5 w-12">
 					<h2 class="d-inline">Output</h2>
@@ -99,7 +99,7 @@
 			<div id="options-div">
 				<h2>Options</h2>
 				<div>
-					<label for="boolean-options-select">Boolean options</label><br>
+					<label for="boolean-options-select">Boolean options (changing them will reset property editor)</label><br>
 					<select id="boolean-options-select" class="form-control browser-default" size="10" multiple>
 						<option value="use_default_values">Default values based on the "type"</option>
 						<option value="use_name_attributes">Use name attributes</option>

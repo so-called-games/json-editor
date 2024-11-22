@@ -15,6 +15,21 @@ option
 	--bs-card-title-spacer-y: 0.25rem !important;
 }
 
+.card > div > .card:first-child
+{
+	margin-top: 0 !important;
+}
+
+div:last-child > .btn-group:has(.json-editor-btntype-delete, .json-editor-btntype-movedown, .json-editor-btntype-moveup):last-child, .row:last-child > div > div
+{
+	margin-bottom: 0 !important;
+}
+
+.btn-group:has(.json-editor-btntype-delete, .json-editor-btntype-movedown, .json-editor-btntype-moveup):not(.card > div > .card .btn-group)
+{
+	margin-bottom: 12px !important;
+}
+
 .je-modal, .property-selector
 {
 	border: none !important;
@@ -34,10 +49,17 @@ option
 
 .property-selector-input
 {
+	margin-top: 8px;
 	margin-right: 8px;
 }
 
 .json-editor-btn-add
+{
+	margin-top: 0 !important;
+	border-radius: 4px !important;
+}
+
+.json-editor-btn-add:not(.row > div > .card .json-editor-btn-add)
 {
 	margin-top: -4px !important;
 	padding: 7px !important;
@@ -56,9 +78,10 @@ option
 
 .json-editor-btntype-editjson, .json-editor-btntype-properties
 {
-	margin-top: -4px !important;
+	margin-top: -8px !important;
 	margin-left: 6px !important;
 	padding: 4px 12px !important;
+	border-radius: 4px !important;
 }
 
 .je-edit-json--textarea

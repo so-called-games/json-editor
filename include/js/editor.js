@@ -209,6 +209,7 @@ function saveJSON(data, filename, type)
 
 const validateSchema = () =>
 {
+	schemaTextarea.setValue(replaceSpacings(JSON.stringify(data.options.schema, null, 2)))
 	const dataToValidate = JSON.parse(schemaTextarea.getValue())
 	let errors
 	ajvErrorsCount.textContent = "0"
@@ -224,6 +225,7 @@ const validateSchema = () =>
 	schemaTextarea.clearSelection(1)
 	jeErrorsTextarea.clearSelection(1)
 	schemaTextarea.setValue(replaceSpacings(schemaTextarea.getSession().getValue()))
+	initJsoneditor()
 }
 
 var parseUrl = function()
@@ -247,7 +249,7 @@ var parseUrl = function()
 			{
 				try
 				{
-					var parsedData = JSON.parse(LZString.decompressFromBase64(value))
+					var parsedData = JSON.parse(LZString.decompressFromEncodedURIComponent(value))
 					
 					if ("filenames" in parsedData)
 						data.filenames = Object.assign({}, parsedData.filenames)
@@ -296,13 +298,12 @@ var parseUrl = function()
 			}
 		}
 	}
+	validateSchema()
 	refreshUI()
 }
 
 var refreshUI = function()
 {
-	schemaTextarea.setValue(replaceSpacings(JSON.stringify(data.options.schema, null, 2)))
-	validateSchema()
 	var themeMap = {
 		html: "",
 		bootstrap3: "https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css",
@@ -475,7 +476,6 @@ var refreshUI = function()
 			})
 		})
 	}
-	initJsoneditor()
 	schemaTextarea.clearSelection(1)
 }
 
@@ -534,7 +534,7 @@ directLink.addEventListener("click", function()
 	if (!isEmpty(modifiedData))
 	{
 		url += "?data="
-		url += LZString.compressToBase64(JSON.stringify(modifiedData))
+		url += LZString.compressToEncodedURIComponent(JSON.stringify(modifiedData))
 	}
 	copyToClipboard(url)
 	document.body.scrollIntoView(copyScrollOptions)
@@ -699,6 +699,7 @@ booleanOptionsSelect.addEventListener("change", function()
 	{
 		data.options[booleanOptions[i].value] = booleanOptions[i].selected
 	}
+	initJsoneditor()
 	refreshUI()
 })
 libSelect.addEventListener("change", function()
