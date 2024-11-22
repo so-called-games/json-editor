@@ -31,10 +31,11 @@
 					<h2 class="d-inline">Output</h2>
 					<p class="mt-2">JSON output that will be generated when properies in the editor will be changed.</p>
 					<div class="mt-2 mb-3">
-						<button class="btn btn-primary action-button" id="set-output" title="Update editor from output"><i class="fas fa-redo"></i> <span>Update</span></button>
-						<button class="btn btn-secondary action-button" id="clear-output" title="Clear output"><i class="fas fa-eraser"></i> <span>Clear</span></button>
-						<button class="btn btn-secondary action-button" id="copy-output" title="Copy output"><i class="fas fa-copy"></i> <span>Copy</span></button>
-						<button class="btn btn-secondary action-button" id="open-output" title="Upload JSON file to the output"><i class="fas fa-folder-open"></i> <span>Open</span></button>
+						<button id="set-output" class="btn btn-primary action-button" title="Update editor from output"><i class="fas fa-redo"></i> <span>Update</span></button>
+						<button id="clear-output" class="btn btn-secondary action-button" title="Clear output"><i class="fas fa-eraser"></i> <span>Clear</span></button>
+						<button id="copy-output" class="btn btn-secondary action-button" title="Copy output"><i class="fas fa-copy"></i> <span>Copy</span></button>
+						<button id="open-output" class="btn btn-secondary action-button" title="Upload JSON file to the output"><i class="fas fa-folder-open"></i> <span>Open</span></button>
+						<button id="save-output" class="btn btn-secondary action-button" title="Download output as JSON file"><i class="fas fa-save"></i> <span>Save</button>
 					</div>
 					<textarea id="output-textarea" class="form-control" style="width: 100%; font-family: monospace;"></textarea>
 					<span class="h4 d-inline-block mt-1">
@@ -50,7 +51,6 @@
 						<label>Filename of the downloadable output (without ".json")</label>
 						<div class="input-group">
 							<input id="output-filename" class="form-control" type="text"></input>
-							<button id="save-output" class="btn btn-primary m-0 input-button" title="Download output as JSON file"><i class="fas fa-save"></i> <span>Save</button>
 						</div>
 					</div>
 					<h2 class="mt-4">Validation</h2>
@@ -63,10 +63,11 @@
 					<h2 class="d-inline">Schema</h2>
 					<p class="mt-2">JSON schema that will be used to construct HTML form for editing output properties.</p>
 					<div class="mt-2 mb-3">
-						<button class="btn btn-primary action-button" id="set-schema"><i class="fas fa-redo"></i> <span>Update</span></button>
-						<button class="btn btn-secondary action-button" id="clear-schema"><i class="fas fa-eraser"></i> <span>Clear</span></button>
-						<button class="btn btn-secondary action-button" id="copy-schema"><i class="fas fa-copy"></i> <span>Copy</span></button>
-						<button class="btn btn-secondary action-button" id="open-schema"><i class="fas fa-folder-open"></i> <span>Open</span></button>
+						<button id="set-schema" class="btn btn-primary action-button"><i class="fas fa-redo"></i> <span>Update</span></button>
+						<button id="clear-schema" class="btn btn-secondary action-button"><i class="fas fa-eraser"></i> <span>Clear</span></button>
+						<button id="copy-schema" class="btn btn-secondary action-button"><i class="fas fa-copy"></i> <span>Copy</span></button>
+						<button id="open-schema" class="btn btn-secondary action-button"><i class="fas fa-folder-open"></i> <span>Open</span></button>
+						<button id="save-schema" class="btn btn-secondary action-button"><i class="fas fa-save"></i> <span>Save</span></button>
 					</div>
 					<textarea id="schema-textarea" style="height: 100vh;"></textarea>
 					<span class="h4 d-inline-block mt-1">
@@ -82,7 +83,6 @@
 						<label>Filename of the downloadable schema (without ".json")</label>
 						<div class="input-group">
 							<input id="schema-filename" class="form-control" type="text"></input>
-							<button id="save-schema" class="btn btn-primary m-0 input-button"><i class="fas fa-save"></i> <span>Save</span></button>
 						</div>
 					</div>
 				</div>

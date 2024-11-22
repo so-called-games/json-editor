@@ -603,7 +603,7 @@ setOutput.addEventListener("click", function()
 })
 clearOutput.addEventListener("click", function()
 {
-	outputTextarea.setValue("")
+	outputTextarea.setValue("{}")
 	outputTextarea.clearSelection(1)
 })
 copyOutput.addEventListener("click", function()
