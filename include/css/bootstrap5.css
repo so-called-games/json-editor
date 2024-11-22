@@ -20,6 +20,11 @@ option
 	margin-top: 0 !important;
 }
 
+.row:not(:last-child) > div:has(.card)
+{
+	margin-bottom: 8px !important;
+}
+
 div:last-child > .btn-group:has(.json-editor-btntype-delete, .json-editor-btntype-movedown, .json-editor-btntype-moveup):last-child, .row:last-child > div > div
 {
 	margin-bottom: 0 !important;

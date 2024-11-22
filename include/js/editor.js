@@ -605,6 +605,7 @@ clearOutput.addEventListener("click", function()
 {
 	outputTextarea.setValue("{}")
 	outputTextarea.clearSelection(1)
+	document.body.scrollIntoView(copyScrollOptions)
 })
 copyOutput.addEventListener("click", function()
 {
@@ -649,6 +650,8 @@ clearSchema.addEventListener("click", function()
 {
 	schemaTextarea.setValue(replaceSpacings(JSON.stringify(defaultSchema, null, 2)))
 	schemaTextarea.clearSelection(1)
+	schemaDiv.scrollIntoView(copyScrollOptions)
+	setSchema.click()
 })
 copySchema.addEventListener("click", function()
 {

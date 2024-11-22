@@ -16,14 +16,14 @@ label
 	padding: 32px;
 }
 
-#schema-div
+#editor-div
 {
-	margin-top: 24px;
+	margin-bottom: 0 !important;
 }
 
-#options-div
+#schema-div, #options-div
 {
-	margin-top: 32px;
+	margin-top: 24px;
 }
 
 .action-button
