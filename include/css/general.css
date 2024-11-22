@@ -21,6 +21,11 @@ label
 	margin-bottom: 0 !important;
 }
 
+#json-editor-form textarea
+{
+	field-sizing: content;
+}
+
 #schema-div, #options-div
 {
 	margin-top: 24px;
@@ -46,4 +51,9 @@ label
 .url
 {
 	margin-bottom: 16px;
+}
+
+.fullscreen
+{
+	
 }

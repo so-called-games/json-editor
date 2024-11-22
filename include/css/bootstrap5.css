@@ -52,10 +52,20 @@ div:last-child > .btn-group:has(.json-editor-btntype-delete, .json-editor-btntyp
 	padding-top: 12px !important;
 }
 
+.property-selector:empty
+{
+	padding-top: 0 !important;
+}
+
 .property-selector-input
 {
-	margin-top: 8px;
+	margin-top: 4px;
 	margin-right: 8px;
+}
+
+.property-selector:empty .property-selector-input
+{
+	margin-top: 0 !important;
 }
 
 .json-editor-btn-add
@@ -72,6 +82,7 @@ div:last-child > .btn-group:has(.json-editor-btntype-delete, .json-editor-btntyp
 
 .je-switcher
 {
+	margin-top: 4px !important;
 	margin-bottom: 12px !important;
 }
 
@@ -83,7 +94,7 @@ div:last-child > .btn-group:has(.json-editor-btntype-delete, .json-editor-btntyp
 
 .json-editor-btntype-editjson, .json-editor-btntype-properties
 {
-	margin-top: -8px !important;
+	margin-top: -9px !important;
 	margin-left: 6px !important;
 	padding: 4px 12px !important;
 	border-radius: 4px !important;
