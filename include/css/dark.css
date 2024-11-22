@@ -21,12 +21,12 @@ option:checked
 	background: #333333 !important;
 }
 
-h1, h2, a, span, input, textarea, select, option
+h1, h2, a, a:visited, span, input, textarea, select, option
 {
 	color: white;
 }
 
-a:hover, a:visited
+a:hover
 {
 	color: #cccccc !important;
 }
