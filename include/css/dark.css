@@ -171,28 +171,10 @@ input[type="number"]
 	background: #333333 !important;
 }
 
-.ace_optionsMenuEntry
-{
-	display: block !important;
-	padding: 6px !important;
-}
-
-.ace_optionsMenuEntry > td
-{
-	display: inline-block !important;
-	margin-left: 12px !important;
-}
-
 .ace_optionsMenuEntry button[ace_selected_button="true"]
 {
 	background: #323232 !important;
 	box-shadow: none !important;
-}
-
-.ace_optionsMenuEntry input[type="checkbox"]
-{
-	margin-top: -6px !important;
-	margin-right: 8px !important;	
 }
 
 .ace_prompt_container, .ace_prompt_container .ace-tm

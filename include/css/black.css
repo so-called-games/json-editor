@@ -210,28 +210,10 @@ input[type="number"]
 	border-right: 1px solid white !important;
 }
 
-.ace_optionsMenuEntry
-{
-	display: block !important;
-	padding: 6px !important;
-}
-
-.ace_optionsMenuEntry > td
-{
-	display: inline-block !important;
-	margin-left: 12px !important;
-}
-
 .ace_optionsMenuEntry button[ace_selected_button="true"]
 {
 	border: none !important;
 	box-shadow: inset 0px 0px 0px 4px white !important;
-}
-
-.ace_optionsMenuEntry input[type="checkbox"]
-{
-	margin-top: -6px !important;
-	margin-right: 8px !important;	
 }
 
 .ace_prompt_container
@@ -251,7 +233,6 @@ input[type="number"]
 {
 	background: black !important;
 	border: white solid 2px !important;
-	border-radius: 0 !important;
 }
 
 .ace_prompt_container .ace_active-line, .ace_prompt_container .ace_selected-word, .ace_prompt_container .ace_selection
@@ -272,6 +253,8 @@ input[type="number"]
 
 .ace_button, .ace_mobile-button
 {
+	color: white !important;
+	background: black !important;
 	box-shadow: inset 0px 0px 0px 1px white !important;
 }
 
@@ -305,7 +288,7 @@ input[type="number"]
 
 .ace_search_field::placeholder
 {
-	color: #888888 !important;
+	color: white !important;
 }
 
 .ace_search_counter

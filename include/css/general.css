@@ -31,6 +31,12 @@ label
 	margin-top: 24px;
 }
 
+#ace_settingsmenu
+{
+	width: 75%;
+	max-width: 512px;
+}
+
 .action-button
 {
 	margin-bottom: 8px;
@@ -53,7 +59,35 @@ label
 	margin-bottom: 16px;
 }
 
-.fullscreen
+.ace_optionsMenuEntry
 {
-	
+	display: block !important;
+	padding: 6px !important;
+}
+
+.ace_optionsMenuEntry > td
+{
+	display: inline-block !important;
+	margin-left: 12px !important;
+}
+
+.ace_optionsMenuEntry input[type="checkbox"]
+{
+	margin-top: -6px !important;
+	margin-right: 8px !important;	
+}
+
+.ace_prompt_container, .ace_autocomplete, .ace_search
+{
+	border-radius: 4px !important;
+}
+
+.ace_autocomplete
+{
+	margin-left: -3px !important;
+}
+
+.ace_mobile-button
+{
+	padding: 2px 4px !important;
 }
