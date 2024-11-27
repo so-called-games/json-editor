@@ -28,7 +28,7 @@ var copyScrollOptions = {
 	inline: "nearest"
 }
 var jsonEditor = null
-const jsonEditorInitDelay = 500
+const jsonEditorInitDelay = 1000
 var isExpanded = false
 var mainDiv = document.querySelector("#main-div")
 var editorDiv = document.querySelector("#editor-div")
