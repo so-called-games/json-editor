@@ -41,7 +41,7 @@ p, b, label
 	color: #cccccc;
 }
 
-button
+button:not(.jsoneditor-twbs5-text-button)
 {
 	color: white !important;
 	padding: 6px 12px !important;
@@ -49,12 +49,12 @@ button
 	border: none !important;
 }
 
-button:hover
+button:not(.jsoneditor-twbs5-text-button):hover
 {
 	background: #383838 !important;
 }
 
-button:active
+button:not(.jsoneditor-twbs5-text-button):active
 {
 	background: #323232 !important;
 }

@@ -27,7 +27,8 @@ var copyScrollOptions = {
 	block: "start",
 	inline: "nearest"
 }
-var jsoneditor = null
+var jsonEditor = null
+const jsonEditorInitDelay = 500
 var isExpanded = false
 var mainDiv = document.querySelector("#main-div")
 var editorDiv = document.querySelector("#editor-div")
@@ -139,23 +140,29 @@ function initXHR()
 	outputXHR.onreadystatechange = function ()
 	{
 		if (outputXHR.readyState === 4)
-		{
-			outputTextarea.setValue(outputXHR.responseText)
-			outputTextarea.clearSelection(1)
-			setOutput.click()
-		}
+			outputXHRIsReady()
 	}
 	schemaXHR = new XMLHttpRequest()
 	
 	schemaXHR.onreadystatechange = function ()
 	{
 		if (schemaXHR.readyState === 4)
-		{
-			schemaTextarea.setValue(schemaXHR.responseText)
-			schemaTextarea.clearSelection(1)
-			setSchema.click()
-		}
+			schemaXHRIsReady()
 	}
+}
+
+function outputXHRIsReady()
+{
+	outputTextarea.setValue(outputXHR.responseText)
+	outputTextarea.clearSelection(1)
+	setOutput.click()
+}
+
+function schemaXHRIsReady()
+{
+	schemaTextarea.setValue(schemaXHR.responseText)
+	schemaTextarea.clearSelection(1)
+	setSchema.click()
 }
 
 function loadJSON(url, xhr)
@@ -227,7 +234,7 @@ const validateSchema = () =>
 	schemaTextarea.clearSelection(1)
 	jeErrorsTextarea.clearSelection(1)
 	schemaTextarea.setValue(replaceSpacings(schemaTextarea.getSession().getValue()))
-	initJsoneditor()
+	initJsonEditor()
 }
 
 var parseUrl = function()
@@ -282,21 +289,48 @@ var parseUrl = function()
 	
 	if ("urls" in data)
 	{
-		if ("output" in data.urls)
-		{
-			if (data.urls.output != "")
-			{
-				outputURL.value = data.urls.output
-				loadJSON(data.urls.output, outputXHR)
-			}
-		}
-		
 		if ("schema" in data.urls)
 		{
 			if (data.urls.schema != "")
 			{
 				schemaURL.value = data.urls.schema
 				loadJSON(data.urls.schema, schemaXHR)
+			}
+		}
+		
+		if ("output" in data.urls)
+		{
+			if (data.urls.output != "")
+			{
+				outputURL.value = data.urls.output
+				loadJSON(data.urls.output, outputXHR)
+				
+				if ("schema" in data.urls)
+				{
+					outputXHR.onreadystatechange = function ()
+					{
+						if (outputXHR.readyState === 4)
+						{
+							if (!(schemaXHR.readyState === 4))
+							{
+								schemaXHR.onreadystatechange = function ()
+								{
+									if (schemaXHR.readyState === 4)
+									{
+										schemaXHRIsReady()
+										setTimeout(() =>
+										{
+											outputXHRIsReady()
+											initXHR()
+										}, jsonEditorInitDelay)
+									}
+								}
+							}
+							else
+								outputXHRIsReady()
+						}
+					}
+				}
 			}
 		}
 	}
@@ -481,19 +515,19 @@ var refreshUI = function()
 	schemaTextarea.clearSelection(1)
 }
 
-var initJsoneditor = function()
+var initJsonEditor = function()
 {
-	if (jsoneditor)
-		jsoneditor.destroy()
+	if (jsonEditor)
+		jsonEditor.destroy()
 	var modifiedOptions = Object.assign({}, data.options)
 	modifiedOptions.theme = modifiedOptions.theme.replaceAllFromList(customThemes, "")
-	jsoneditor = new window.JSONEditor(jsonEditorForm, modifiedOptions)
-	jsoneditor.on("change", function()
+	jsonEditor = new window.JSONEditor(jsonEditorForm, modifiedOptions)
+	jsonEditor.on("change", function()
 	{
-		var json = jsoneditor.getValue()
+		var json = jsonEditor.getValue()
 		outputTextarea.setValue(replaceSpacings(JSON.stringify(json, null, 2)))
 		outputTextarea.clearSelection(1)
-		var validationErrors = jsoneditor.validate()
+		var validationErrors = jsonEditor.validate()
 		
 		if (validationErrors.length)
 			validateTextarea.value = replaceSpacings(JSON.stringify(validationErrors, null, 2))
@@ -601,7 +635,7 @@ loadOutput.addEventListener("click", function()
 })
 setOutput.addEventListener("click", function()
 {
-	jsoneditor.setValue(JSON.parse(outputTextarea.getValue()))
+	jsonEditor.setValue(JSON.parse(outputTextarea.getValue()))
 })
 clearOutput.addEventListener("click", function()
 {
@@ -704,7 +738,7 @@ booleanOptionsSelect.addEventListener("change", function()
 	{
 		data.options[booleanOptions[i].value] = booleanOptions[i].selected
 	}
-	initJsoneditor()
+	initJsonEditor()
 	refreshUI()
 })
 libSelect.addEventListener("change", function()
