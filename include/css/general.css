@@ -1,11 +1,3 @@
-@media screen and (min-width: 768px)
-{
-	#json-editor-form
-	{
-		zoom: 75%;
-	}
-}
-
 label
 {
 	margin-bottom: 6px !important;
@@ -19,6 +11,11 @@ label
 #editor-div
 {
 	margin-bottom: 0 !important;
+}
+
+#json-editor-form
+{
+	zoom: 75%;
 }
 
 #json-editor-form textarea
@@ -80,11 +77,6 @@ label
 .ace_prompt_container, .ace_autocomplete, .ace_search
 {
 	border-radius: 4px !important;
-}
-
-.ace_autocomplete
-{
-	margin-left: -3px !important;
 }
 
 .ace_mobile-button

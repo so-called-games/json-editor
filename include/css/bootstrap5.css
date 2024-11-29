@@ -20,10 +20,32 @@ option
 	margin-top: 0 !important;
 }
 
+.card .row:last-child > .je-object__container
+{
+	margin-bottom: -12px !important;
+}
+
+.card .row:last-child > .je-object__container > .card
+{
+	margin-bottom: 12px !important;
+}
+
+.je-object__container > .card
+{
+	margin-top: 0 !important;
+}
+
+/*
+.card:has(.je-object__container)
+{
+	padding-bottom: 0 !important;
+}
+
 .row:not(:last-child) > div:has(.card)
 {
 	margin-bottom: 8px !important;
 }
+*/
 
 div:last-child > .btn-group:has(.json-editor-btntype-delete, .json-editor-btntype-movedown, .json-editor-btntype-moveup):last-child, .row:last-child > div > div
 {
@@ -88,14 +110,13 @@ div:last-child > .btn-group:has(.json-editor-btntype-delete, .json-editor-btntyp
 
 .json-editor-btntype-toggle
 {
-	margin-top: -4px !important;
+	margin-top: -8px !important;
 	margin-right: 16px !important;
 }
 
 .json-editor-btntype-editjson, .json-editor-btntype-properties
 {
-	margin-top: -9px !important;
-	margin-left: 6px !important;
+	margin-right: 6px !important;
 	padding: 4px 12px !important;
 	border-radius: 4px !important;
 }
@@ -109,4 +130,31 @@ div:last-child > .btn-group:has(.json-editor-btntype-delete, .json-editor-btntyp
 .json-editor-btntype-save, .json-editor-btntype-copy, .json-editor-btntype-cancel
 {
 	margin-right: 4px !important;
+}
+
+.je-object__title
+{
+	margin-right: 16px !important;
+	margin-bottom: 6px !important;
+}
+
+.je-object__title:has(.visually-hidden)
+{
+	margin-right: 6px !important;
+}
+
+.je-object__title:has(.visually-hidden) > .json-editor-btntype-toggle
+{
+	margin-right: 0 !important;
+}
+
+.je-object__title:has(.visually-hidden) + .je-object__controls
+{
+	margin-left: 0 !important;
+}
+
+.je-object__controls
+{
+	margin-left: 1px !important;
+	margin-bottom: 16px !important;
 }

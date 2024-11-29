@@ -189,6 +189,11 @@ input[type="number"]
 	border: none !important;
 }
 
+.ace_autocomplete
+{
+	margin-left: -3px !important;
+}
+
 .ace_prompt_container .ace_active-line, .ace_prompt_container .ace_selected-word, .ace_prompt_container .ace_selection
 {
 	background: #333333 !important;
@@ -240,5 +245,14 @@ input[type="number"]
 
 .ace_mobile-menu
 {
+	box-shadow: none !important;
+}
+
+.ace_tooltip
+{
+	color: white !important;
+	background: #1c1c1c !important;
+	border: none !important;
+	border-radius: 4px !important;
 	box-shadow: none !important;
 }
