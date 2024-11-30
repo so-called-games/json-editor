@@ -29,15 +29,27 @@ var copyScrollOptions = {
 }
 var jsonEditor = null
 const jsonEditorInitDelay = 500
+const QRCodeDimensions = 256
 var isExpanded = false
+var overlay = document.querySelector("#overlay")
+var QRCodeDiv = document.querySelector("#qr-code-div")
+var QRCodeContainer = document.querySelector("#qr-code")
+var QRCode = new QRCode(QRCodeContainer, {
+	useSVG: true,
+	width: QRCodeDimensions,
+	height: QRCodeDimensions,
+	correctLevel: QRCode.CorrectLevel.L
+})
+var expandedTextarea = document.querySelector("#expanded-textarea")
 var mainDiv = document.querySelector("#main-div")
 var editorDiv = document.querySelector("#editor-div")
 var outputDiv = document.querySelector("#output-div")
 var schemaDiv = document.querySelector("#schema-div")
 var optionsDiv = document.querySelector("#options-div")
 var descriptionParagraph = document.querySelector("#description")
-var directLink = document.querySelector("#direct-link")
 var resetButton = document.querySelector("#reset")
+var directLink = document.querySelector("#direct-link")
+var showQRCode = document.querySelector("#show-qr-code")
 var expandButton = document.querySelector("#expand")
 var expandButtonIcon = expandButton.querySelector("i")
 var outputAdditionalButton = document.querySelector("#output-additional-expand")
@@ -120,6 +132,46 @@ String.prototype.replaceAllFromList = function(searchList, replacement)
 function replaceSpacings(dataToReplace)
 {
 	return dataToReplace.replaceAll("  ", "	")
+}
+
+function makeLink()
+{
+	var modifiedData = JSON.parse(JSON.stringify(data))
+	
+	if (modifiedData.filenames.output == "")
+		delete modifiedData.filenames.output
+	
+	if (modifiedData.filenames.schema == "")
+		delete modifiedData.filenames.schema
+	
+	if (isEmpty(modifiedData.filenames))
+		delete modifiedData.filenames
+	
+	if (modifiedData.urls.output == "")
+		delete modifiedData.urls.output
+	
+	if (modifiedData.urls.schema == "")
+		delete modifiedData.urls.schema
+	
+	if (isEmpty(modifiedData.urls))
+		delete modifiedData.urls
+	
+	for (const [key, value] of Object.entries(modifiedData.options))
+	{
+		if (JSON.stringify(value) == JSON.stringify(defaultOptions[key]) || defaultOptions[key] == undefined)
+			delete modifiedData.options[key]
+	}
+	
+	if (isEmpty(modifiedData.options))
+		delete modifiedData.options
+	var url = window.location.href.replace(/\?.*/, "")
+	
+	if (!isEmpty(modifiedData))
+	{
+		url += "?data="
+		url += LZString.compressToEncodedURIComponent(JSON.stringify(modifiedData))
+	}
+	return url
 }
 
 function copyToClipboard(element)
@@ -237,7 +289,7 @@ const validateSchema = () =>
 	initJsonEditor()
 }
 
-var parseUrl = function()
+var parseURL = function()
 {
 	data.filenames = Object.assign({}, defaultExtras)
 	data.urls = Object.assign({}, defaultExtras)
@@ -535,49 +587,36 @@ var initJsonEditor = function()
 			validateTextarea.value = "valid"
 	})
 }
-directLink.addEventListener("click", function()
+overlay.addEventListener("click", function()
 {
-	var modifiedData = JSON.parse(JSON.stringify(data))
-	
-	if (modifiedData.filenames.output == "")
-		delete modifiedData.filenames.output
-	
-	if (modifiedData.filenames.schema == "")
-		delete modifiedData.filenames.schema
-	
-	if (isEmpty(modifiedData.filenames))
-		delete modifiedData.filenames
-	
-	if (modifiedData.urls.output == "")
-		delete modifiedData.urls.output
-	
-	if (modifiedData.urls.schema == "")
-		delete modifiedData.urls.schema
-	
-	if (isEmpty(modifiedData.urls))
-		delete modifiedData.urls
-	
-	for (const [key, value] of Object.entries(modifiedData.options))
-	{
-		if (JSON.stringify(value) == JSON.stringify(defaultOptions[key]) || defaultOptions[key] == undefined)
-			delete modifiedData.options[key]
-	}
-	
-	if (isEmpty(modifiedData.options))
-		delete modifiedData.options
-	var url = window.location.href.replace(/\?.*/, "")
-	
-	if (!isEmpty(modifiedData))
-	{
-		url += "?data="
-		url += LZString.compressToEncodedURIComponent(JSON.stringify(modifiedData))
-	}
-	copyToClipboard(url)
-	document.body.scrollIntoView(copyScrollOptions)
+	overlay.hidden = true
+})
+QRCodeDiv.addEventListener("click", function(e)
+{
+	e.stopPropagation();
+})
+expandedTextarea.addEventListener("click", function(e)
+{
+	e.stopPropagation();
 })
 resetButton.addEventListener("click", function()
 {
 	window.open("?", "_self")
+})
+directLink.addEventListener("click", function()
+{
+	copyToClipboard(makeLink())
+	document.body.scrollIntoView(copyScrollOptions)
+})
+showQRCode.addEventListener("click", function()
+{
+	var isHidden = overlay.hidden
+	overlay.hidden = !isHidden
+	QRCodeDiv.hidden = !isHidden
+	expandedTextarea.hidden = true
+	
+	if (isHidden)
+		QRCode.makeCode(makeLink())
 })
 expandButton.addEventListener("click", function()
 {
@@ -596,8 +635,9 @@ expandButton.addEventListener("click", function()
 		expandButtonIcon.className = "fas fa-expand"
 	}
 	descriptionParagraph.hidden = isHidden
-	directLink.hidden = isHidden
 	resetButton.hidden = isHidden
+	directLink.hidden = isHidden
+	showQRCode.hidden = isHidden
 	outputDiv.hidden = isHidden
 	schemaDiv.hidden = isHidden
 	optionsDiv.hidden = isHidden
@@ -760,4 +800,4 @@ libSelect.addEventListener("change", function()
 	}
 	refreshUI()
 })
-parseUrl()
+parseURL()

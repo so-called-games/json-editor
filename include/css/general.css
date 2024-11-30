@@ -1,6 +1,42 @@
+@media screen and (min-width: 768px)
+{
+	#json-editor-form
+	{
+		zoom: 75%;
+	}
+}
+
 label
 {
 	margin-bottom: 6px !important;
+}
+
+#overlay
+{
+	display: flex;
+	height: 100vh;
+    width: 100vw;
+	position: fixed;
+	align-items: center;
+	justify-content: center;
+	z-index: 10;
+	overflow-x: hidden;
+	background: rgba(0, 0, 0, 0.3);
+}
+
+#qr-code-div
+{
+	width: auto;
+	margin: auto;
+	padding: 16px;
+	background: white;
+	border-radius: 12px;
+}
+
+#qr-code
+{
+	width: 256px;
+	height: 256px;
 }
 
 #main-div
@@ -11,11 +47,6 @@ label
 #editor-div
 {
 	margin-bottom: 0 !important;
-}
-
-#json-editor-form
-{
-	zoom: 75%;
 }
 
 #json-editor-form textarea
