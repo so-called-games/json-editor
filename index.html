@@ -18,8 +18,11 @@
 	<body>
 		<div id="overlay" hidden>
 			<div id="qr-code-div" hidden>
-				<div id="qr-code"></div>
-			</div>
+				<div id="qr-code-inner-div">
+					<div id="qr-code"></div>
+				</div>
+				<button id="save-qr-code" class="btn btn-primary image-button" title="Save QR code as PNG image with 1024x1024 resolution"><i class="fas fa-save"></i> <span>Save as PNG</span></button>
+			</div>	
 			<div id="expanded-textarea" hidden></div>
 		</div>
 		<div id="main-div" class="container-fluid grid">
@@ -28,9 +31,9 @@
 					<h2 class="d-inline">JSON Editor </h2>
 					<p id="description" class="mt-2">This is modified version of the original JSON Editor interactive demo. You can learn more about JSON Editor on the <a href="https://github.com/json-editor/json-editor" title="github" target="_blank">official GitHub</a> page.</p>
 					<div id="editor-buttons" class="d-inline">
-						<button class="btn btn-secondary action-button" id="reset" title="Reload editor and reset all the forms and options"><i class="fas fa-redo"></i> <span>Reset</span></button>
-						<button class="btn btn-primary action-button" id="direct-link" title="Copy URL which contains JSON schema and options of this session"><i class="fas fa-link"></i> <span>Copy link</span></button>
-						<button class="btn btn-secondary action-button" id="show-qr-code" title="Show QR code containing a direct link to this editor session, including JSON schema and editor options"><i class="fas fa-qrcode"></i></button>
+						<button class="btn btn-primary action-button" id="reset" title="Reload editor and reset all the forms and options"><i class="fas fa-redo"></i> <span>Reset</span></button>
+						<button class="btn btn-secondary action-button" id="direct-link" title="Copy URL which contains JSON schema and options of this session"><i class="fas fa-link"></i> <span>Copy link</span></button>
+						<button class="btn btn-secondary action-button" id="show-qr-code" title="Show QR code containing a direct link to this editor session, including JSON schema and editor options"><i class="fas fa-qrcode"></i> <span>Show code</span></button>
 						<button class="btn btn-secondary action-button" id="expand" title="Expand editor and hide every other tab (or vice versa)"><i id="expand-icon" class="fas fa-expand"></i></button>
 					</div>
 					<div id="json-editor-form" class="mt-3" spellcheck="false"></div>

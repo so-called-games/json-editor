@@ -27,10 +27,13 @@ var copyScrollOptions = {
 	block: "start",
 	inline: "nearest"
 }
-var jsonEditor = null
 const jsonEditorInitDelay = 500
-const QRCodeDimensions = 256
+const QRCodeDimensions = 384
+const QRCodeSaveDimensions = 1024
+const QRCodeSaveOffset = 42
+var jsonEditor = null
 var isExpanded = false
+var wasSchemaFromURL = false
 var overlay = document.querySelector("#overlay")
 var QRCodeDiv = document.querySelector("#qr-code-div")
 var QRCodeContainer = document.querySelector("#qr-code")
@@ -38,7 +41,7 @@ var QRCode = new QRCode(QRCodeContainer, {
 	useSVG: true,
 	width: QRCodeDimensions,
 	height: QRCodeDimensions,
-	correctLevel: QRCode.CorrectLevel.L
+	correctLevel: QRCode.CorrectLevel.M
 })
 var expandedTextarea = document.querySelector("#expanded-textarea")
 var mainDiv = document.querySelector("#main-div")
@@ -50,6 +53,7 @@ var descriptionParagraph = document.querySelector("#description")
 var resetButton = document.querySelector("#reset")
 var directLink = document.querySelector("#direct-link")
 var showQRCode = document.querySelector("#show-qr-code")
+var saveQRCode = document.querySelector("#save-qr-code")
 var expandButton = document.querySelector("#expand")
 var expandButtonIcon = expandButton.querySelector("i")
 var outputAdditionalButton = document.querySelector("#output-additional-expand")
@@ -155,6 +159,9 @@ function makeLink()
 	
 	if (isEmpty(modifiedData.urls))
 		delete modifiedData.urls
+	
+	if (wasSchemaFromURL)
+		delete modifiedData.options.schema
 	
 	for (const [key, value] of Object.entries(modifiedData.options))
 	{
@@ -347,6 +354,7 @@ var parseURL = function()
 			{
 				schemaURL.value = data.urls.schema
 				loadJSON(data.urls.schema, schemaXHR)
+				wasSchemaFromURL = true
 			}
 		}
 		
@@ -599,6 +607,39 @@ expandedTextarea.addEventListener("click", function(e)
 {
 	e.stopPropagation();
 })
+saveQRCode.addEventListener("click", function()
+{
+	var clonedSVG = QRCodeContainer.querySelector("svg").parentNode.cloneNode(true)
+	clonedSVG.querySelector("rect#template").setAttribute("stroke", "black")
+	clonedSVG.querySelector("rect#template").setAttribute("stroke-width", "1px")
+	clonedSVG.querySelector("rect#template").setAttribute("vector-effect", "non-scaling-stroke")
+	var source = "data:image/svg+xml;base64," + btoa(clonedSVG.innerHTML)
+	var canvas = document.createElement("canvas")
+	canvas.setAttribute("width", QRCodeSaveDimensions)
+	canvas.setAttribute("height", QRCodeSaveDimensions)
+	var context = canvas.getContext("2d")
+	context.imageSmoothingEnabled = false
+	context.fillStyle = "white"
+	context.fillRect(0, 0, QRCodeSaveDimensions, QRCodeSaveDimensions)
+	var imageElement = new Image()
+	var offsetedSize = QRCodeSaveDimensions - 2 * QRCodeSaveOffset
+	imageElement.setAttribute("width", offsetedSize)
+	imageElement.setAttribute("height", offsetedSize)
+	imageElement.src = source
+	imageElement.decode().then(() =>
+	{
+		context.drawImage(imageElement, QRCodeSaveOffset, QRCodeSaveOffset, offsetedSize, offsetedSize)
+		var canvasData = canvas.toDataURL("image/png")
+		var a = document.createElement("a")
+		a.textContent = "save"
+		a.download = "qr-code.png"
+		a.href = canvasData
+		document.body.appendChild(a)
+		a.click()
+		document.body.removeChild(a)
+		canvas.remove()
+	})
+})
 resetButton.addEventListener("click", function()
 {
 	window.open("?", "_self")
@@ -611,12 +652,24 @@ directLink.addEventListener("click", function()
 showQRCode.addEventListener("click", function()
 {
 	var isHidden = overlay.hidden
-	overlay.hidden = !isHidden
-	QRCodeDiv.hidden = !isHidden
-	expandedTextarea.hidden = true
 	
 	if (isHidden)
-		QRCode.makeCode(makeLink())
+	{
+		try
+		{
+			QRCode.makeCode(makeLink())
+			overlay.hidden = !isHidden
+			QRCodeDiv.hidden = !isHidden
+			expandedTextarea.hidden = true
+		}
+		catch (e)
+		{
+			if (e.message === "Too long data")
+				alert("Data is too long to be contained in QR code. Try changing options to be shorter or defaults or use direct link instead of QR code.")
+			else
+				alert("Error occured while generating QR code: " + e.message + ".")
+		}
+	}
 })
 expandButton.addEventListener("click", function()
 {
@@ -707,6 +760,7 @@ outputFilename.addEventListener("change", function()
 loadSchema.addEventListener("click", function()
 {
 	loadJSON(schemaURL.value, schemaXHR)
+	wasSchemaFromURL = true
 })
 setSchema.addEventListener("click", function()
 {
@@ -745,6 +799,7 @@ saveSchema.addEventListener("click", function()
 schemaURL.addEventListener("change", function()
 {
 	data.urls.schema = schemaURL.value
+	wasSchemaFromURL = false
 })
 schemaFilename.addEventListener("change", function()
 {

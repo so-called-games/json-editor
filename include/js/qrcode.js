@@ -196,11 +196,12 @@ var QRCode;
 			}
 
 			var svg = makeSVG("svg" , {'viewBox': '0 0 ' + String(nCount) + " " + String(nCount), 'width': '100%', 'height': '100%', 'fill': _htOption.colorLight});
+			svg.setAttributeNS("http://www.w3.org/2000/xmlns/", "xmlns", "http://www.w3.org/2000/svg");
 			svg.setAttributeNS("http://www.w3.org/2000/xmlns/", "xmlns:xlink", "http://www.w3.org/1999/xlink");
 			_el.appendChild(svg);
 
 			svg.appendChild(makeSVG("rect", {"fill": _htOption.colorLight, "width": "100%", "height": "100%"}));
-			svg.appendChild(makeSVG("rect", {"fill": _htOption.colorDark, "width": "1", "height": "1", "id": "template"}));
+			svg.appendChild(makeSVG("rect", {"id": "template", "width": "1", "height": "1", "fill": _htOption.colorDark, "shape-rendering": "crispEdges"}));
 
 			for (var row = 0; row < nCount; row++) {
 				for (var col = 0; col < nCount; col++) {

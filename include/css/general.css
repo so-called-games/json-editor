@@ -28,15 +28,20 @@ label
 {
 	width: auto;
 	margin: auto;
+}
+
+#qr-code-inner-div
+{
 	padding: 16px;
 	background: white;
-	border-radius: 12px;
+	border-top-left-radius: 12px;
+	border-top-right-radius: 12px;
 }
 
 #qr-code
 {
-	width: 256px;
-	height: 256px;
+	width: 384px;
+	height: 384px;
 }
 
 #main-div
@@ -80,6 +85,15 @@ label
 .input-button
 {
 	width: 88px;
+}
+
+.image-button
+{
+	width: 100%;
+	border-top-left-radius: 0 !important;
+	border-top-right-radius: 0 !important;
+	border-bottom-left-radius: 12px !important;
+	border-bottom-right-radius: 12px !important;
 }
 
 .url
