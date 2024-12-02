@@ -26,16 +26,22 @@ label
 
 #qr-code-div
 {
+	max-width: 100%;
 	margin: auto;
 }
 
 #qr-code-inner-div
 {
-	aspect-ratio: 1/1;
 	padding: 16px;
 	background: white;
 	border-top-left-radius: 12px;
 	border-top-right-radius: 12px;
+}
+
+#qr-code
+{
+	width: 384px;
+	max-width: 100%;
 }
 
 #main-div
@@ -62,6 +68,11 @@ label
 {
 	width: 75%;
 	max-width: 512px;
+}
+
+.qr-code-compatible-div
+{
+	border-radius: 12px !important;
 }
 
 .action-button

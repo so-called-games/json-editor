@@ -365,6 +365,8 @@ var QRCode;
 			this._elImage = document.createElement("img");
 			this._elImage.alt = "QR code with link to this session";
 			this._elImage.style.display = "none";
+			this._elImage.style.width = "100%";
+			this._elImage.style.height = "100%";
 			this._el.appendChild(this._elImage);
 			this._bSupportDataURI = null;
 		};

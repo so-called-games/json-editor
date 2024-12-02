@@ -36,6 +36,7 @@ var isExpanded = false
 var wasSchemaFromURL = false
 var overlay = document.querySelector("#overlay")
 var QRCodeDiv = document.querySelector("#qr-code-div")
+var QRCodeInnerDiv = document.querySelector("#qr-code-inner-div")
 var QRCodeContainer = document.querySelector("#qr-code")
 var QRCode = new QRCode(QRCodeContainer, {
 	useSVG: true,
@@ -50,10 +51,10 @@ var outputDiv = document.querySelector("#output-div")
 var schemaDiv = document.querySelector("#schema-div")
 var optionsDiv = document.querySelector("#options-div")
 var descriptionParagraph = document.querySelector("#description")
-var resetButton = document.querySelector("#reset")
 var directLink = document.querySelector("#direct-link")
 var showQRCode = document.querySelector("#show-qr-code")
 var saveQRCode = document.querySelector("#save-qr-code")
+var resetButton = document.querySelector("#reset")
 var expandButton = document.querySelector("#expand")
 var expandButtonIcon = expandButton.querySelector("i")
 var outputAdditionalButton = document.querySelector("#output-additional-expand")
@@ -641,10 +642,6 @@ saveQRCode.addEventListener("click", function()
 		canvas.remove()
 	})
 })
-resetButton.addEventListener("click", function()
-{
-	window.open("?", "_self")
-})
 directLink.addEventListener("click", function()
 {
 	copyToClipboard(makeLink())
@@ -660,6 +657,12 @@ showQRCode.addEventListener("click", function()
 		{
 			QRCode.makeCode(makeLink())
 			overlay.hidden = !isHidden
+			
+			if (!QRCode._htOption.useSVG)
+			{
+				saveQRCode.hidden = true
+				QRCodeInnerDiv.classList.add("qr-code-compatible-div")
+			}
 			QRCodeDiv.hidden = !isHidden
 			expandedTextarea.hidden = true
 		}
@@ -671,6 +674,10 @@ showQRCode.addEventListener("click", function()
 				alert("Error occured while generating QR code: " + e.message + ".")
 		}
 	}
+})
+resetButton.addEventListener("click", function()
+{
+	window.open("?", "_self")
 })
 expandButton.addEventListener("click", function()
 {
