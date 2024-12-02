@@ -26,22 +26,16 @@ label
 
 #qr-code-div
 {
-	width: auto;
 	margin: auto;
 }
 
 #qr-code-inner-div
 {
+	aspect-ratio: 1/1;
 	padding: 16px;
 	background: white;
 	border-top-left-radius: 12px;
 	border-top-right-radius: 12px;
-}
-
-#qr-code
-{
-	width: 384px;
-	height: 384px;
 }
 
 #main-div
