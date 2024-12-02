@@ -611,7 +611,7 @@ saveQRCode.addEventListener("click", function()
 {
 	var clonedSVG = QRCodeContainer.querySelector("svg").parentNode.cloneNode(true)
 	clonedSVG.querySelector("rect#template").setAttribute("stroke", "black")
-	clonedSVG.querySelector("rect#template").setAttribute("stroke-width", "1px")
+	clonedSVG.querySelector("rect#template").setAttribute("stroke-width", "1.125px")
 	clonedSVG.querySelector("rect#template").setAttribute("vector-effect", "non-scaling-stroke")
 	var source = "data:image/svg+xml;base64," + btoa(clonedSVG.innerHTML)
 	var canvas = document.createElement("canvas")
@@ -625,6 +625,7 @@ saveQRCode.addEventListener("click", function()
 	var offsetedSize = QRCodeSaveDimensions - 2 * QRCodeSaveOffset
 	imageElement.setAttribute("width", offsetedSize)
 	imageElement.setAttribute("height", offsetedSize)
+	imageElement.setAttribute("style", "image-rendering: pixelated;")
 	imageElement.src = source
 	imageElement.decode().then(() =>
 	{
