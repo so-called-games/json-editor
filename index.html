@@ -33,7 +33,9 @@
 					<div id="editor-buttons" class="d-inline">
 						<button class="btn btn-primary action-button" id="direct-link" title="Copy URL which contains JSON schema and options of this session"><i class="fas fa-link"></i> <span>Copy link</span></button>
 						<button class="btn btn-secondary action-button" id="show-qr-code" title="Show QR code containing a direct link to this editor session, including JSON schema and editor options"><i class="fas fa-qrcode"></i> <span>Show code</span></button>
-						<button class="btn btn-secondary action-button" id="reset" title="Reload editor and reset all the forms and options"><i class="fas fa-redo"></i> <span>Reset</span></button>
+						<a id="reset" href="?">
+							<button class="btn btn-secondary action-button" title="Reload editor and reset all the forms and options"><i class="fas fa-redo"></i> <span>Reset</span></button>
+						</a>
 						<button class="btn btn-secondary action-button" id="expand" title="Expand editor and hide every other tab (or vice versa)"><i id="expand-icon" class="fas fa-expand"></i></button>
 					</div>
 					<div id="json-editor-form" class="mt-3" spellcheck="false"></div>

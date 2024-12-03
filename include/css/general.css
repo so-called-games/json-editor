@@ -6,6 +6,11 @@
 	}
 }
 
+a:has(button)
+{
+	text-decoration: none;
+}
+
 label
 {
 	margin-bottom: 6px !important;

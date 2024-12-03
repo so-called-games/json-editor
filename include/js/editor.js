@@ -782,10 +782,6 @@ showQRCode.addEventListener("click", function()
 		}
 	}
 })
-resetButton.addEventListener("click", function()
-{
-	window.location.replace(window.location.pathname)
-})
 expandButton.addEventListener("click", function()
 {
 	var isHidden
