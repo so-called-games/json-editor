@@ -3,25 +3,41 @@ var defaultSchema = {
 }
 var data = {}
 var defaultOptions = Object.assign({}, JSONEditor.defaults.options, {
-	disable_array_delete_all_rows: true,
-	disable_array_delete_last_row: true,
-	disable_edit_json: true,
+	use_default_values: true,
+	use_name_attributes: true,
 	prompt_before_delete: false,
 	case_sensitive_property_search: false,
+	required_by_default: false,
+	display_required_only: false,
+	show_opt_in: false,
+	no_additional_properties: false,
+	ajax: false,
+	disable_edit_json: true,
+	disable_collapse: false,
+	disable_properties: false,
+	disable_array_add: false,
+	disable_array_reorder: false,
+	disable_array_delete: false,
+	enable_array_copy: false,
+	disable_array_delete_all_rows: true,
+	disable_array_delete_last_row: true,
+	array_controls_top: false,
 	schema: defaultSchema,
 	theme: "bootstrap5_dark",
 	iconlib: "fontawesome5",
 	object_layout: "normal",
 	show_errors: "interaction"
 })
+const customThemes = [
+	"_dark",
+	"_black"
+]
 const defaultExtras = {
 	output: "",
 	schema: ""
 }
-var customThemes = [
-	"_dark",
-	"_black"
-]
+const parsingMap = new Map()
+setParsingMap()
 var copyScrollOptions = {
 	behavior: "instant",
 	block: "start",
@@ -42,7 +58,7 @@ var QRCode = new QRCode(QRCodeContainer, {
 	useSVG: true,
 	width: QRCodeDimensions,
 	height: QRCodeDimensions,
-	correctLevel: QRCode.CorrectLevel.M
+	correctLevel: QRCode.CorrectLevel.L
 })
 var expandedTextarea = document.querySelector("#expanded-textarea")
 var mainDiv = document.querySelector("#main-div")
@@ -119,6 +135,35 @@ function isEmpty(object)
 	return true
 }
 
+function getMapKeyByValue(map, searchValue)
+{
+	for (let [key, value] of map.entries())
+	{
+		if (value === searchValue)
+			return key
+	}
+}
+
+function replacePropertiesWithMap(object, map, usingValues = false)
+{
+	for (const [old_key, value] of Object.entries(object))
+	{
+		if (typeof value === "object" && old_key != "schema" && old_key != "s")
+			replacePropertiesWithMap(value, map, usingValues)
+		var matchingValue = usingValues ? getMapKeyByValue(map, value) : map.get(value)
+		
+		if (matchingValue != undefined)
+			object[old_key] = matchingValue
+		var new_key = usingValues ? getMapKeyByValue(map, old_key) : map.get(old_key)
+		
+		if (old_key !== new_key)
+		{
+			Object.defineProperty(object, new_key, Object.getOwnPropertyDescriptor(object, old_key))
+			delete object[old_key]
+		}
+	}
+}
+
 String.prototype.replaceAll = function(search, replacement)
 {
 	var target = this
@@ -137,6 +182,68 @@ String.prototype.replaceAllFromList = function(searchList, replacement)
 function replaceSpacings(dataToReplace)
 {
 	return dataToReplace.replaceAll("  ", "	")
+}
+
+function setParsingMap()
+{
+	parsingMap.set("o", "output")
+	parsingMap.set("s", "schema")
+	parsingMap.set("u", "urls")
+	parsingMap.set("f", "filenames")
+	parsingMap.set("op", "options")
+	parsingMap.set("t", "theme")
+	parsingMap.set("h", "html")
+	parsingMap.set("b3", "bootstrap3")
+	parsingMap.set("b5", "bootstrap5")
+	parsingMap.set("b5d", "bootstrap5_dark")
+	parsingMap.set("b5b", "bootstrap5_black")
+	parsingMap.set("i", "iconlib")
+	parsingMap.set("jq", "jqueryui")
+	parsingMap.set("oi", "openiconic")
+	parsingMap.set("b", "bootstrap")
+	parsingMap.set("sc", "spectre")
+	parsingMap.set("f3", "fontawesome3")
+	parsingMap.set("f4", "fontawesome4")
+	parsingMap.set("f5", "fontawesome5")
+	parsingMap.set("l", "object_layout")
+	parsingMap.set("n", "normal")
+	parsingMap.set("g", "grid")
+	parsingMap.set("e", "show_errors")
+	parsingMap.set("ia", "interaction")
+	parsingMap.set("ch", "change")
+	parsingMap.set("al", "always")
+	parsingMap.set("ne", "never")
+	parsingMap.set("sl", "selectedLibs")
+	parsingMap.set("ul", "unselectedLibs")
+	parsingMap.set("ae", "ace_editor")
+	parsingMap.set("ci", "choices")
+	parsingMap.set("sce", "sceditor")
+	parsingMap.set("smd", "simplemde")
+	parsingMap.set("s2", "select2")
+	parsingMap.set("st", "selectize")
+	parsingMap.set("fp", "flatpickr")
+	parsingMap.set("sp", "signature_pad")
+	parsingMap.set("mjs", "mathjs")
+	parsingMap.set("cjs", "cleavejs")
+	parsingMap.set("ud", "use_default_values")
+	parsingMap.set("un", "use_name_attributes")
+	parsingMap.set("pd", "prompt_before_delete")
+	parsingMap.set("cs", "case_sensitive_property_search")
+	parsingMap.set("rd", "required_by_default")
+	parsingMap.set("ro", "display_required_only")
+	parsingMap.set("so", "show_opt_in")
+	parsingMap.set("na", "no_additional_properties")
+	parsingMap.set("aj", "ajax")
+	parsingMap.set("de", "disable_edit_json")
+	parsingMap.set("dc", "disable_collapse")
+	parsingMap.set("dp", "disable_properties")
+	parsingMap.set("daa", "disable_array_add")
+	parsingMap.set("dar", "disable_array_reorder")
+	parsingMap.set("dad", "disable_array_delete")
+	parsingMap.set("dda", "disable_array_delete_all_rows")
+	parsingMap.set("ddr", "disable_array_delete_last_row")
+	parsingMap.set("ac", "enable_array_copy")
+	parsingMap.set("at", "array_controls_top")
 }
 
 function makeLink()
@@ -165,18 +272,17 @@ function makeLink()
 		delete modifiedData.options.schema
 	
 	for (const [key, value] of Object.entries(modifiedData.options))
-	{
-		if (JSON.stringify(value) == JSON.stringify(defaultOptions[key]) || defaultOptions[key] == undefined)
+		if (JSON.stringify(value) == JSON.stringify(defaultOptions[key]))
 			delete modifiedData.options[key]
-	}
 	
 	if (isEmpty(modifiedData.options))
 		delete modifiedData.options
+	replacePropertiesWithMap(modifiedData, parsingMap, true)
 	var url = window.location.href.replace(/\?.*/, "")
 	
 	if (!isEmpty(modifiedData))
 	{
-		url += "?data="
+		url += "?d="
 		url += LZString.compressToEncodedURIComponent(JSON.stringify(modifiedData))
 	}
 	return url
@@ -314,11 +420,12 @@ var parseURL = function()
 			var param = splittedParam[0]
 			var value = splittedParam[1]
 
-			if (param === "data")
+			if (param === "d")
 			{
 				try
 				{
 					var parsedData = JSON.parse(LZString.decompressFromEncodedURIComponent(value))
+					replacePropertiesWithMap(parsedData, parsingMap, false)
 					
 					if ("filenames" in parsedData)
 						data.filenames = Object.assign({}, parsedData.filenames)
@@ -838,9 +945,7 @@ booleanOptionsSelect.addEventListener("change", function()
 	var booleanOptions = this.children
 	
 	for (var i = 0; i < booleanOptions.length; i++)
-	{
 		data.options[booleanOptions[i].value] = booleanOptions[i].selected
-	}
 	initJsonEditor()
 	refreshUI()
 })
@@ -853,13 +958,9 @@ libSelect.addEventListener("change", function()
 	for (var i = 0; i < libs.length; i++)
 	{
 		if (libs[i].selected)
-		{
-		data.selectedLibs.push(libs[i].value)
-		}
+			data.selectedLibs.push(libs[i].value)
 		else
-		{
-		data.unselectedLibs.push(libs[i].value)
-		}
+			data.unselectedLibs.push(libs[i].value)
 	}
 	refreshUI()
 })

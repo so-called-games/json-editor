@@ -102,10 +102,15 @@ input[type="number"]
 	padding: 10px 16px !important;
 }
 
+.image-button
+{
+	background: black !important;
+}
+
 .btn-primary, .btn-secondary
 {
 	font-weight: bold;
-	background: transparent !important;
+	background: transparent;
 	--bs-btn-border-color: none !important;
 }
 
