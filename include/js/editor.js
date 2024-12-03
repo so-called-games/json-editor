@@ -784,7 +784,7 @@ showQRCode.addEventListener("click", function()
 })
 resetButton.addEventListener("click", function()
 {
-	window.open("?", "_self")
+	window.location.replace(window.location.pathname)
 })
 expandButton.addEventListener("click", function()
 {
