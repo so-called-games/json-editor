@@ -6,6 +6,24 @@
 	}
 }
 
+@keyframes fade-in
+{
+	0%
+	{
+		opacity: 0;
+	}
+	
+	100%
+	{
+		opacity: 1;
+	}
+}
+
+[hidden]
+{
+	display: none !important;
+}
+
 a:has(button)
 {
 	text-decoration: none;
@@ -14,6 +32,19 @@ a:has(button)
 label
 {
 	margin-bottom: 6px !important;
+}
+
+#message
+{
+	position: fixed;
+	left: 50%;
+	bottom: 0%;
+	transform: translateX(-50%);
+	align-self: flex-end;
+	z-index: 11;
+	margin-bottom: 32px;
+	padding: 6px 12px;
+	border-radius: 6px;
 }
 
 #overlay
@@ -73,6 +104,23 @@ label
 {
 	width: 75%;
 	max-width: 512px;
+}
+
+.fade-in, .fade-out
+{
+	animation-name: fade-in;
+	animation-duration: 0.5s;
+	animation-timing-function: ease;
+}
+
+.fade-in
+{
+	animation-direction: normal;
+}
+
+.fade-out
+{
+	animation-direction: reverse;
 }
 
 .qr-code-compatible-div

@@ -36,6 +36,12 @@ const defaultExtras = {
 	output: "",
 	schema: ""
 }
+var messageTimer
+const messageShowLength = 2
+const messageAnimationLength = 0.5
+const messageLinkCopied = "Direct link to this session was copied"
+const messageOutputCopied = "JSON output was copied"
+const messageSchemaCopied = "JSON schema was copied"
 const parsingMap = new Map()
 setParsingMap()
 var copyScrollOptions = {
@@ -50,6 +56,7 @@ const QRCodeSaveOffset = 42
 var jsonEditor = null
 var isExpanded = false
 var wasSchemaFromURL = false
+var messageDiv = document.querySelector("#message")
 var overlay = document.querySelector("#overlay")
 var QRCodeDiv = document.querySelector("#qr-code-div")
 var QRCodeInnerDiv = document.querySelector("#qr-code-inner-div")
@@ -73,10 +80,10 @@ var saveQRCode = document.querySelector("#save-qr-code")
 var resetButton = document.querySelector("#reset")
 var expandButton = document.querySelector("#expand")
 var expandButtonIcon = expandButton.querySelector("i")
-var outputAdditionalButton = document.querySelector("#output-additional-expand")
+var outputAdditionalButton = document.querySelector("#toggle-output-additional")
 var outputAdditionalButtonIcon = outputAdditionalButton.querySelector("i")
 var outputAdditionalDiv = document.querySelector("#output-additional-div")
-var schemaAdditionalButton = document.querySelector("#schema-additional-expand")
+var schemaAdditionalButton = document.querySelector("#toggle-schema-additional")
 var schemaAdditionalButtonIcon = schemaAdditionalButton.querySelector("i")
 var schemaAdditionalDiv = document.querySelector("#schema-additional-div")
 var booleanOptionsSelect = document.querySelector("#boolean-options-select")
@@ -87,6 +94,9 @@ var libSelect = document.querySelector("#lib-select")
 var jsonEditorForm = document.querySelector("#json-editor-form")
 var objectLayoutSelect = document.querySelector("#object-layout-select")
 var loadOutput = document.querySelector("#load-output")
+var toggleOutput = document.querySelector("#toggle-output")
+var toggleOutputIcon = toggleOutput.querySelector("i")
+var outputEditorDiv = document.querySelector("#output-editor-div")
 var setOutput = document.querySelector("#set-output")
 var clearOutput = document.querySelector("#clear-output")
 var copyOutput = document.querySelector("#copy-output")
@@ -95,6 +105,9 @@ var saveOutput = document.querySelector("#save-output")
 var outputURL = document.querySelector("#output-url")
 var outputFilename = document.querySelector("#output-filename")
 var loadSchema = document.querySelector("#load-schema")
+var toggleSchema = document.querySelector("#toggle-schema")
+var toggleSchemaIcon = toggleSchema.querySelector("i")
+var schemaEditorDiv = document.querySelector("#schema-editor-div")
 var setSchema = document.querySelector("#set-schema")
 var clearSchema = document.querySelector("#clear-schema")
 var copySchema = document.querySelector("#copy-schema")
@@ -186,13 +199,16 @@ function replaceSpacings(dataToReplace)
 
 function setParsingMap()
 {
+	parsingMap.set(0, false)
+	parsingMap.set(1, true)
 	parsingMap.set("o", "output")
 	parsingMap.set("s", "schema")
-	parsingMap.set("u", "urls")
+	parsingMap.set("h", "hide")
 	parsingMap.set("f", "filenames")
+	parsingMap.set("u", "urls")
 	parsingMap.set("op", "options")
 	parsingMap.set("t", "theme")
-	parsingMap.set("h", "html")
+	parsingMap.set("no", "html")
 	parsingMap.set("b3", "bootstrap3")
 	parsingMap.set("b5", "bootstrap5")
 	parsingMap.set("b5d", "bootstrap5_dark")
@@ -250,6 +266,15 @@ function makeLink()
 {
 	var modifiedData = JSON.parse(JSON.stringify(data))
 	
+	if (modifiedData.hide.output == false)
+		delete modifiedData.hide.output
+	
+	if (modifiedData.hide.schema == false)
+		delete modifiedData.hide.schema
+	
+	if (isEmpty(modifiedData.hide))
+		delete modifiedData.hide
+	
 	if (modifiedData.filenames.output == "")
 		delete modifiedData.filenames.output
 	
@@ -286,6 +311,33 @@ function makeLink()
 		url += LZString.compressToEncodedURIComponent(JSON.stringify(modifiedData))
 	}
 	return url
+}
+
+function showMessage(message)
+{
+	if (messageDiv.innerHTML !== message)
+	{
+		messageDiv.classList.remove("fade-in")
+		messageDiv.classList.remove("fade-out")
+		clearTimeout(messageTimer)
+		messageDiv.innerHTML = message
+		messageDiv.classList.add("fade-in")
+		messageDiv.hidden = false
+		messageTimer = setTimeout(function()
+		{
+			messageDiv.classList.remove("fade-in")
+			messageTimer = setTimeout(function()
+			{
+				messageDiv.classList.add("fade-out")
+				messageTimer = setTimeout(function()
+				{
+					messageDiv.hidden = true
+					messageDiv.innerHTML = ""
+					messageDiv.classList.remove("fade-out")
+				}, messageAnimationLength * 1000 - 10)
+			}, messageShowLength * 1000)
+		}, messageAnimationLength * 1000)
+	}
 }
 
 function copyToClipboard(element)
@@ -378,7 +430,7 @@ function saveJSON(data, filename, type)
 		{
 			document.body.removeChild(a)
 			window.URL.revokeObjectURL(url)
-		}, 0);
+		}, 0)
 	}
 }
 
@@ -427,6 +479,19 @@ var parseURL = function()
 					var parsedData = JSON.parse(LZString.decompressFromEncodedURIComponent(value))
 					replacePropertiesWithMap(parsedData, parsingMap, false)
 					
+					if ("hide" in parsedData)
+					{
+						data.hide = Object.assign({}, parsedData.hide)
+						
+						if (!("output" in data.hide))
+							data.hide.output = false
+						
+						if (!("schema" in data.hide))
+							data.hide.schema = false
+					}
+					else
+						data.hide = { "output": false, "schema": false }
+					
 					if ("filenames" in parsedData)
 						data.filenames = Object.assign({}, parsedData.filenames)
 					
@@ -443,6 +508,25 @@ var parseURL = function()
 			}
 		})
 	}
+	
+	if ("hide" in data)
+	{
+		if ("output" in data.hide)
+			if (data.hide.output)
+				{
+					data.hide.output = false
+					toggleOutput.click()
+				}
+		
+		if ("schema" in data.hide)
+			if (data.hide.schema)
+				{
+					data.hide.schema = false
+					toggleSchema.click()
+				}
+	}
+	else
+		data.hide = { "output": false, "schema": false }
 	
 	if ("filenames" in data)
 	{
@@ -753,6 +837,7 @@ directLink.addEventListener("click", function()
 {
 	copyToClipboard(makeLink())
 	document.body.scrollIntoView(copyScrollOptions)
+	showMessage(messageLinkCopied)
 })
 showQRCode.addEventListener("click", function()
 {
@@ -837,6 +922,33 @@ loadOutput.addEventListener("click", function()
 {
 	loadJSON(outputURL.value, outputXHR)
 })
+toggleOutput.addEventListener("click", function()
+{
+	if ("hide" in data)
+	{
+		if ("output" in data.hide)
+		{
+			data.hide.output = !data.hide.output
+		}
+		else
+			data.hide.output = true
+	}
+	else
+		data.hide = { "output": true }
+	var isHidden
+	
+	if (data.hide.output)
+	{
+		isHidden = true
+		toggleOutputIcon.className = "fas fa-caret-right"
+	}
+	else
+	{
+		isHidden = false
+		toggleOutputIcon.className = "fas fa-caret-down"
+	}
+	outputEditorDiv.hidden = isHidden
+})
 setOutput.addEventListener("click", function()
 {
 	jsonEditor.setValue(JSON.parse(outputTextarea.getValue()))
@@ -851,6 +963,7 @@ copyOutput.addEventListener("click", function()
 {
 	copyToClipboard(outputTextarea.getValue())
 	document.body.scrollIntoView(copyScrollOptions)
+	showMessage(messageOutputCopied)
 })
 openOutput.addEventListener("click", function()
 {
@@ -872,6 +985,33 @@ loadSchema.addEventListener("click", function()
 {
 	loadJSON(schemaURL.value, schemaXHR)
 	wasSchemaFromURL = true
+})
+toggleSchema.addEventListener("click", function()
+{
+	if ("hide" in data)
+	{
+		if ("schema" in data.hide)
+		{
+			data.hide.schema = !data.hide.schema
+		}
+		else
+			data.hide.schema = true
+	}
+	else
+		data.hide = { "schema": true }
+	var isHidden
+	
+	if (data.hide.schema)
+	{
+		isHidden = true
+		toggleSchemaIcon.className = "fas fa-caret-right"
+	}
+	else
+	{
+		isHidden = false
+		toggleSchemaIcon.className = "fas fa-caret-down"
+	}
+	schemaEditorDiv.hidden = isHidden
 })
 setSchema.addEventListener("click", function()
 {
@@ -898,6 +1038,7 @@ copySchema.addEventListener("click", function()
 {
 	copyToClipboard(schemaTextarea.getValue())
 	schemaDiv.scrollIntoView(copyScrollOptions)
+	showMessage(messageSchemaCopied)
 })
 openSchema.addEventListener("click", function()
 {

@@ -48,17 +48,17 @@ button
 	padding: 6px 12px !important;
 	background: black !important;
 	border: none !important;
-	box-shadow: inset 0px 0px 0px 2px white !important;
+	box-shadow: inset 0 0 0 2px white !important;
 }
 
 button:hover
 {
-	box-shadow: inset 0px 0px 0px 3px white !important;
+	box-shadow: inset 0 0 0 3px white !important;
 }
 
 button:active
 {
-	box-shadow: inset 0px 0px 0px 4px white !important;
+	box-shadow: inset 0 0 0 4px white !important;
 }
 
 input::placeholder
@@ -85,6 +85,13 @@ input[type="checkbox"]:checked
 input[type="number"]
 {
 	padding: 4px !important;
+}
+
+#message
+{
+	color: white;
+	background: black;
+	border: white solid 2px;
 }
 
 #ace_settingsmenu
@@ -116,32 +123,32 @@ input[type="number"]
 
 .btn-primary
 {
-	box-shadow: inset 0px 0px 0px 2px white !important;
+	box-shadow: inset 0 0 0 2px white !important;
 }
 
 .btn-secondary
 {
-	box-shadow: inset 0px 0px 0px 2px white !important;
+	box-shadow: inset 0 0 0 2px white !important;
 }
 
 .btn-primary:hover
 {
-	box-shadow: inset 0px 0px 0px 4px white !important;
+	box-shadow: inset 0 0 0 4px white !important;
 }
 
 .btn-primary:active
 {
-	box-shadow: inset 0px 0px 0px 6px white !important;
+	box-shadow: inset 0 0 0 6px white !important;
 }
 
 .btn-secondary:hover
 {
-	box-shadow: inset 0px 0px 0px 3px white !important;
+	box-shadow: inset 0 0 0 3px white !important;
 }
 
 .btn-secondary:active
 {
-	box-shadow: inset 0px 0px 0px 4px white !important;
+	box-shadow: inset 0 0 0 4px white !important;
 }
 
 .form-control
@@ -218,7 +225,7 @@ input[type="number"]
 .ace_optionsMenuEntry button[ace_selected_button="true"]
 {
 	border: none !important;
-	box-shadow: inset 0px 0px 0px 4px white !important;
+	box-shadow: inset 0 0 0 4px white !important;
 }
 
 .ace_prompt_container
@@ -266,19 +273,19 @@ input[type="number"]
 {
 	color: white !important;
 	background: black !important;
-	box-shadow: inset 0px 0px 0px 1px white !important;
+	box-shadow: inset 0 0 0 1px white !important;
 }
 
 .ace_button:hover, .ace_mobile-button:hover, .ace_searchbtn:hover
 {
 	background: black !important;
-	box-shadow: inset 0px 0px 0px 2px white !important;
+	box-shadow: inset 0 0 0 2px white !important;
 }
 
 .ace_button:active, .ace_mobile-button:active, .ace_searchbtn:active
 {
 	background: black !important;
-	box-shadow: inset 0px 0px 0px 3px white !important;
+	box-shadow: inset 0 0 0 3px white !important;
 }
 
 .ace_searchbtn
@@ -286,7 +293,7 @@ input[type="number"]
 	color: #848484 !important;
 	background: black !important;
 	border: none !important;
-	box-shadow: inset 0px 0px 0px 1px white !important;
+	box-shadow: inset 0 0 0 1px white !important;
 }
 
 .ace_search_field
@@ -294,7 +301,7 @@ input[type="number"]
 	color: white !important;
 	caret-color: white !important;
 	border: none !important;
-	box-shadow: inset 0px 0px 0px 1px white !important;
+	box-shadow: inset 0 0 0 1px white !important;
 }
 
 .ace_search_field::placeholder
