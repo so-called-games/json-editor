@@ -67,7 +67,9 @@ var QRCode = new QRCode(QRCodeContainer, {
 	height: QRCodeDimensions,
 	correctLevel: QRCode.CorrectLevel.L
 })
-var expandedTextarea = document.querySelector("#expanded-textarea")
+var expandedTextareaDiv = document.querySelector("#expanded-textarea")
+var expandedTextarea = expandedTextareaDiv.querySelector("textarea")
+var currentTextarea
 var mainDiv = document.querySelector("#main-div")
 var editorDiv = document.querySelector("#editor-div")
 var outputDiv = document.querySelector("#output-div")
@@ -785,17 +787,53 @@ var initJsonEditor = function()
 			validateTextarea.value = replaceSpacings(JSON.stringify(validationErrors, null, 2))
 		else
 			validateTextarea.value = "valid"
+		textareaList = Array.from(jsonEditorForm.querySelectorAll("textarea"))
+		textareaList.forEach((textareaElement) =>
+		{
+			parentNode = textareaElement.parentNode
+			
+			if (!parentNode.classList.contains("input-group"))
+			{
+				selfHTML = textareaElement.outerHTML
+				selfValue = textareaElement.value
+				textareaElement.outerHTML = "<div class=\"input-group\">" +
+					selfHTML +
+					"<button title=\"Expand to fullscreen\" class=\"btn btn-sm btn-secondary expand-button\" type=\"button\"><i class=\"fas fa-expand\"></i></button>" +
+				"</div>"
+				var movedTextarea = parentNode.querySelector("textarea")
+				movedTextarea.value = selfValue
+				parentNode.querySelector(".expand-button").onclick = function()
+				{
+					expandTextarea(movedTextarea)
+				}
+			}
+		})
 	})
+}
+
+function expandTextarea(textareaElement)
+{
+	currentTextarea = textareaElement
+	expandedTextarea.value = textareaElement.value
+	QRCodeDiv.hidden = true
+	overlay.hidden = false
+	expandedTextareaDiv.hidden = false
 }
 overlay.addEventListener("click", function()
 {
+	if (currentTextarea != undefined)
+	{
+		currentTextarea.value = expandedTextarea.value
+		currentTextarea = undefined
+		expandedTextarea.value = ""
+	}
 	overlay.hidden = true
 })
 QRCodeDiv.addEventListener("click", function(e)
 {
 	e.stopPropagation();
 })
-expandedTextarea.addEventListener("click", function(e)
+expandedTextareaDiv.addEventListener("click", function(e)
 {
 	e.stopPropagation();
 })
@@ -856,7 +894,7 @@ showQRCode.addEventListener("click", function()
 				QRCodeInnerDiv.classList.add("qr-code-compatible-div")
 			}
 			QRCodeDiv.hidden = !isHidden
-			expandedTextarea.hidden = true
+			expandedTextareaDiv.hidden = true
 		}
 		catch (e)
 		{

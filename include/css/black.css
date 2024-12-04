@@ -94,6 +94,11 @@ input[type="number"]
 	border: white solid 2px;
 }
 
+#expanded-textarea textarea
+{
+	background: black !important;
+}
+
 #ace_settingsmenu
 {
 	color: white !important;
