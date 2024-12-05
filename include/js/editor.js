@@ -35,7 +35,7 @@ const customThemes = [
 const defaultHides = {
 	output: false,
 	schema: false,
-	errors: false
+	errors: true
 }
 const defaultExtras = {
 	output: "",
@@ -280,13 +280,13 @@ function makeLink()
 {
 	var modifiedData = JSON.parse(JSON.stringify(data))
 	
-	if (modifiedData.hide.output == false)
+	if (modifiedData.hide.output == defaultHides.output)
 		delete modifiedData.hide.output
 	
-	if (modifiedData.hide.schema == false)
+	if (modifiedData.hide.schema == defaultHides.schema)
 		delete modifiedData.hide.schema
 	
-	if (modifiedData.hide.errors == false)
+	if (modifiedData.hide.errors == defaultHides.errors)
 		delete modifiedData.hide.errors
 	
 	if (isEmpty(modifiedData.hide))
@@ -501,13 +501,13 @@ var parseURL = function()
 						data.hide = Object.assign({}, parsedData.hide)
 						
 						if (!("output" in data.hide))
-							data.hide.output = false
+							data.hide.output = defaultHides.output
 						
 						if (!("schema" in data.hide))
-							data.hide.schema = false
+							data.hide.schema = defaultHides.schema
 						
 						if (!("errors" in data.hide))
-							data.hide.errors = false
+							data.hide.errors = defaultHides.errors
 					}
 					else
 						data.hide = defaultHides
@@ -546,11 +546,18 @@ var parseURL = function()
 				}
 		
 		if ("errors" in data.hide)
+		{
 			if (data.hide.errors)
-				{
-					data.hide.errors = false
-					toggleErrors.click()
-				}
+			{
+				data.hide.errors = false
+				toggleErrors.click()
+			}
+		}
+		else
+		{
+			data.hide.errors = true
+			toggleErrors.click()
+		}
 	}
 	else
 		data.hide = defaultHides
@@ -861,6 +868,7 @@ function expandTextarea(textareaElement)
 	QRCodeDiv.hidden = true
 	overlay.hidden = false
 	expandedTextareaDiv.hidden = false
+	expandedTextarea.focus()
 }
 overlay.addEventListener("click", function()
 {
@@ -1015,10 +1023,10 @@ toggleOutput.addEventListener("click", function()
 			data.hide.output = !data.hide.output
 		}
 		else
-			data.hide.output = true
+			data.hide.output = !defaultHides.output
 	}
 	else
-		data.hide = { "output": true }
+		data.hide = { "output": !defaultHides.output }
 	var isHidden
 	
 	if (data.hide.output)
@@ -1079,10 +1087,10 @@ toggleSchema.addEventListener("click", function()
 			data.hide.schema = !data.hide.schema
 		}
 		else
-			data.hide.schema = true
+			data.hide.schema = !defaultHides.schema
 	}
 	else
-		data.hide = { "schema": true }
+		data.hide = { "schema": !defaultHides.schema }
 	var isHidden
 	
 	if (data.hide.schema)
@@ -1150,10 +1158,10 @@ toggleErrors.addEventListener("click", function()
 			data.hide.errors = !data.hide.errors
 		}
 		else
-			data.hide.errors = true
+			data.hide.errors = !defaultHides.errors
 	}
 	else
-		data.hide = { "errors": true }
+		data.hide = { "errors": !defaultHides.errors }
 	var isHidden
 	
 	if (data.hide.errors)
@@ -1174,6 +1182,9 @@ toggleErrors.addEventListener("click", function()
 	ajvErrorsTextarea.resize()
 	jeErrorsTextarea.resize()
 	errorsInnerDiv.hidden = isHidden
+	
+	if (!isHidden)
+		errorsDiv.scrollIntoView({ behavior: "smooth", block: "start", inline: "nearest" })
 })
 themeSelect.addEventListener("change", function()
 {
