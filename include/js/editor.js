@@ -510,7 +510,7 @@ var parseURL = function()
 							data.hide.errors = defaultHides.errors
 					}
 					else
-						data.hide = defaultHides
+						data.hide = Object.assign({}, defaultHides)
 					
 					if ("filenames" in parsedData)
 						data.filenames = Object.assign({}, parsedData.filenames)
@@ -560,7 +560,7 @@ var parseURL = function()
 		}
 	}
 	else
-		data.hide = defaultHides
+		data.hide = Object.assign({}, defaultHides)
 	
 	if ("filenames" in data)
 	{
