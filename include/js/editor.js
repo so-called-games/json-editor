@@ -555,12 +555,16 @@ var parseURL = function()
 		}
 		else
 		{
-			data.hide.errors = true
+			data.hide.errors = false
 			toggleErrors.click()
 		}
 	}
 	else
+	{
 		data.hide = Object.assign({}, defaultHides)
+		data.hide.errors = false
+		toggleErrors.click()
+	}
 	
 	if ("filenames" in data)
 	{
