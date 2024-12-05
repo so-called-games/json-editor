@@ -156,5 +156,5 @@ div:last-child > .btn-group:has(.json-editor-btntype-delete, .json-editor-btntyp
 .je-object__controls
 {
 	margin-left: 1px !important;
-	margin-bottom: 16px !important;
+	margin-bottom: 12px !important;
 }

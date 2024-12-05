@@ -123,6 +123,11 @@ label
 	margin-bottom: 0 !important;
 }
 
+#json-editor-form span
+{
+	overflow-wrap: anywhere;
+}
+
 #json-editor-form textarea, #validate-textarea
 {
 	field-sizing: content;
