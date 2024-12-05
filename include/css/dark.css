@@ -85,9 +85,15 @@ input[type="number"]
 	box-shadow: 0 0 4px 2px rgba(0, 0, 0, 0.15);
 }
 
-#expanded-textarea textarea
+#expanded-textarea-div
 {
 	box-shadow: 0 0 4px 2px rgba(0, 0, 0, 0.25);
+}
+
+#expanded-textarea-path
+{
+	color: #888888;
+	background: #1a1a1a;
 }
 
 #ace_settingsmenu

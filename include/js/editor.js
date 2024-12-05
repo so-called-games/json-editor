@@ -67,8 +67,9 @@ var QRCode = new QRCode(QRCodeContainer, {
 	height: QRCodeDimensions,
 	correctLevel: QRCode.CorrectLevel.L
 })
-var expandedTextareaDiv = document.querySelector("#expanded-textarea")
-var expandedTextarea = expandedTextareaDiv.querySelector("textarea")
+var expandedTextareaDiv = document.querySelector("#expanded-textarea-div")
+var expandedTextareaPath = document.querySelector("#expanded-textarea-path")
+var expandedTextarea = document.querySelector("#expanded-textarea")
 var currentTextarea
 var mainDiv = document.querySelector("#main-div")
 var editorDiv = document.querySelector("#editor-div")
@@ -830,6 +831,11 @@ function expandTextarea(textareaElement)
 {
 	currentTextarea = textareaElement
 	expandedTextarea.value = textareaElement.value
+	var sourcePath = textareaElement.parentNode.parentNode.querySelector("label.form-label").getAttribute("for")
+	sourcePath = sourcePath.replace(new RegExp("^root\\["), "")
+	sourcePath = sourcePath.replace(new RegExp("\\]$"), "")
+	sourcePath = sourcePath.replaceAll("\\]\\[", " / ")
+	expandedTextareaPath.innerHTML = sourcePath
 	QRCodeDiv.hidden = true
 	overlay.hidden = false
 	expandedTextareaDiv.hidden = false
@@ -843,6 +849,7 @@ overlay.addEventListener("click", function()
 		currentTextarea.dispatchEvent(event)
 		currentTextarea = undefined
 		expandedTextarea.value = ""
+		expandedTextareaPath.innerHTML = ""
 	}
 	overlay.hidden = true
 })

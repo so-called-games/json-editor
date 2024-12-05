@@ -94,7 +94,12 @@ input[type="number"]
 	border: white solid 2px;
 }
 
-#expanded-textarea textarea
+#expanded-textarea-path
+{
+	background: black;
+}
+
+#expanded-textarea
 {
 	background: black !important;
 }

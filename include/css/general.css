@@ -80,19 +80,34 @@ label
 	max-width: 100%;
 }
 
+#expanded-textarea-div
+{
+	width: 100%;
+	margin: 64px;
+	border-radius: 6px;
+}
+
+#expanded-textarea-path
+{
+	display: block;
+	width: 100%;
+	margin: 0;
+	padding: 4px 12px;
+	padding-bottom: 8px;
+	border-top-left-radius: 6px;
+	border-top-right-radius: 6px;
+}
+
 #expanded-textarea
 {
 	width: 100%;
-	height: 50%;
-	margin: 32px;
-}
-
-#expanded-textarea textarea
-{
-	width: 100%;
-	height: 100%;
+	height: 50vh;
 	resize: none;
-	border-radius: 6px;
+	padding: 12px 16px;
+	border-top-left-radius: 0 !important;
+	border-top-right-radius: 0 !important;
+	border-bottom-left-radius: 6px;
+	border-bottom-right-radius: 6px;
 }
 
 #main-div
