@@ -787,25 +787,40 @@ var initJsonEditor = function()
 			validateTextarea.value = replaceSpacings(JSON.stringify(validationErrors, null, 2))
 		else
 			validateTextarea.value = "valid"
-		textareaList = Array.from(jsonEditorForm.querySelectorAll("textarea"))
+		textareaList = Array.from(jsonEditorForm.querySelectorAll("textarea:not(.textarea-clone)"))
 		textareaList.forEach((textareaElement) =>
 		{
 			parentNode = textareaElement.parentNode
 			
 			if (!parentNode.classList.contains("input-group"))
 			{
-				selfHTML = textareaElement.outerHTML
-				selfValue = textareaElement.value
-				textareaElement.outerHTML = "<div class=\"input-group\">" +
-					selfHTML +
-					"<button title=\"Expand to fullscreen\" class=\"btn btn-sm btn-secondary expand-button\" type=\"button\"><i class=\"fas fa-expand\"></i></button>" +
-				"</div>"
-				var movedTextarea = parentNode.querySelector("textarea")
-				movedTextarea.value = selfValue
-				parentNode.querySelector(".expand-button").onclick = function()
+				textareaElement.classList.add("textarea-clone")
+				textareaElement.hidden = true
+				var inputGroup = document.createElement("div")
+				inputGroup.classList.add("input-group")
+				var movedTextarea = document.createElement("textarea")
+				movedTextarea.classList.add("form-control")
+				movedTextarea.value = textareaElement.value
+				movedTextarea.onchange = function()
+				{
+					textareaElement.value = movedTextarea.value
+					var event = new Event("change")
+					textareaElement.dispatchEvent(event)
+				}
+				inputGroup.appendChild(movedTextarea)
+				var expandTextareaButton = document.createElement("button")
+				expandTextareaButton.title = "Expand to fullscreen"
+				expandTextareaButton.classList.add("btn", "btn-sm", "btn-secondary", "expand-button")
+				expandTextareaButton.type = "button"
+				expandTextareaButton.onclick = function()
 				{
 					expandTextarea(movedTextarea)
 				}
+				var icon = document.createElement("i")
+				icon.classList.add("fas", "fa-expand")
+				expandTextareaButton.appendChild(icon)
+				inputGroup.appendChild(expandTextareaButton)
+				parentNode.appendChild(inputGroup)
 			}
 		})
 	})
@@ -824,6 +839,8 @@ overlay.addEventListener("click", function()
 	if (currentTextarea != undefined)
 	{
 		currentTextarea.value = expandedTextarea.value
+		var event = new Event("change")
+		currentTextarea.dispatchEvent(event)
 		currentTextarea = undefined
 		expandedTextarea.value = ""
 	}
