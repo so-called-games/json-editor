@@ -32,6 +32,11 @@ const customThemes = [
 	"_dark",
 	"_black"
 ]
+const defaultHides = {
+	output: false,
+	schema: false,
+	errors: false
+}
 const defaultExtras = {
 	output: "",
 	schema: ""
@@ -75,6 +80,9 @@ var mainDiv = document.querySelector("#main-div")
 var editorDiv = document.querySelector("#editor-div")
 var outputDiv = document.querySelector("#output-div")
 var schemaDiv = document.querySelector("#schema-div")
+var schemaInnerDiv = document.querySelector("#schema-inner-div")
+var errorsDiv = document.querySelector("#errors-div")
+var errorsInnerDiv = document.querySelector("#errors-inner-div")
 var optionsDiv = document.querySelector("#options-div")
 var descriptionParagraph = document.querySelector("#description")
 var directLink = document.querySelector("#direct-link")
@@ -110,6 +118,8 @@ var outputFilename = document.querySelector("#output-filename")
 var loadSchema = document.querySelector("#load-schema")
 var toggleSchema = document.querySelector("#toggle-schema")
 var toggleSchemaIcon = toggleSchema.querySelector("i")
+var toggleErrors = document.querySelector("#toggle-errors")
+var toggleErrorsIcon = toggleErrors.querySelector("i")
 var schemaEditorDiv = document.querySelector("#schema-editor-div")
 var setSchema = document.querySelector("#set-schema")
 var clearSchema = document.querySelector("#clear-schema")
@@ -207,6 +217,7 @@ function setParsingMap()
 	parsingMap.set("o", "output")
 	parsingMap.set("s", "schema")
 	parsingMap.set("h", "hide")
+	parsingMap.set("e", "errors")
 	parsingMap.set("f", "filenames")
 	parsingMap.set("u", "urls")
 	parsingMap.set("op", "options")
@@ -227,7 +238,7 @@ function setParsingMap()
 	parsingMap.set("l", "object_layout")
 	parsingMap.set("n", "normal")
 	parsingMap.set("g", "grid")
-	parsingMap.set("e", "show_errors")
+	parsingMap.set("se", "show_errors")
 	parsingMap.set("ia", "interaction")
 	parsingMap.set("ch", "change")
 	parsingMap.set("al", "always")
@@ -274,6 +285,9 @@ function makeLink()
 	
 	if (modifiedData.hide.schema == false)
 		delete modifiedData.hide.schema
+	
+	if (modifiedData.hide.errors == false)
+		delete modifiedData.hide.errors
 	
 	if (isEmpty(modifiedData.hide))
 		delete modifiedData.hide
@@ -491,9 +505,12 @@ var parseURL = function()
 						
 						if (!("schema" in data.hide))
 							data.hide.schema = false
+						
+						if (!("errors" in data.hide))
+							data.hide.errors = false
 					}
 					else
-						data.hide = { "output": false, "schema": false }
+						data.hide = defaultHides
 					
 					if ("filenames" in parsedData)
 						data.filenames = Object.assign({}, parsedData.filenames)
@@ -527,9 +544,16 @@ var parseURL = function()
 					data.hide.schema = false
 					toggleSchema.click()
 				}
+		
+		if ("errors" in data.hide)
+			if (data.hide.errors)
+				{
+					data.hide.errors = false
+					toggleErrors.click()
+				}
 	}
 	else
-		data.hide = { "output": false, "schema": false }
+		data.hide = defaultHides
 	
 	if ("filenames" in data)
 	{
@@ -832,9 +856,7 @@ function expandTextarea(textareaElement)
 	currentTextarea = textareaElement
 	expandedTextarea.value = textareaElement.value
 	var sourcePath = textareaElement.parentNode.parentNode.querySelector("label.form-label").getAttribute("for")
-	sourcePath = sourcePath.replace(new RegExp("^root\\["), "")
-	sourcePath = sourcePath.replace(new RegExp("\\]$"), "")
-	sourcePath = sourcePath.replaceAll("\\]\\[", " / ")
+	sourcePath = sourcePath.replace(new RegExp("^root\\["), "").replace(new RegExp("\\]$"), "").replaceAll("\\]\\[", " / ")
 	expandedTextareaPath.innerHTML = sourcePath
 	QRCodeDiv.hidden = true
 	overlay.hidden = false
@@ -1118,6 +1140,40 @@ schemaURL.addEventListener("change", function()
 schemaFilename.addEventListener("change", function()
 {
 	data.filenames.schema = schemaFilename.value
+})
+toggleErrors.addEventListener("click", function()
+{
+	if ("hide" in data)
+	{
+		if ("errors" in data.hide)
+		{
+			data.hide.errors = !data.hide.errors
+		}
+		else
+			data.hide.errors = true
+	}
+	else
+		data.hide = { "errors": true }
+	var isHidden
+	
+	if (data.hide.errors)
+	{
+		isHidden = true
+		schemaInnerDiv.className = "col-md-12 w-12"
+		errorsDiv.className = "col-md-0 w-12"
+		toggleErrorsIcon.className = "fas fa-caret-right"
+	}
+	else
+	{
+		isHidden = false
+		schemaInnerDiv.className = "col-md-7 w-12"
+		errorsDiv.className = "col-md-5 w-12"
+		toggleErrorsIcon.className = "fas fa-caret-down"
+	}
+	schemaTextarea.resize()
+	ajvErrorsTextarea.resize()
+	jeErrorsTextarea.resize()
+	errorsInnerDiv.hidden = isHidden
 })
 themeSelect.addEventListener("change", function()
 {

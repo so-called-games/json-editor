@@ -81,7 +81,7 @@
 				</div>
 			</div>
 			<div id="schema-div" class="row gy-2">
-				<div class="col-md-7 w-12">
+				<div id="schema-inner-div" class="col-md-7 w-12">
 					<h2 class="d-inline">Schema</h2>
 					<p class="mt-2">JSON schema that will be used to construct HTML form for editing output properties.</p>
 					<div class="mt-2 mb-2">
@@ -113,14 +113,19 @@
 						</div>
 					</div>
 				</div>
-				<div class="col-md-5 w-12">
-					<h2>Errors</h2>
-					<label for="je-errors-textarea">AJV (JE meta-schema): </label>
-					<code id="je-errors-count"></code>
-					<textarea id="je-errors-textarea"></textarea>
-					<label for="ajv-errors-textarea">AJV (meta-schema-2020-12): </label>
-					<code id="ajv-errors-count"></code>
-					<textarea id="ajv-errors-textarea"></textarea>
+				<div id="errors-div" class="col-md-5 w-12">
+					<span class="d-block mb-2">
+						<button id="toggle-errors" title="Toggle" class="btn btn-sm btn-secondary toggle-errors-button" type="button"><i class="fas fa-caret-down"></i></button>
+						<h2 class="d-inline">Errors</h2>
+					</span>
+					<div id="errors-inner-div">
+						<label for="je-errors-textarea">AJV (JE meta-schema):</label>
+						<code id="je-errors-count"></code>
+						<textarea id="je-errors-textarea"></textarea>
+						<label for="ajv-errors-textarea">AJV (meta-schema-2020-12):</label>
+						<code id="ajv-errors-count"></code>
+						<textarea id="ajv-errors-textarea"></textarea>
+					</div>
 				</div>
 			</div>
 			<div id="options-div">

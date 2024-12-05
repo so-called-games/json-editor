@@ -97,6 +97,8 @@ input[type="number"]
 #expanded-textarea-path
 {
 	background: black;
+	border: white solid 2px;
+	border-bottom: none;
 }
 
 #expanded-textarea

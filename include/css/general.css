@@ -170,6 +170,12 @@ label
 	margin-right: 4px;
 }
 
+.toggle-errors-button
+{
+	margin-top: -10px;
+	margin-right: 6px;
+}
+
 .input-button
 {
 	width: 88px;
