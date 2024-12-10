@@ -64,15 +64,18 @@ div:last-child > .btn-group:has(.json-editor-btntype-delete, .json-editor-btntyp
 
 .je-modal
 {
-	padding-left: 8px;
-	padding-bottom: 8px;
+	min-width: 236px;
+	padding: 8px;
 	box-shadow: none !important;
 }
 
 .property-selector
 {
+	width: auto !important;
+	max-width: fit-content !important;
 	max-height: 320px !important;
-	padding-top: 12px !important;
+	overflow-wrap: break-word !important;
+	padding: 0 8px 0 4px !important;
 }
 
 .property-selector:empty
@@ -82,7 +85,8 @@ div:last-child > .btn-group:has(.json-editor-btntype-delete, .json-editor-btntyp
 
 .property-selector-input
 {
-	margin-top: 4px;
+	display: inline !important;
+	width: max(calc(100% - 80px), 140px) !important;
 	margin-right: 8px;
 }
 
@@ -93,7 +97,10 @@ div:last-child > .btn-group:has(.json-editor-btntype-delete, .json-editor-btntyp
 
 .json-editor-btn-add
 {
-	margin-top: 0 !important;
+	display: inline !important;
+	width: 72px;
+	height: 36px;
+	margin-top: -4px !important;
 	border-radius: 4px !important;
 }
 
