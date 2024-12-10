@@ -15,6 +15,8 @@ var defaultOptions = Object.assign({}, JSONEditor.defaults.options, {
 	disable_edit_json: true,
 	disable_collapse: false,
 	disable_properties: false,
+	disable_properties_reorder: false,
+	disable_textarea_expanding: false,
 	disable_array_add: false,
 	disable_array_reorder: false,
 	disable_array_delete: false,
@@ -161,6 +163,69 @@ function isEmpty(object)
 	return true
 }
 
+Array.prototype.move = function(old_index, new_index)
+{
+	var array = this
+	
+	if (new_index >= array.length)
+	{
+		var k = new_index - array.length + 1
+		while (k--)
+			array.push(undefined)
+	}
+	array.splice(new_index, 0, array.splice(old_index, 1)[0])
+	return array
+}
+
+Object.getByPath = function(object, path)
+{
+    path = path.replace(/\[(\w+)\]/g, ".$1")
+    path = path.replace(/^\./, "")
+    var array = path.split(".")
+	
+    for (var i = 0, n = array.length; i < n; ++i)
+	{
+        var key = array[i]
+		
+        if (key in object)
+            object = object[key]
+		else
+            return
+    }
+    return object
+}
+
+Object.setByPath = function(object, path, value)
+{
+  var array = path.split(".")
+  var newObject = object
+  
+  while (array.length - 1)
+  {
+    var n = array.shift()
+	
+    if (!(n in newObject))
+		newObject[n] = {}
+    newObject = newObject[n]
+  }
+  newObject[array[0]] = value
+}
+
+Object.deleteByPath = function(object, path)
+{
+	const parts = path.split(".")
+	const last = parts.pop()
+	
+	for (const part of parts)
+	{
+		object = object[part]
+		
+		if (!object)
+			return
+	}
+	delete object[last]
+}
+
 function getMapKeyByValue(map, searchValue)
 {
 	for (let [key, value] of map.entries())
@@ -267,6 +332,8 @@ function setParsingMap()
 	parsingMap.set("de", "disable_edit_json")
 	parsingMap.set("dc", "disable_collapse")
 	parsingMap.set("dp", "disable_properties")
+	parsingMap.set("dr", "disable_properties_reorder")
+	parsingMap.set("dt", "disable_textarea_expanding")
 	parsingMap.set("daa", "disable_array_add")
 	parsingMap.set("dar", "disable_array_reorder")
 	parsingMap.set("dad", "disable_array_delete")
@@ -469,7 +536,7 @@ const validateSchema = () =>
 	schemaTextarea.clearSelection(1)
 	jeErrorsTextarea.clearSelection(1)
 	schemaTextarea.setValue(replaceSpacings(schemaTextarea.getSession().getValue()))
-	initJsonEditor()
+	initJSONEditor()
 }
 
 var parseURL = function()
@@ -805,13 +872,21 @@ var refreshUI = function()
 	schemaTextarea.clearSelection(1)
 }
 
-var initJsonEditor = function()
+var initJSONEditor = function(initialValue = undefined)
 {
 	if (jsonEditor)
 		jsonEditor.destroy()
 	var modifiedOptions = Object.assign({}, data.options)
 	modifiedOptions.theme = modifiedOptions.theme.replaceAllFromList(customThemes, "")
 	jsonEditor = new window.JSONEditor(jsonEditorForm, modifiedOptions)
+	
+	if (initialValue)
+	{
+		jsonEditor.on("ready", function()
+		{
+			jsonEditor.setValue(initialValue)
+		})
+	}
 	jsonEditor.on("change", function()
 	{
 		var json = jsonEditor.getValue()
@@ -823,43 +898,117 @@ var initJsonEditor = function()
 			validateTextarea.value = replaceSpacings(JSON.stringify(validationErrors, null, 2))
 		else
 			validateTextarea.value = "valid"
-		textareaList = Array.from(jsonEditorForm.querySelectorAll("textarea:not(.textarea-clone)"))
-		textareaList.forEach((textareaElement) =>
+		
+		if (!data.options.disable_properties_reorder)
 		{
-			parentNode = textareaElement.parentNode
-			
-			if (!parentNode.classList.contains("input-group"))
+			objectControlsList = Array.from(jsonEditorForm.querySelector(".je-object__container .card").querySelectorAll(".je-object__controls"))
+			objectControlsList.forEach((controlElement) =>
 			{
-				textareaElement.classList.add("textarea-clone")
-				textareaElement.hidden = true
-				var inputGroup = document.createElement("div")
-				inputGroup.classList.add("input-group")
-				var movedTextarea = document.createElement("textarea")
-				movedTextarea.classList.add("form-control")
-				movedTextarea.value = textareaElement.value
-				movedTextarea.onchange = function()
+				reorderButtons = Array.from(controlElement.querySelectorAll(".json-editor-property-control-button"))
+				reorderButtons.forEach((reorderButton) =>
 				{
-					textareaElement.value = movedTextarea.value
-					var event = new Event("change")
-					textareaElement.dispatchEvent(event)
-				}
-				inputGroup.appendChild(movedTextarea)
-				var expandTextareaButton = document.createElement("button")
-				expandTextareaButton.title = "Expand to fullscreen"
-				expandTextareaButton.classList.add("btn", "btn-sm", "btn-secondary", "expand-button")
-				expandTextareaButton.type = "button"
-				expandTextareaButton.onclick = function()
+					reorderButton.remove()
+				})
+				controlElement.querySelectorAll(".json-editor-property-control-button") == null
+				var comparedParent = controlElement.parentNode.parentNode
+				var generalParent = comparedParent.parentNode
+				
+				for (let i = 0; i < 2; i++)
 				{
-					expandTextarea(movedTextarea)
+					var postfix = (i == 0) ? "up" : "down"
+					var moveButton = document.createElement("button")
+					moveButton.type = "button"
+					moveButton.title = "Move property " + postfix
+					moveButton.classList.add("btn", "btn-secondary", "btn-sm", "json-editor-property-control-button", "json-editor-btntype-move" + postfix)
+					moveButton.onclick = function()
+					{
+						reorderProperty(comparedParent, i)
+					}
+					var icon = document.createElement("i")
+					icon.classList.add("fas", "fa-caret-" + postfix)
+					moveButton.appendChild(icon)
+					controlElement.appendChild(moveButton)
+					
+					if ((generalParent.querySelectorAll(":scope > .row:first-child")[0] == comparedParent) && i == 0 || (generalParent.querySelectorAll(":scope > .row:last-child")[0] == comparedParent) && i == 1)
+						moveButton.classList.add("visually-hidden")
 				}
-				var icon = document.createElement("i")
-				icon.classList.add("fas", "fa-expand")
-				expandTextareaButton.appendChild(icon)
-				inputGroup.appendChild(expandTextareaButton)
-				parentNode.appendChild(inputGroup)
-			}
-		})
+			})
+		}
+		
+		if (!data.options.disable_textarea_expanding)
+		{
+			textareaList = Array.from(jsonEditorForm.querySelectorAll("textarea:not(.textarea-clone)"))
+			textareaList.forEach((textareaElement) =>
+			{
+				parentNode = textareaElement.parentNode
+				
+				if (!parentNode.classList.contains("input-group"))
+				{
+					textareaElement.classList.add("textarea-clone")
+					textareaElement.hidden = true
+					var inputGroup = document.createElement("div")
+					inputGroup.classList.add("input-group")
+					var movedTextarea = document.createElement("textarea")
+					movedTextarea.classList.add("form-control")
+					movedTextarea.value = textareaElement.value
+					movedTextarea.onchange = function()
+					{
+						textareaElement.value = movedTextarea.value
+						var event = new Event("change")
+						textareaElement.dispatchEvent(event)
+					}
+					inputGroup.appendChild(movedTextarea)
+					var expandTextareaButton = document.createElement("button")
+					expandTextareaButton.type = "button"
+					expandTextareaButton.title = "Expand to fullscreen"
+					expandTextareaButton.classList.add("btn", "btn-sm", "btn-secondary", "expand-button")
+					expandTextareaButton.onclick = function()
+					{
+						expandTextarea(movedTextarea)
+					}
+					var icon = document.createElement("i")
+					icon.classList.add("fas", "fa-expand")
+					expandTextareaButton.appendChild(icon)
+					inputGroup.appendChild(expandTextareaButton)
+					parentNode.appendChild(inputGroup)
+				}
+			})
+		}
 	})
+}
+
+function reorderProperty(propertyRow, direction)
+{
+	var path = propertyRow.querySelector(".je-object__container").dataset.schemapath
+	var parentPath = propertyRow.parentNode.parentNode.parentNode.parentNode.parentNode.querySelector(".je-object__container").dataset.schemapath
+	
+	if (direction == 0)
+		propertyRow.parentNode.insertBefore(propertyRow, propertyRow.previousSibling)
+	else
+		propertyRow.nextSibling.after(propertyRow)
+	var propertyContainer = jsonEditor.getEditor(parentPath)
+	var arrayFromContainer = Object.entries(propertyContainer.getValue())
+	var propertyIndex
+	var propertyName = path.split(".").pop()
+	
+	for (let i = 0; i < arrayFromContainer.length; i++)
+	{
+		if (arrayFromContainer[i][0] == propertyName)
+		{
+			propertyIndex = i
+			break
+		}
+	}
+	arrayFromContainer.move(propertyIndex, propertyIndex + (direction == 0 ? -1 : 1))
+	var jsonData = jsonEditor.getValue()
+	var reorderedData = Object.fromEntries(arrayFromContainer)
+	var parentPathWithoutRoot = parentPath.replace(new RegExp("^(root\.|root)"), "")
+	
+	if (parentPathWithoutRoot === "")
+		jsonData = Object.assign({}, reorderedData)
+	else
+		Object.setByPath(jsonData, parentPathWithoutRoot, Object.assign({}, reorderedData))
+	initJSONEditor(jsonData)
 }
 
 function expandTextarea(textareaElement)
@@ -872,7 +1021,6 @@ function expandTextarea(textareaElement)
 	QRCodeDiv.hidden = true
 	overlay.hidden = false
 	expandedTextareaDiv.hidden = false
-	expandedTextarea.focus()
 }
 overlay.addEventListener("click", function()
 {
@@ -1044,6 +1192,9 @@ toggleOutput.addEventListener("click", function()
 		toggleOutputIcon.className = "fas fa-caret-down"
 	}
 	outputEditorDiv.hidden = isHidden
+	
+	if (!isHidden)
+		outputTextarea.resize()
 })
 setOutput.addEventListener("click", function()
 {
@@ -1108,6 +1259,9 @@ toggleSchema.addEventListener("click", function()
 		toggleSchemaIcon.className = "fas fa-caret-down"
 	}
 	schemaEditorDiv.hidden = isHidden
+	
+	if (!isHidden)
+		schemaTextarea.resize()
 })
 setSchema.addEventListener("click", function()
 {
@@ -1188,7 +1342,11 @@ toggleErrors.addEventListener("click", function()
 	errorsInnerDiv.hidden = isHidden
 	
 	if (!isHidden)
+	{
 		errorsDiv.scrollIntoView({ behavior: "smooth", block: "start", inline: "nearest" })
+		ajvErrorsTextarea.resize()
+		jeErrorsTextarea.resize()
+	}
 })
 themeSelect.addEventListener("change", function()
 {
@@ -1216,7 +1374,7 @@ booleanOptionsSelect.addEventListener("change", function()
 	
 	for (var i = 0; i < booleanOptions.length; i++)
 		data.options[booleanOptions[i].value] = booleanOptions[i].selected
-	initJsonEditor()
+	initJSONEditor(JSON.parse(outputTextarea.getValue()))
 	refreshUI()
 })
 libSelect.addEventListener("change", function()

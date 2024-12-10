@@ -71,6 +71,7 @@ div:last-child > .btn-group:has(.json-editor-btntype-delete, .json-editor-btntyp
 
 .property-selector
 {
+	max-height: 320px !important;
 	padding-top: 12px !important;
 }
 
@@ -114,7 +115,7 @@ div:last-child > .btn-group:has(.json-editor-btntype-delete, .json-editor-btntyp
 	margin-right: 16px !important;
 }
 
-.json-editor-btntype-editjson, .json-editor-btntype-properties
+.json-editor-btntype-editjson, .json-editor-btntype-properties, .json-editor-property-control-button
 {
 	margin-right: 6px !important;
 	padding: 4px 12px !important;

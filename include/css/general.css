@@ -91,8 +91,7 @@ label
 	display: block;
 	width: 100%;
 	margin: 0;
-	padding: 4px 12px;
-	padding-bottom: 8px;
+	padding: 8px 12px;
 	border-top-left-radius: 6px;
 	border-top-right-radius: 6px;
 }
