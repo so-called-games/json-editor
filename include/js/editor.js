@@ -426,7 +426,7 @@ function showMessage(message)
 
 function copyToClipboard(element)
 {
-	var tempArea = document.createElement("input")
+	var tempArea = document.createElement("textarea")
 	tempArea.value = element
 	document.body.appendChild(tempArea)
 	tempArea.focus()
@@ -872,7 +872,7 @@ var refreshUI = function()
 	schemaTextarea.clearSelection(1)
 }
 
-var initJSONEditor = function(initialValue = undefined)
+var initJSONEditor = function(initialValue = undefined, expandPath = undefined)
 {
 	if (jsonEditor)
 		jsonEditor.destroy()
@@ -885,6 +885,24 @@ var initJSONEditor = function(initialValue = undefined)
 		jsonEditor.on("ready", function()
 		{
 			jsonEditor.setValue(initialValue)
+			
+			if (expandPath)
+			{
+				var constructedPath
+				var pathArray = expandPath.split(".")
+				
+				for (let i = 0; i < pathArray.length; i++)
+				{
+					if (constructedPath)
+						constructedPath += "." + pathArray[i]
+					else
+						constructedPath = pathArray[i]
+					var currentElement = jsonEditorForm.querySelector(".je-object__container[data-schemapath='" + constructedPath + "']")
+					
+					if (currentElement.querySelectorAll(":scope > .card")[0].style.display === "none")
+						currentElement.querySelector(".json-editor-btntype-toggle").click()
+				}
+			}
 		})
 	}
 	jsonEditor.on("change", function()
@@ -913,31 +931,34 @@ var initJSONEditor = function(initialValue = undefined)
 				var comparedParent = controlElement.parentNode.parentNode
 				var generalParent = comparedParent.parentNode
 				
-				for (let i = 0; i < 2; i++)
+				if (comparedParent.previousSibling != null && comparedParent.previousSibling.querySelector(".je-object__container") != null || comparedParent.nextSibling != null && comparedParent.nextSibling.querySelector(".je-object__container") != null)
 				{
-					var postfix = (i == 0) ? "up" : "down"
-					var moveButton = document.createElement("button")
-					moveButton.type = "button"
-					moveButton.title = "Move property " + postfix
-					moveButton.classList.add("btn", "btn-secondary", "btn-sm", "json-editor-property-control-button", "json-editor-btntype-move" + postfix)
-					moveButton.onclick = function()
+					for (let i = 0; i < 2; i++)
 					{
-						reorderProperty(comparedParent, i)
+						var postfix = (i == 0) ? "up" : "down"
+						var moveButton = document.createElement("button")
+						moveButton.type = "button"
+						moveButton.title = "Move property " + postfix
+						moveButton.classList.add("btn", "btn-secondary", "btn-sm", "json-editor-property-control-button", "json-editor-btntype-move" + postfix)
+						moveButton.onclick = function()
+						{
+							reorderProperty(comparedParent, i)
+						}
+						var icon = document.createElement("i")
+						icon.classList.add("fas", "fa-caret-" + postfix)
+						moveButton.appendChild(icon)
+						controlElement.appendChild(moveButton)
+						
+						if ((generalParent.querySelectorAll(":scope > .row:first-child")[0] == comparedParent) && i == 0 || (generalParent.querySelectorAll(":scope > .row:last-child")[0] == comparedParent) && i == 1)
+							moveButton.classList.add("visually-hidden")
 					}
-					var icon = document.createElement("i")
-					icon.classList.add("fas", "fa-caret-" + postfix)
-					moveButton.appendChild(icon)
-					controlElement.appendChild(moveButton)
-					
-					if ((generalParent.querySelectorAll(":scope > .row:first-child")[0] == comparedParent) && i == 0 || (generalParent.querySelectorAll(":scope > .row:last-child")[0] == comparedParent) && i == 1)
-						moveButton.classList.add("visually-hidden")
 				}
 			})
 		}
 		
 		if (!data.options.disable_textarea_expanding)
 		{
-			textareaList = Array.from(jsonEditorForm.querySelectorAll("textarea:not(.textarea-clone)"))
+			textareaList = Array.from(jsonEditorForm.querySelectorAll("textarea:not(.je-object__controls *, .textarea-clone)"))
 			textareaList.forEach((textareaElement) =>
 			{
 				parentNode = textareaElement.parentNode
@@ -1008,7 +1029,7 @@ function reorderProperty(propertyRow, direction)
 		jsonData = Object.assign({}, reorderedData)
 	else
 		Object.setByPath(jsonData, parentPathWithoutRoot, Object.assign({}, reorderedData))
-	initJSONEditor(jsonData)
+	initJSONEditor(jsonData, parentPath)
 }
 
 function expandTextarea(textareaElement)
