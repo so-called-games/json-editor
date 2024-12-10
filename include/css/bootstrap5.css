@@ -30,22 +30,20 @@ option
 	margin-bottom: 12px !important;
 }
 
+.card .row:last-child:has(> div > span > .btn-group:empty) .card-title
+{
+	margin-bottom: 0 !important;
+}
+
 .je-object__container > .card
 {
 	margin-top: 0 !important;
 }
 
-/*
-.card:has(.je-object__container)
+.card .row:not(:last-child) > div:has(> span > .btn-group:empty):has(.card[style*="display: none"])
 {
-	padding-bottom: 0 !important;
+	margin-bottom: 12px !important;
 }
-
-.row:not(:last-child) > div:has(.card)
-{
-	margin-bottom: 8px !important;
-}
-*/
 
 div:last-child > .btn-group:has(.json-editor-btntype-delete, .json-editor-btntype-movedown, .json-editor-btntype-moveup):last-child, .row:last-child > div > div
 {
@@ -54,7 +52,12 @@ div:last-child > .btn-group:has(.json-editor-btntype-delete, .json-editor-btntyp
 
 .btn-group:has(.json-editor-btntype-delete, .json-editor-btntype-movedown, .json-editor-btntype-moveup):not(.card > div > .card .btn-group)
 {
-	margin-bottom: 12px !important;
+	margin-bottom: 12px;
+}
+
+.je-object__container > .btn-group:has(.delete)
+{
+	margin-bottom: 16px !important;
 }
 
 .je-modal, .property-selector

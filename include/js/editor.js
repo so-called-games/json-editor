@@ -43,6 +43,8 @@ const defaultExtras = {
 	output: "",
 	schema: ""
 }
+const titlePosfix = "JSON Editor"
+const titleSeparator = "-"
 var messageTimer
 const messageShowLength = 2
 const messageAnimationLength = 0.5
@@ -880,9 +882,16 @@ var initJSONEditor = function(initialValue = undefined, expandPath = undefined)
 	modifiedOptions.theme = modifiedOptions.theme.replaceAllFromList(customThemes, "")
 	jsonEditor = new window.JSONEditor(jsonEditorForm, modifiedOptions)
 	
-	if (initialValue)
+	jsonEditor.on("ready", function()
 	{
-		jsonEditor.on("ready", function()
+		var rootName = jsonEditorForm.querySelectorAll(".je-object__container > .je-object__title > span")[0].innerText
+		
+		if (rootName != "root")
+			document.title = rootName + " " + titleSeparator + " " + titlePosfix
+		else
+			document.title = titlePosfix
+		
+		if (initialValue)
 		{
 			jsonEditor.setValue(initialValue)
 			
@@ -903,8 +912,8 @@ var initJSONEditor = function(initialValue = undefined, expandPath = undefined)
 						currentElement.querySelector(".json-editor-btntype-toggle").click()
 				}
 			}
-		})
-	}
+		}
+	})
 	jsonEditor.on("change", function()
 	{
 		var json = jsonEditor.getValue()
