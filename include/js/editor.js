@@ -731,16 +731,28 @@ var parseURL = function()
 			previewFontSize.value = Number(data.preview.font_size)
 		
 		if ("font_normal" in data.preview)
+		{
 			previewFontNormal.value = data.preview.font_normal
+			loadPreviewFontNormal.click()
+		}
 		
 		if ("font_bold" in data.preview)
+		{
 			previewFontBold.value = data.preview.font_bold
+			loadPreviewFontBold.click()
+		}
 		
 		if ("font_italic" in data.preview)
+		{
 			previewFontItalic.value = data.preview.font_italic
+			loadPreviewFontItalic.click()
+		}
 		
 		if ("font_bold_italic" in data.preview)
+		{
 			previewFontBoldItalic.value = data.preview.font_bold_italic
+			loadPreviewFontBoldItalic.click()
+		}
 	}
 	else
 	{
@@ -1378,6 +1390,7 @@ previewFontSize.addEventListener("change", function()
 	else
 		if (data.preview.font_size != undefined)
 			delete data.preview.font_size
+	refreshPreview()
 })
 previewFontNormal.addEventListener("change", function()
 {
@@ -1407,10 +1420,8 @@ loadPreviewFontNormal.addEventListener("click", function()
 		previewFontFaceNormal.load().then(function(loadedFont)
 		{
 			document.fonts.add(loadedFont)
-			preview.style.fontFamily = fontName
 		}).catch(function(e)
 		{
-			preview.style.fontFamily = ""
 			showMessage(messagePreviewFontLoadError)
 		})
 	}
@@ -1429,10 +1440,8 @@ loadPreviewFontBold.addEventListener("click", function()
 		previewFontFaceBold.load().then(function(loadedFont)
 		{
 			document.fonts.add(loadedFont)
-			preview.style.fontFamily = fontName
 		}).catch(function(e)
 		{
-			preview.style.fontFamily = ""
 			showMessage(messagePreviewFontLoadError)
 		})
 	}
@@ -1450,11 +1459,9 @@ loadPreviewFontItalic.addEventListener("click", function()
 		previewFontFaceItalic = new FontFace(fontName, "url(" + data.preview.font_italic + ")")
 		previewFontFaceItalic.load().then(function(loadedFont)
 		{
-			document.fonts.add(loadedFont)
 			preview.style.fontFamily = fontName
 		}).catch(function(e)
 		{
-			preview.style.fontFamily = ""
 			showMessage(messagePreviewFontLoadError)
 		})
 	}
@@ -1472,11 +1479,9 @@ loadPreviewFontBoldItalic.addEventListener("click", function()
 		previewFontFaceBoldItalic = new FontFace(fontName, "url(" + data.preview.font_bold_italic + ")")
 		previewFontFaceBoldItalic.load().then(function(loadedFont)
 		{
-			document.fonts.add(loadedFont)
 			preview.style.fontFamily = fontName
 		}).catch(function(e)
 		{
-			preview.style.fontFamily = ""
 			showMessage(messagePreviewFontLoadError)
 		})
 	}
