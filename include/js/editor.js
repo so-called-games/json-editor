@@ -52,6 +52,8 @@ const messageAnimationLength = 0.5
 const messageLinkCopied = "Direct link to this session was copied"
 const messageOutputCopied = "JSON output was copied"
 const messageSchemaCopied = "JSON schema was copied"
+const messagePreviewFontNotSpecified = "Font URL was not specified"
+const messagePreviewFontLoadError = "Error occured while loading font"
 const parsingMap = new Map()
 setParsingMap()
 var copyScrollOptions = {
@@ -90,6 +92,14 @@ var previewFontNormal = document.querySelector("#preview-font-normal")
 var previewFontBold = document.querySelector("#preview-font-bold")
 var previewFontItalic = document.querySelector("#preview-font-italic")
 var previewFontBoldItalic = document.querySelector("#preview-font-bold-italic")
+var loadPreviewFontNormal = document.querySelector("#load-preview-font-normal")
+var loadPreviewFontBold = document.querySelector("#load-preview-font-bold")
+var loadPreviewFontItalic = document.querySelector("#load-preview-font-italic")
+var loadPreviewFontBoldItalic = document.querySelector("#load-preview-font-bold-italic")
+var previewFontFaceNormal
+var previewFontFaceBold
+var previewFontFaceItalic
+var previewFontFaceBoldItalic
 var previewFontSize = document.querySelector("#preview-font-size")
 const previewFontSizeMaskOptions = {
 	mask: Number,
@@ -407,6 +417,9 @@ function makeLink()
 	if (modifiedData.preview.separator == "")
 		delete modifiedData.preview.separator
 	
+	if (modifiedData.preview.font_size == undefined)
+		delete modifiedData.preview.font_size
+	
 	if (modifiedData.preview.font_normal == "")
 		delete modifiedData.preview.font_normal
 	
@@ -460,7 +473,7 @@ function makeLink()
 	return url
 }
 
-function showMessage(message)
+function showMessage(message, duration = messageShowLength)
 {
 	if (messageDiv.innerHTML !== message)
 	{
@@ -482,7 +495,7 @@ function showMessage(message)
 					messageDiv.innerHTML = ""
 					messageDiv.classList.remove("fade-out")
 				}, messageAnimationLength * 1000 - 10)
-			}, messageShowLength * 1000)
+			}, duration * 1000)
 		}, messageAnimationLength * 1000)
 	}
 }
@@ -826,6 +839,11 @@ function refreshPreview()
 			value = value.slice(0, lastIndex) + value.slice(lastIndex + data.preview.separator.length)
 		}
 	}
+	
+	if (data.preview.font_size != undefined)
+		preview.style.fontSize = data.preview.font_size + "pt"
+	else
+		preview.style.fontSize = ""
 	preview.innerHTML = ""
 	
 	if (useBBCode)
@@ -1350,7 +1368,6 @@ previewFontSize.addEventListener("change", function()
 		try
 		{
 			var proposedSize = parseInt(previewFontSize.value)
-			preview.style.fontSize = proposedSize + "pt"
 			data.preview.font_size = proposedSize
 		}
 		catch (e)
@@ -1359,12 +1376,112 @@ previewFontSize.addEventListener("change", function()
 		}
 	}
 	else
-	{
-		preview.style.fontSize = ""
-		
-		if (data.preview.font_size)
+		if (data.preview.font_size != undefined)
 			delete data.preview.font_size
+})
+previewFontNormal.addEventListener("change", function()
+{
+	data.preview.font_normal = previewFontNormal.value
+})
+previewFontBold.addEventListener("change", function()
+{
+	data.preview.font_bold = previewFontBold.value
+})
+previewFontItalic.addEventListener("change", function()
+{
+	data.preview.font_italic = previewFontItalic.value
+})
+previewFontBoldItalic.addEventListener("change", function()
+{
+	data.preview.font_bold_italic = previewFontBoldItalic.value
+})
+loadPreviewFontNormal.addEventListener("click", function()
+{
+	if (data.preview.font_normal != undefined && data.preview.font_normal != "")
+	{
+		var fontName = "CustomFontRegular"
+		
+		if (previewFontFaceNormal != undefined)
+			document.fonts.delete(previewFontFaceNormal)
+		previewFontFaceNormal = new FontFace(fontName, "url(" + data.preview.font_normal + ")")
+		previewFontFaceNormal.load().then(function(loadedFont)
+		{
+			document.fonts.add(loadedFont)
+			preview.style.fontFamily = fontName
+		}).catch(function(e)
+		{
+			preview.style.fontFamily = ""
+			showMessage(messagePreviewFontLoadError)
+		})
 	}
+	else
+		showMessage(messagePreviewFontNotSpecified)
+})
+loadPreviewFontBold.addEventListener("click", function()
+{
+	if (data.preview.font_bold != undefined && data.preview.font_bold != "")
+	{
+		var fontName = "CustomFontBold"
+		
+		if (previewFontFaceBold != undefined)
+			document.fonts.delete(previewFontFaceBold)
+		previewFontFaceBold = new FontFace(fontName, "url(" + data.preview.font_bold + ")")
+		previewFontFaceBold.load().then(function(loadedFont)
+		{
+			document.fonts.add(loadedFont)
+			preview.style.fontFamily = fontName
+		}).catch(function(e)
+		{
+			preview.style.fontFamily = ""
+			showMessage(messagePreviewFontLoadError)
+		})
+	}
+	else
+		showMessage(messagePreviewFontNotSpecified)
+})
+loadPreviewFontItalic.addEventListener("click", function()
+{
+	if (data.preview.font_italic != undefined && data.preview.font_italic != "")
+	{
+		var fontName = "CustomFontItalic"
+		
+		if (previewFontFaceItalic != undefined)
+			document.fonts.delete(previewFontFaceItalic)
+		previewFontFaceItalic = new FontFace(fontName, "url(" + data.preview.font_italic + ")")
+		previewFontFaceItalic.load().then(function(loadedFont)
+		{
+			document.fonts.add(loadedFont)
+			preview.style.fontFamily = fontName
+		}).catch(function(e)
+		{
+			preview.style.fontFamily = ""
+			showMessage(messagePreviewFontLoadError)
+		})
+	}
+	else
+		showMessage(messagePreviewFontNotSpecified)
+})
+loadPreviewFontBoldItalic.addEventListener("click", function()
+{
+	if (data.preview.font_bold_italic != undefined && data.preview.font_bold_italic != "")
+	{
+		var fontName = "CustomFontBoldItalic"
+		
+		if (previewFontFaceBoldItalic != undefined)
+			document.fonts.delete(previewFontFaceBoldItalic)
+		previewFontFaceBoldItalic = new FontFace(fontName, "url(" + data.preview.font_bold_italic + ")")
+		previewFontFaceBoldItalic.load().then(function(loadedFont)
+		{
+			document.fonts.add(loadedFont)
+			preview.style.fontFamily = fontName
+		}).catch(function(e)
+		{
+			preview.style.fontFamily = ""
+			showMessage(messagePreviewFontLoadError)
+		})
+	}
+	else
+		showMessage(messagePreviewFontNotSpecified)
 })
 outputAdditionalButton.addEventListener("click", function()
 {

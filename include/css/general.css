@@ -145,7 +145,23 @@ label
 
 #preview
 {
+	font-family: "CustomFontRegular", var(--bs-body-font-family);
 	margin: 12px 0 24px 0;
+}
+
+#preview b
+{
+	font-family: "CustomFontBold", var(--bs-body-font-family);
+}
+
+#preview i
+{
+	font-family: "CustomFontItalic", var(--bs-body-font-family);
+}
+
+#preview b i, #preview i b
+{
+	font-family: "CustomFontBoldItalic", var(--bs-body-font-family);
 }
 
 #preview-separator, #preview-font-size
@@ -156,7 +172,7 @@ label
 #preview-parse-bbcode
 {
 	margin-top: 4px;
-	margin-right: 12px;
+	margin-right: 16px;
 }
 
 #preview-options-fonts-div
