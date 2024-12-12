@@ -10,6 +10,11 @@ option
 	padding: 4px 8px !important;
 }
 
+.input-group:not(:last-child, .font-url)
+{
+	margin-bottom: 16px;
+}
+
 .card
 {
 	--bs-card-title-spacer-y: 0.25rem !important;

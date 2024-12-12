@@ -17,6 +17,7 @@ var defaultOptions = Object.assign({}, JSONEditor.defaults.options, {
 	disable_properties: false,
 	disable_properties_reorder: false,
 	disable_textarea_expanding: false,
+	disable_expanded_preview: false,
 	disable_array_add: false,
 	disable_array_reorder: false,
 	disable_array_delete: false,
@@ -80,6 +81,25 @@ var expandedTextareaDiv = document.querySelector("#expanded-textarea-div")
 var expandedTextareaPath = document.querySelector("#expanded-textarea-path")
 var expandedTextarea = document.querySelector("#expanded-textarea")
 var currentTextarea
+var previewDiv = document.querySelector("#preview-div")
+var preview = document.querySelector("#preview")
+var previewOptionsDiv = document.querySelector("#preview-options-div")
+var previewParseBBCode = document.querySelector("#preview-parse-bbcode")
+var previewSeparator = document.querySelector("#preview-separator")
+var previewFontNormal = document.querySelector("#preview-font-normal")
+var previewFontBold = document.querySelector("#preview-font-bold")
+var previewFontItalic = document.querySelector("#preview-font-italic")
+var previewFontBoldItalic = document.querySelector("#preview-font-bold-italic")
+var previewFontSize = document.querySelector("#preview-font-size")
+const previewFontSizeMaskOptions = {
+	mask: Number,
+	scale: 0,
+	min: 0,
+	max: 32,
+	normalizeZeros: true,
+	autofix: true
+}
+const previewFontSizeMask = IMask(previewFontSize, previewFontSizeMaskOptions)
 var mainDiv = document.querySelector("#main-div")
 var editorDiv = document.querySelector("#editor-div")
 var outputDiv = document.querySelector("#output-div")
@@ -95,6 +115,8 @@ var saveQRCode = document.querySelector("#save-qr-code")
 var resetButton = document.querySelector("#reset")
 var expandButton = document.querySelector("#expand")
 var expandButtonIcon = expandButton.querySelector("i")
+var previewOptionsButton = document.querySelector("#toggle-preview-options")
+var previewOptionsButtonIcon = previewOptionsButton.querySelector("i")
 var outputAdditionalButton = document.querySelector("#toggle-output-additional")
 var outputAdditionalButtonIcon = outputAdditionalButton.querySelector("i")
 var outputAdditionalDiv = document.querySelector("#output-additional-div")
@@ -272,6 +294,16 @@ String.prototype.replaceAllFromList = function(searchList, replacement)
 	return target
 }
 
+function escapeRegExp(string)
+{
+	return string.replace("/[-[\]{}()*+?.,\\^$|#\s]/g", "\\$&");
+}
+
+function rgb(r, g, b)
+{
+	return "#" + (1 << 24 | r << 16 | g << 8 | b).toString(16).slice(1)
+}
+
 function replaceSpacings(dataToReplace)
 {
 	return dataToReplace.replaceAll("  ", "	")
@@ -285,6 +317,14 @@ function setParsingMap()
 	parsingMap.set("s", "schema")
 	parsingMap.set("h", "hide")
 	parsingMap.set("e", "errors")
+	parsingMap.set("p", "preview")
+	parsingMap.set("bb", "bbcode")
+	parsingMap.set("sr", "separator")
+	parsingMap.set("fs", "font_size")
+	parsingMap.set("fn", "font_normal")
+	parsingMap.set("fb", "font_bold")
+	parsingMap.set("fi", "font_italic")
+	parsingMap.set("fbi", "font_bold_italic")
 	parsingMap.set("f", "filenames")
 	parsingMap.set("u", "urls")
 	parsingMap.set("op", "options")
@@ -360,6 +400,27 @@ function makeLink()
 	
 	if (isEmpty(modifiedData.hide))
 		delete modifiedData.hide
+	
+	if (modifiedData.preview.bbcode == true)
+		delete modifiedData.preview.bbcode
+	
+	if (modifiedData.preview.separator == "")
+		delete modifiedData.preview.separator
+	
+	if (modifiedData.preview.font_normal == "")
+		delete modifiedData.preview.font_normal
+	
+	if (modifiedData.preview.font_bold == "")
+		delete modifiedData.preview.font_bold
+	
+	if (modifiedData.preview.font_italic == "")
+		delete modifiedData.preview.font_italic
+	
+	if (modifiedData.preview.font_bold_italic == "")
+		delete modifiedData.preview.font_bold_italic
+	
+	if (isEmpty(modifiedData.preview))
+		delete modifiedData.preview
 	
 	if (modifiedData.filenames.output == "")
 		delete modifiedData.filenames.output
@@ -581,6 +642,11 @@ var parseURL = function()
 					else
 						data.hide = Object.assign({}, defaultHides)
 					
+					if ("preview" in parsedData)
+						data.preview = Object.assign({}, parsedData.preview)
+					else
+						data.preview = {}
+					
 					if ("filenames" in parsedData)
 						data.filenames = Object.assign({}, parsedData.filenames)
 					
@@ -633,6 +699,41 @@ var parseURL = function()
 		data.hide = Object.assign({}, defaultHides)
 		data.hide.errors = false
 		toggleErrors.click()
+	}
+	
+	if ("preview" in data)
+	{
+		if ("bbcode" in data.preview)
+			previewParseBBCode.checked = (data.preview.bbcode != "false")
+		else
+		{
+			data.preview.bbcode = true
+			previewParseBBCode.checked = true
+		}
+		
+		if ("separator" in data.preview)
+			previewSeparator.value = data.preview.separator
+		
+		if ("font_size" in data.preview)
+			previewFontSize.value = Number(data.preview.font_size)
+		
+		if ("font_normal" in data.preview)
+			previewFontNormal.value = data.preview.font_normal
+		
+		if ("font_bold" in data.preview)
+			previewFontBold.value = data.preview.font_bold
+		
+		if ("font_italic" in data.preview)
+			previewFontItalic.value = data.preview.font_italic
+		
+		if ("font_bold_italic" in data.preview)
+			previewFontBoldItalic.value = data.preview.font_bold_italic
+	}
+	else
+	{
+		data.preview = {}
+		data.preview.bbcode = true
+		previewParseBBCode.checked = true
 	}
 	
 	if ("filenames" in data)
@@ -697,6 +798,42 @@ var parseURL = function()
 	refreshUI()
 }
 
+function refreshPreview()
+{
+	var value = expandedTextarea.value
+	var useBBCode = data.preview != undefined && data.preview.bbcode != undefined && data.preview.bbcode
+	
+	if (data.preview != undefined && data.preview.separator != undefined && data.preview.separator != "")
+	{
+		var gutterColor = eval(getComputedStyle(previewDiv.querySelector("#preview-reference-gutter")).color)
+		var iterateTimes = value.split(data.preview.separator).length - 1
+		var lastIndex = 0
+		
+		for (let i = 1; i <= iterateTimes; i++)
+		{
+			var currentIndex = value.indexOf(data.preview.separator, lastIndex)
+			var indexedGutter = ""
+			
+			if (i == 1)
+			{
+				indexedGutter = useBBCode ? "[b][color=" + gutterColor + "]" + i + ":[/color][/b] " : "<span class=\"preview-gutter\">" + i + ": </span>"
+				value = value.substr(0, lastIndex) + indexedGutter + value.substr(lastIndex)
+				currentIndex += indexedGutter.length
+			}
+			indexedGutter = useBBCode ? "\n[b][color=" + gutterColor + "]" + (i + 1) + ":[/color][/b] " : "<br><span class=\"preview-gutter\">" + (i + 1) + ": </span>"
+			value = value.substr(0, currentIndex) + indexedGutter + value.substr(currentIndex)
+			lastIndex = currentIndex + indexedGutter.length
+			value = value.slice(0, lastIndex) + value.slice(lastIndex + data.preview.separator.length)
+		}
+	}
+	preview.innerHTML = ""
+	
+	if (useBBCode)
+		preview.appendChild(renderBBCode(value))
+	else
+		preview.innerHTML = value
+}
+
 var refreshUI = function()
 {
 	var themeMap = {
@@ -737,6 +874,22 @@ var refreshUI = function()
 		
 		if (data.options[booleanValue.value])
 			booleanValue.selected = true
+	}
+	
+	if (data.options.disable_expanded_preview)
+	{
+		previewDiv.hidden = true
+		expandedTextarea.classList.add("expanded-textarea-rounded")
+		expandedTextarea.removeEventListener("input")
+	}
+	else
+	{
+		previewDiv.hidden = false
+		expandedTextarea.classList.remove("expanded-textarea-rounded")
+		expandedTextarea.oninput = function()
+		{
+			refreshPreview()
+		}
 	}
 	var libMapping = {
 		ace_editor: {
@@ -1048,6 +1201,7 @@ function expandTextarea(textareaElement)
 	var sourcePath = textareaElement.parentNode.parentNode.querySelector("label.form-label").getAttribute("for")
 	sourcePath = sourcePath.replace(new RegExp("^root\\["), "").replace(new RegExp("\\]$"), "").replaceAll("\\]\\[", " / ")
 	expandedTextareaPath.innerHTML = sourcePath
+	refreshPreview()
 	QRCodeDiv.hidden = true
 	overlay.hidden = false
 	expandedTextareaDiv.hidden = false
@@ -1165,6 +1319,52 @@ expandButton.addEventListener("click", function()
 	schemaDiv.hidden = isHidden
 	optionsDiv.hidden = isHidden
 	isExpanded = !isExpanded
+})
+previewOptionsButton.addEventListener("click", function()
+{
+	if (previewOptionsDiv.hidden)
+	{
+		previewOptionsDiv.hidden = false
+		previewOptionsButtonIcon.className = "fas fa-caret-down"
+	}
+	else
+	{
+		previewOptionsDiv.hidden = true
+		previewOptionsButtonIcon.className = "fas fa-caret-right"
+	}
+})
+previewParseBBCode.addEventListener("change", function()
+{
+	data.preview.bbcode = previewParseBBCode.checked
+	refreshPreview()
+})
+previewSeparator.addEventListener("change", function()
+{
+	data.preview.separator = previewSeparator.value
+	refreshPreview()
+})
+previewFontSize.addEventListener("change", function()
+{
+	if (previewFontSize.value != "")
+	{
+		try
+		{
+			var proposedSize = parseInt(previewFontSize.value)
+			preview.style.fontSize = proposedSize + "pt"
+			data.preview.font_size = proposedSize
+		}
+		catch (e)
+		{
+			alert(e.message)
+		}
+	}
+	else
+	{
+		preview.style.fontSize = ""
+		
+		if (data.preview.font_size)
+			delete data.preview.font_size
+	}
 })
 outputAdditionalButton.addEventListener("click", function()
 {

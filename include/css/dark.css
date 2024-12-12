@@ -21,7 +21,7 @@ option:checked
 	background: #333333 !important;
 }
 
-h1, h2, a, a:visited, span, input, textarea, select, option
+h1, h2, h3, h4, h5, h6, a, a:visited, span, input, textarea, select, option
 {
 	color: white;
 }
@@ -41,7 +41,7 @@ p, b, label
 	color: #cccccc;
 }
 
-button:not(.jsoneditor-twbs5-text-button)
+button:not(.jsoneditor-twbs5-text-button, .tooltip-button)
 {
 	color: white !important;
 	padding: 6px 12px !important;
@@ -49,12 +49,12 @@ button:not(.jsoneditor-twbs5-text-button)
 	border: none !important;
 }
 
-button:not(.jsoneditor-twbs5-text-button):hover
+button:not(.jsoneditor-twbs5-text-button, .tooltip-button):hover
 {
 	background: #383838 !important;
 }
 
-button:not(.jsoneditor-twbs5-text-button):active
+button:not(.jsoneditor-twbs5-text-button, .tooltip-button):active
 {
 	background: #323232 !important;
 }
@@ -90,10 +90,20 @@ input[type="number"]
 	box-shadow: 0 0 4px 2px rgba(0, 0, 0, 0.25);
 }
 
-#expanded-textarea-path
+#expanded-textarea-path, #preview-div
 {
 	color: #888888;
 	background: #1a1a1a;
+}
+
+#preview-header, #preview + span > span, .preview-gutter
+{
+	color: #888888 !important;
+}
+
+#preview
+{
+	color: white !important;
 }
 
 #ace_settingsmenu
@@ -101,6 +111,11 @@ input[type="number"]
 	color: white !important;
 	background: #282828 !important;
 	box-shadow: none !important;
+}
+
+.tooltip-button
+{
+	color: inherit !important;
 }
 
 .btn-primary, .btn-secondary

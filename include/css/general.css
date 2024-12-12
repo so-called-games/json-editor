@@ -19,6 +19,23 @@
 	}
 }
 
+@font-face
+{
+	font-family: "Goofoo";
+	src:
+		url("../fonts/goofoo-regular.ttf") format("truetype"),
+		url("../fonts/goofoo-regular.woff") format("woff");
+}
+
+@font-face
+{
+    font-family: "Goofoo";
+    font-weight: bold;
+    src:
+		url("../fonts/goofoo-bold.ttf") format("truetype"),
+		url("../fonts/goofoo-bold.woff") format("woff");
+}
+
 [hidden]
 {
 	display: none !important;
@@ -99,17 +116,52 @@ label
 #expanded-textarea
 {
 	width: 75vh;
-	height: 50vh;
+	height: 35vh;
 	min-width: 100%;
 	min-height: 64px;
 	max-width: calc(100vw - 128px);
 	max-height: calc(100vh - 128px);
 	resize: both;
 	padding: 12px 16px;
+	border-radius: 0;
 	border-top-left-radius: 0 !important;
 	border-top-right-radius: 0 !important;
+}
+
+#preview-div
+{
+	padding: 12px;
+	padding-top: 8px;
+	border-top-left-radius: 0;
+	border-top-right-radius: 0;
 	border-bottom-left-radius: 6px;
 	border-bottom-right-radius: 6px;
+}
+
+#preview-header
+{
+	display: inline !important;
+}
+
+#preview
+{
+	margin: 12px 0 24px 0;
+}
+
+#preview-separator, #preview-font-size
+{
+	margin-bottom: 16px;
+}
+
+#preview-parse-bbcode
+{
+	margin-top: 4px;
+	margin-right: 12px;
+}
+
+#preview-options-fonts-div
+{
+	display: flex;
 }
 
 #main-div
@@ -165,6 +217,42 @@ label
 	border-radius: 12px !important;
 }
 
+.expanded-textarea-rounded
+{
+	border-bottom-left-radius: 6px !important;
+	border-bottom-right-radius: 6px !important;
+}
+
+.tooltip-button
+{
+	display: inline;
+	margin: 0 !important;
+	margin-left: 4px !important;
+	background: none !important;
+	border: none !important;
+}
+
+.preview-gutter
+{
+	font-weight: bold;
+}
+
+.font-url
+{
+	width: auto;
+	margin: 0 6px;
+}
+
+.font-url:first-child
+{
+	margin-left: 0 !important;
+}
+
+.font-url:last-child
+{
+	margin-right: 0 !important;
+}
+
 .action-button
 {
 	margin-bottom: 8px;
@@ -195,11 +283,6 @@ label
 	border-top-right-radius: 0 !important;
 	border-bottom-left-radius: 12px !important;
 	border-bottom-right-radius: 12px !important;
-}
-
-.url
-{
-	margin-bottom: 16px;
 }
 
 .ace_optionsMenuEntry

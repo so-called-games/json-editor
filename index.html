@@ -9,11 +9,13 @@
 		<link id="theme-link" rel="stylesheet">
 		<link id="iconlib-link" rel="stylesheet">
 		<script src="include/js/qrcode.js"></script>
+		<script src="include/js/bbcode.js"></script>
 		<script src="include/js/assign.js"></script>
 		<script src="include/js/ajv-validator.js"></script>
 		<script src="https://cdn.jsdelivr.net/npm/@json-editor/json-editor@latest/dist/jsoneditor.min.js"></script>
 		<script src="https://cdn.jsdelivr.net/npm/ace-builds@1.14.0/src-noconflict/ace.js"></script>
 		<script src="https://cdn.jsdelivr.net/npm/lz-string@1.4.4/libs/lz-string.min.js"></script>
+		<script src="https://unpkg.com/imask@7.6.1/dist/imask.js"></script>
 	</head>
 	<body>
 		<div id="message" hidden></div>
@@ -26,7 +28,50 @@
 			</div>	
 			<div id="expanded-textarea-div" hidden>
 				<span id="expanded-textarea-path" id="text" class="h5"></span>
-				<textarea id="expanded-textarea" class="form-control"></textarea>
+				<textarea id="expanded-textarea" class="form-control" spellcheck="false"></textarea>
+				<div id="preview-div">
+					<div class="form-group">
+						<span id="preview-header" class="h3">Preview</span>
+						<button type="button" class="tooltip-button" title="">ⓘ</button>
+					</div>
+					<span id="preview-reference-gutter" class="preview-gutter" hidden></span>
+					<div id="preview"></div>
+					<span class="h4">
+						<button id="toggle-preview-options" title="Toggle" class="btn btn-sm btn-secondary toggle-button" type="button"><i class="fas fa-caret-right"></i></button> <span>Options</span>
+					</span>
+					<div id="preview-options-div" class="card card-body mt-2 bg-light" hidden>
+						<div class="input-group mb-1">
+							<input id="preview-parse-bbcode" type="checkbox"></input>
+							<label>Parse BBCode</label>
+						</div>
+						<br>
+						<label>Preview parts separator</label>
+						<input id="preview-separator" class="form-control" type="text"></input>
+						<br>
+						<label>Font size (in points)</label>
+						<input id="preview-font-size" class="form-control" type="text"></input>
+						<br>
+						<label>URLs to custom fonts</label>
+						<div id="preview-options-fonts-div">
+							<div class="input-group font-url">
+								<input id="preview-font-normal" class="form-control" type="text" placeholder="Regular"></input>
+								<button id="load-preview-font-normal" class="btn btn-primary m-0" title="Load custom refular font from URL"><i class="fas fa-download"></i></button>
+							</div>
+							<div class="input-group font-url">
+								<input id="preview-font-bold" class="form-control" type="text" placeholder="Bold"></input>
+								<button id="load-preview-font-bold" class="btn btn-primary m-0" title="Load custom bold font from URL"><i class="fas fa-download"></i></button>
+							</div>
+							<div class="input-group font-url">
+								<input id="preview-font-italic" class="form-control" type="text" placeholder="Italic"></input>
+								<button id="load-preview-font-italic" class="btn btn-primary m-0" title="Load custom italic font from URL"><i class="fas fa-download"></i></button>
+							</div>
+							<div class="input-group font-url">
+								<input id="preview-font-bold-italic" class="form-control" type="text" placeholder="Bold-italic"></input>
+								<button id="load-preview-font-bold-italic" class="btn btn-primary m-0" title="Load custom bold-italic font from URL"><i class="fas fa-download"></i></button>
+							</div>
+						</div>
+					</div>
+				</div>
 			</div>
 		</div>
 		<div id="main-div" class="container-fluid grid">
@@ -65,15 +110,13 @@
 					</span>
 					<div id="output-additional-div" class="card card-body mt-2 bg-light" hidden>
 						<label>URL from which output will be loaded (also on opening copied link)</label>
-						<div class="input-group url">
+						<div class="input-group">
 							<input id="output-url" class="form-control" type="text"></input>
 							<button id="load-output" class="btn btn-primary m-0 input-button" title="Get output from URL"><i class="fas fa-download"></i> <span>Load</span></button>
 						</div>
 						<br>
 						<label>Filename of the downloadable output (without ".json")</label>
-						<div class="input-group">
-							<input id="output-filename" class="form-control" type="text"></input>
-						</div>
+						<input id="output-filename" class="form-control" type="text"></input>
 					</div>
 					<h2 class="mt-3">Validation</h2>
 					<p>This will update whenever the form changes to show validation errors if there are any.</p>
@@ -102,15 +145,13 @@
 					</span>
 					<div id="schema-additional-div" class="card card-body mt-2 bg-light" hidden>
 						<label>URL from which schema will be loaded (also on opening copied link)</label>
-						<div class="input-group url">
+						<div class="input-group">
 							<input id="schema-url" class="form-control" type="text"></input>
 							<button id="load-schema" class="btn btn-primary m-0 input-button" title="Get output from URL"><i class="fas fa-download"></i> <span>Load</span></button>
 						</div>
 						<br>
 						<label>Filename of the downloadable schema (without ".json")</label>
-						<div class="input-group">
-							<input id="schema-filename" class="form-control" type="text"></input>
-						</div>
+						<input id="schema-filename" class="form-control" type="text"></input>
 					</div>
 				</div>
 				<div id="errors-div" class="col-md-5 w-12">
@@ -147,6 +188,7 @@
 						<option value="disable_properties">Disable properties buttons</option>
 						<option value="disable_properties_reorder">Disable properties reordering</option>
 						<option value="disable_textarea_expanding">Disable textarea expanding buttons</option>
+						<option value="disable_expanded_preview">Disable expanded textarea preview</option>
 						<option value="disable_array_add">Disable array add buttons</option>
 						<option value="disable_array_reorder">Disable array move buttons</option>
 						<option value="disable_array_delete">Disable array delete buttons</option>
@@ -198,7 +240,7 @@
 				</div>
 				<div hidden>
 					<br>
-					<label for="lib-select" title="It's recommended that you click the &quot;Copy Link&quot; after changing these options">Include External Library</label><br>
+					<label for="lib-select" title="It's recommended that you click the &quot;Copy Link&quot; after changing these options">External Libraries</label><br>
 					<select multiple size="10" id="lib-select" class="form-control browser-default" title="It"s reccomended that you click the Direct Link after changing these options">
 						<option value="ace_editor">Ace Editor</option>
 						<option value="choices">Choices</option>
