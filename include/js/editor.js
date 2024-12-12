@@ -52,8 +52,8 @@ const messageAnimationLength = 0.5
 const messageLinkCopied = "Direct link to this session was copied"
 const messageOutputCopied = "JSON output was copied"
 const messageSchemaCopied = "JSON schema was copied"
-const messagePreviewFontNotSpecified = "Font URL was not specified"
-const messagePreviewFontLoadError = "Error occured while loading font"
+const messagePreviewFontNotSpecified = "Preview font URL was not specified"
+const messagePreviewFontLoadError = "Error occured while loading preview font"
 const parsingMap = new Map()
 setParsingMap()
 var copyScrollOptions = {

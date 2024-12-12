@@ -96,7 +96,7 @@ input[type="number"]
 	background: #1a1a1a;
 }
 
-#preview-header, #preview + span > span, .preview-gutter
+#preview-header, #preview + span > span
 {
 	color: #888888 !important;
 }
@@ -116,6 +116,11 @@ input[type="number"]
 .tooltip-button
 {
 	color: inherit !important;
+}
+
+.preview-gutter
+{
+	color: #4a4a4a !important;
 }
 
 .btn-primary, .btn-secondary

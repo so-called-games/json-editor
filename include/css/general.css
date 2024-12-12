@@ -152,16 +152,19 @@ label
 #preview b
 {
 	font-family: "CustomFontBold", var(--bs-body-font-family);
+	color: inherit !important;
 }
 
 #preview i
 {
 	font-family: "CustomFontItalic", var(--bs-body-font-family);
+	color: inherit !important;
 }
 
 #preview b i, #preview i b
 {
 	font-family: "CustomFontBoldItalic", var(--bs-body-font-family);
+	color: inherit !important;
 }
 
 #preview-separator, #preview-font-size
