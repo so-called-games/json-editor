@@ -1,5 +1,10 @@
 @import url('https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css');
 
+button:not(.jsoneditor-twbs5-text-button, .small-button, .tooltip-button)
+{
+	padding: 6px 12px !important;
+}
+
 select:not(.je-switcher)
 {
 	padding: 8px 16px !important;

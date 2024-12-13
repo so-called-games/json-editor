@@ -847,7 +847,6 @@ function refreshPreview()
 	
 	if (data.preview != undefined && data.preview.separator != undefined && data.preview.separator != "")
 	{
-		var gutterColor = eval(getComputedStyle(previewDiv.querySelector("#preview-reference-gutter")).color)
 		var iterateTimes = value.split(data.preview.separator).length - 1
 		var lastIndex = 0
 		
@@ -858,11 +857,11 @@ function refreshPreview()
 			
 			if (i == 1)
 			{
-				indexedGutter = useBBCode ? "[b][color=" + gutterColor + "]" + i + ":[/color][/b] " : "<span class=\"preview-gutter\">" + i + ": </span>"
+				indexedGutter = useBBCode ? "[c=preview-gutter]" + i + ":[/c] " : "<span class=\"preview-gutter\">" + i + ": </span>"
 				value = value.substr(0, lastIndex) + indexedGutter + value.substr(lastIndex)
 				currentIndex += indexedGutter.length
 			}
-			indexedGutter = useBBCode ? "\n[b][color=" + gutterColor + "]" + (i + 1) + ":[/color][/b] " : "<br><span class=\"preview-gutter\">" + (i + 1) + ": </span>"
+			indexedGutter = useBBCode ? "\n[c=preview-gutter]" + (i + 1) + ":[/c] " : "<br><span class=\"preview-gutter\">" + (i + 1) + ": </span>"
 			value = value.substr(0, currentIndex) + indexedGutter + value.substr(currentIndex)
 			lastIndex = currentIndex + indexedGutter.length
 			value = value.slice(0, lastIndex) + value.slice(lastIndex + data.preview.separator.length)

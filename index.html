@@ -24,14 +24,13 @@
 				<div id="qr-code-inner-div">
 					<div id="qr-code"></div>
 				</div>
-				<button id="save-qr-code" class="btn btn-primary image-button" title="Save QR code as PNG image with 1024x1024 resolution"><i class="fas fa-save"></i> <span>Save as PNG</span></button>
+				<button id="save-qr-code" class="btn btn-secondary image-button" title="Save QR code as PNG image with 1024x1024 resolution"><i class="fas fa-save"></i> <span>Save as PNG</span></button>
 			</div>	
 			<div id="expanded-textarea-div" hidden>
 				<span id="expanded-textarea-path" id="text" class="h5"></span>
 				<textarea id="expanded-textarea" class="form-control" spellcheck="false"></textarea>
 				<div id="preview-div">
 					<span id="preview-header" class="h3">Preview</span>
-					<span id="preview-reference-gutter" class="preview-gutter" hidden></span>
 					<div id="preview"></div>
 					<span class="h4">
 						<button id="toggle-preview-options" title="Toggle" class="btn btn-sm btn-secondary toggle-button" type="button"><i class="fas fa-caret-right"></i></button> <span>Options</span>
@@ -48,23 +47,23 @@
 						<label>Font size (in points)</label>
 						<input id="preview-font-size" class="form-control" type="text"></input>
 						<br>
-						<label>URLs to custom fonts</label>
+						<label>Сustom fonts URLs</label>
 						<div id="preview-options-fonts-div">
 							<div class="input-group font-url">
 								<input id="preview-font-normal" class="form-control" type="text" placeholder="Regular"></input>
-								<button id="load-preview-font-normal" class="btn btn-primary m-0" title="Load custom refular font from URL"><i class="fas fa-download"></i></button>
+								<button id="load-preview-font-normal" class="btn btn-secondary m-0" title="Load custom refular font from URL"><i class="fas fa-download"></i></button>
 							</div>
 							<div class="input-group font-url">
 								<input id="preview-font-bold" class="form-control" type="text" placeholder="Bold"></input>
-								<button id="load-preview-font-bold" class="btn btn-primary m-0" title="Load custom bold font from URL"><i class="fas fa-download"></i></button>
+								<button id="load-preview-font-bold" class="btn btn-secondary m-0" title="Load custom bold font from URL"><i class="fas fa-download"></i></button>
 							</div>
 							<div class="input-group font-url">
 								<input id="preview-font-italic" class="form-control" type="text" placeholder="Italic"></input>
-								<button id="load-preview-font-italic" class="btn btn-primary m-0" title="Load custom italic font from URL"><i class="fas fa-download"></i></button>
+								<button id="load-preview-font-italic" class="btn btn-secondary m-0" title="Load custom italic font from URL"><i class="fas fa-download"></i></button>
 							</div>
 							<div class="input-group font-url">
 								<input id="preview-font-bold-italic" class="form-control" type="text" placeholder="Bold-italic"></input>
-								<button id="load-preview-font-bold-italic" class="btn btn-primary m-0" title="Load custom bold-italic font from URL"><i class="fas fa-download"></i></button>
+								<button id="load-preview-font-bold-italic" class="btn btn-secondary m-0" title="Load custom bold-italic font from URL"><i class="fas fa-download"></i></button>
 							</div>
 						</div>
 					</div>
@@ -235,9 +234,9 @@
 						<option value="never">Never</option>
 					</select>
 				</div>
-				<div hidden>
+				<div>
 					<br>
-					<label for="lib-select" title="It's recommended that you click the &quot;Copy Link&quot; after changing these options">External Libraries</label><br>
+					<label for="lib-select" title="It is recommended that you click the &quot;Copy link&quot; after changing these options">External Libraries</label><br>
 					<select multiple size="10" id="lib-select" class="form-control browser-default" title="It"s reccomended that you click the Direct Link after changing these options">
 						<option value="ace_editor">Ace Editor</option>
 						<option value="choices">Choices</option>

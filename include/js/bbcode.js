@@ -5,47 +5,48 @@ window.renderBBCode = (function()
 		/[=[\]]/,
 		/\]/
 	];
-	var tagList = ['*', 'img', 'url', 'color', 'size', 'font', 'quote', 'spoiler', 'hr', 'b', 'i', 'u', 's'];
+	var tagList = ["*", "img", "url", "color", "size", "font", "c", "quote", "spoiler", "hr", "b", "i", "u", "s"];
 	var whitelist = {
-	  'img': /^https?:\/\//, 'url': /^(https?|ftps?|ircs?):\/\//, 'color': /[A-Za-z]+|#(?:[0-9a-f]{3}){1,2}/, 'font': '[1-7]'
+	  "img": /^https?:\/\//, "url": /^(https?|ftps?|ircs?):\/\//, "color": /[A-Za-z]+|#(?:[0-9a-f]{3}){1,2}/, "font": "[1-7]"
 	};
 	var tagInfo = [
-		['li'],
-		['img', 'src', {style: 'max-width:500px;', alt: '', border: 0}],
-		['a', 'href', {rel: 'noreferrer', target: '_blank'}],
-		['font', 'color'],
-		['font', 'size'],
-		['font', 'face'],
+		["li"],
+		["img", "src", {style: "max-width: 500px;", alt: "", border: 0}],
+		["a", "href", {rel: "noreferrer", target: "_blank"}],
+		["font", "color"],
+		["font", "size"],
+		["font", "face"],
+		["span", "class"],
 		function (arg, content)
 		{
 			var el = document.createDocumentFragment();
-			var tmp = document.createElement('p');
-			tmp.className = 'sub';
-			tmp.innerHTML = '<b></b>';
-			tmp.firstChild.textContent = arg ? arg + ' escreveu:' : 'Citação:';
+			var tmp = document.createElement("p");
+			tmp.className = "sub";
+			tmp.innerHTML = "<b></b>";
+			tmp.firstChild.textContent = arg ? arg + " wrote:" : "Quotation:";
 			el.appendChild(tmp);
-			tmp = document.createElement('table');
-			tmp.className = 'main';
-			tmp.setAttribute('border', 1);
-			tmp.setAttribute('cellspacing', 0);
-			tmp.setAttribute('cellpadding', 10);
-			tmp.innerHTML = '<tr><td style="border: 1px black dotted"></td></tr>';
+			tmp = document.createElement("table");
+			tmp.className = "main";
+			tmp.setAttribute("border", 1);
+			tmp.setAttribute("cellspacing", 0);
+			tmp.setAttribute("cellpadding", 10);
+			tmp.innerHTML = "<tr><td style=\"border: 1px black dotted\"></td></tr>";
 			tmp.firstChild.firstChild.appendChild(parse(content));
 			el.appendChild(tmp);
 			return el;
 		},
 		function (arg, content)
 		{
-			var el = document.createElement('div');
-			el.textContent = (arg || 'Spoiler') + ' ';
-			var toggleImg = document.createElement('img');
-			toggleImg.src = 'images/plus.gif';
-			toggleImg.title = 'Spoiler';
-			toggleImg.alt = '';
+			var el = document.createElement("div");
+			el.textContent = (arg || "Spoiler") + " ";
+			var toggleImg = document.createElement("img");
+			toggleImg.src = "images/plus.gif";
+			toggleImg.title = "Spoiler";
+			toggleImg.alt = "";
 			el.appendChild(toggleImg);
-			var spoilerDiv = document.createElement('div');
+			var spoilerDiv = document.createElement("div");
 			spoilerDiv.appendChild(parse(content));
-			spoilerDiv.style.display = 'none';
+			spoilerDiv.style.display = "none";
 			el.appendChild(spoilerDiv);
 			return el;
 		}
@@ -62,12 +63,12 @@ window.renderBBCode = (function()
 		
 		function addTextNode(text)
 		{
-			text.split('\n').forEach(function (content, n, arr)
+			text.split("\n").forEach(function (content, n, arr)
 			{
 				result.appendChild(document.createTextNode(content));
 
 				if (n !== arr.length - 1)
-					result.appendChild(document.createElement('br'));
+					result.appendChild(document.createElement("br"));
 			});
 		}
 		
@@ -109,20 +110,20 @@ window.renderBBCode = (function()
 
 					foundChar = text.charAt(newp);
 
-					if (foundChar === '[')
+					if (foundChar === "[")
 					{
-						addTextNode('[');
+						addTextNode("[");
 						break;
 					}
-					hasAttributes = foundChar === '=';
+					hasAttributes = foundChar === "=";
 
 					if (!hasAttributes)
 					{
-						attributeArr.push('');
+						attributeArr.push("");
 						
-						if (tag === '*' || tag === 'hr')
+						if (tag === "*" || tag === "hr")
 						{
-							text = text.substr(0, newp + 1) + '[/' + tag + ']' +
+							text = text.substr(0, newp + 1) + "[/" + tag + "]" +
 							text.substr(newp + 1);
 						}
 					}
@@ -140,8 +141,8 @@ window.renderBBCode = (function()
 			{
 				closingTag = tagArr.pop();
 				closingAttr = attributeArr.pop();
-				var endedStartTag = text.indexOf(']', newp);
-				newp = closingTag === 'img' && closingAttr ? endedStartTag : text.indexOf('[/' + closingTag + ']', oldp);
+				var endedStartTag = text.indexOf("]", newp);
+				newp = closingTag === "img" && closingAttr ? endedStartTag : text.indexOf("[/" + closingTag + "]", oldp);
 				var openedTag;
 				
 				if (newp === -1)
@@ -155,16 +156,16 @@ window.renderBBCode = (function()
 				
 				if (tagIndex === -1)
 				{
-					addTextNode('[' + closingTag + (closingAttr ? ('=' + closingAttr) : '') + (endedStartTag === -1 ? '' : ']'));
+					addTextNode("[" + closingTag + (closingAttr ? ("=" + closingAttr) : "") + (endedStartTag === -1 ? "" : "]"));
 					
 					if (content)
 						result.appendChild(parse(content));
 					
 					if (!openedTag)
-						addTextNode('[/' + closingTag + ']');
+						addTextNode("[/" + closingTag + "]");
 					
 				}
-				else if (typeof tagInfo[tagIndex] === 'function')
+				else if (typeof tagInfo[tagIndex] === "function")
 				{
 					result.appendChild(tagInfo[tagIndex](closingAttr, content));
 				}
@@ -181,16 +182,16 @@ window.renderBBCode = (function()
 					var whitelistConfig = whitelist[closingTag];
 					var attribute;
 
-					if (closingTag === 'img')
+					if (closingTag === "img")
 					{
 						attribute = closingAttr || content;
 
 						if (!whitelistConfig || whitelistConfig.test(attribute))
 							el.setAttribute(info[1], attribute);
 						else
-							el = document.createTextNode('');
+							el = document.createTextNode("");
 					}
-					else if (closingTag === 'url')
+					else if (closingTag === "url")
 					{
 						attribute = closingAttr || content;
 
@@ -200,7 +201,7 @@ window.renderBBCode = (function()
 							el.appendChild(parse(content));
 						}
 						else
-							el = document.createTextNode('');
+							el = document.createTextNode("");
 					}
 					else if (info[1])
 					{
@@ -211,7 +212,7 @@ window.renderBBCode = (function()
 						el.appendChild(parse(content));
 					result.appendChild(el);
 				}
-				oldp = endedStartTag === -1 || openedTag ? text.length : text.indexOf(']', newp) + 1;
+				oldp = endedStartTag === -1 || openedTag ? text.length : text.indexOf("]", newp) + 1;
 				state = 0;
 			}
 		} while (oldp < text.length);
@@ -219,13 +220,13 @@ window.renderBBCode = (function()
 		switch (state)
 		{
 			case 1:
-				addTextNode('[');
+				addTextNode("[");
 				break;
 			case 2:
-				addTextNode('[' + tagArr.pop());
+				addTextNode("[" + tagArr.pop());
 				break;
 			case 3:
-				addTextNode('[' + tagArr.pop() + '=' + attributeArr.pop());
+				addTextNode("[" + tagArr.pop() + "=" + attributeArr.pop());
 				break;
 		}
 		return result;
