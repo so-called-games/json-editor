@@ -40,6 +40,7 @@ const defaultHides = {
 	schema: false,
 	errors: true
 }
+const defaultParseBBCode = false
 const defaultExtras = {
 	output: "",
 	schema: ""
@@ -50,6 +51,7 @@ var messageTimer
 const messageShowLength = 2
 const messageAnimationLength = 0.5
 const messageLinkCopied = "Direct link to this session was copied"
+const messageSchemaIsTooLong = "Schema is too long, so it will be removed from QR code"
 const messageOutputCopied = "JSON output was copied"
 const messageSchemaCopied = "JSON schema was copied"
 const messagePreviewFontNotSpecified = "Preview font URL was not specified"
@@ -395,7 +397,7 @@ function setParsingMap()
 	parsingMap.set("at", "array_controls_top")
 }
 
-function makeLink()
+function makeLink(includeSchema = true)
 {
 	var modifiedData = JSON.parse(JSON.stringify(data))
 	
@@ -411,7 +413,7 @@ function makeLink()
 	if (isEmpty(modifiedData.hide))
 		delete modifiedData.hide
 	
-	if (modifiedData.preview.bbcode == true)
+	if (modifiedData.preview.bbcode == defaultParseBBCode)
 		delete modifiedData.preview.bbcode
 	
 	if (modifiedData.preview.separator == "")
@@ -453,7 +455,7 @@ function makeLink()
 	if (isEmpty(modifiedData.urls))
 		delete modifiedData.urls
 	
-	if (wasSchemaFromURL)
+	if (wasSchemaFromURL || !includeSchema)
 		delete modifiedData.options.schema
 	
 	for (const [key, value] of Object.entries(modifiedData.options))
@@ -471,6 +473,21 @@ function makeLink()
 		url += LZString.compressToEncodedURIComponent(JSON.stringify(modifiedData))
 	}
 	return url
+}
+
+function MakeQRCode(includeSchema)
+{
+	var isHidden = overlay.hidden
+	QRCode.makeCode(makeLink(includeSchema))
+	overlay.hidden = !isHidden
+	
+	if (!QRCode._htOption.useSVG)
+	{
+		saveQRCode.hidden = true
+		QRCodeInnerDiv.classList.add("qr-code-compatible-div")
+	}
+	QRCodeDiv.hidden = !isHidden
+	expandedTextareaDiv.hidden = true
 }
 
 function showMessage(message, duration = messageShowLength)
@@ -720,8 +737,8 @@ var parseURL = function()
 			previewParseBBCode.checked = (data.preview.bbcode != "false")
 		else
 		{
-			data.preview.bbcode = true
-			previewParseBBCode.checked = true
+			data.preview.bbcode = defaultParseBBCode
+			previewParseBBCode.checked = defaultParseBBCode
 		}
 		
 		if ("separator" in data.preview)
@@ -757,8 +774,8 @@ var parseURL = function()
 	else
 	{
 		data.preview = {}
-		data.preview.bbcode = true
-		previewParseBBCode.checked = true
+		data.preview.bbcode = defaultParseBBCode
+		previewParseBBCode.checked = defaultParseBBCode
 	}
 	
 	if ("filenames" in data)
@@ -910,16 +927,13 @@ var refreshUI = function()
 	{
 		previewDiv.hidden = true
 		expandedTextarea.classList.add("expanded-textarea-rounded")
-		expandedTextarea.removeEventListener("input")
+		expandedTextarea.removeEventListener("input", refreshPreview)
 	}
 	else
 	{
 		previewDiv.hidden = false
 		expandedTextarea.classList.remove("expanded-textarea-rounded")
-		expandedTextarea.oninput = function()
-		{
-			refreshPreview()
-		}
+		expandedTextarea.addEventListener("input", refreshPreview)
 	}
 	var libMapping = {
 		ace_editor: {
@@ -1305,21 +1319,15 @@ showQRCode.addEventListener("click", function()
 	{
 		try
 		{
-			QRCode.makeCode(makeLink())
-			overlay.hidden = !isHidden
-			
-			if (!QRCode._htOption.useSVG)
-			{
-				saveQRCode.hidden = true
-				QRCodeInnerDiv.classList.add("qr-code-compatible-div")
-			}
-			QRCodeDiv.hidden = !isHidden
-			expandedTextareaDiv.hidden = true
+			MakeQRCode(true)
 		}
 		catch (e)
 		{
-			if (e.message === "Too long data")
-				alert("Data is too long to be contained in QR code. Try changing options to be shorter or defaults or use direct link instead of QR code.")
+			if (e.message === "QRCodeLimitLength[i] is undefined")
+			{
+				showMessage(messageSchemaIsTooLong)
+				MakeQRCode(false)
+			}
 			else
 				alert("Error occured while generating QR code: " + e.message + ".")
 		}
