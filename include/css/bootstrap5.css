@@ -80,7 +80,6 @@ div:last-child > .btn-group:has(.json-editor-btntype-delete, .json-editor-btntyp
 .property-selector
 {
 	width: auto !important;
-	max-width: fit-content !important;
 	max-height: 320px !important;
 	overflow-wrap: break-word !important;
 	padding: 0 8px 0 4px !important;
