@@ -15,6 +15,11 @@ option
 	padding: 4px 8px !important;
 }
 
+.input-group
+{
+	flex-wrap: nowrap !important;
+}
+
 .input-group:not(:last-child, .font-url)
 {
 	margin-bottom: 16px;
@@ -42,7 +47,7 @@ option
 
 .card .row:last-child:has(> div > span > .btn-group:empty) .card-title
 {
-	margin-bottom: 0 !important;
+	margin-bottom: 0;
 }
 
 .je-object__container > .card
@@ -112,7 +117,6 @@ div:last-child > .btn-group:has(.json-editor-btntype-delete, .json-editor-btntyp
 	display: inline !important;
 	width: 72px;
 	height: 36px;
-	margin-top: -4px !important;
 	border-radius: 4px !important;
 }
 
@@ -120,6 +124,17 @@ div:last-child > .btn-group:has(.json-editor-btntype-delete, .json-editor-btntyp
 {
 	margin-top: -4px !important;
 	padding: 7px !important;
+}
+
+.row > div > .card > div > .je-object__container > .btn-group:last-child
+{
+	width: 100%;
+}
+
+.row > div > .card:has(> div > .je-object__container:last-child > .btn-group) .json-editor-btn-add
+{
+	width: 100%;
+	margin-top: 16px !important;
 }
 
 .je-switcher

@@ -34,6 +34,11 @@ label
 	margin-bottom: 6px !important;
 }
 
+tr
+{
+	border: none !important;
+}
+
 #message
 {
 	position: fixed;

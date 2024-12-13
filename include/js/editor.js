@@ -6,6 +6,7 @@ var defaultOptions = Object.assign({}, JSONEditor.defaults.options, {
 	use_default_values: true,
 	use_name_attributes: true,
 	prompt_before_delete: false,
+	enum_source_value_auto_select: false,
 	case_sensitive_property_search: false,
 	required_by_default: false,
 	display_required_only: false,
@@ -877,7 +878,7 @@ function refreshPreview()
 	if (useBBCode)
 		preview.appendChild(renderBBCode(value))
 	else
-		preview.innerHTML = value
+		preview.innerHTML = value.replaceAll("\n", "<br>")
 }
 
 var refreshUI = function()

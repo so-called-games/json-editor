@@ -30,6 +30,9 @@ You can **expand** property editor **by clicking button next to the *Reset***. I
 ### Mobile-friendly scaling
 Scaling of the editor page is different for desktop and mobile devices. This is because with greater scale the editor will look and control more reliably on mobile devices. Since you cannot natively expand `<textarea>` elements on some mobile browsers to contain more lines of multiline string property in property editor, expanded `<textarea>` feature was implemented for editor to be even more accessible on mobile devices. To show `<textarea>` over the editor, click expand button on the right side of the `<textarea>` element in property editor itself. To close expanded `<textarea>`, click anywhere outside of it.
 
+### Preview for expanded text
+Preview feature for expanded `<textarea>` was also implemented to see how typed text will look like with choosen options, such as font size and fonts in different styles (bold or italic for example) which can be loaded from provided URLs. BBCode parsing option can be enabled to stylize preview text and there is also preview parts separation feature: if you specify separation string, preview text will be splitted by this string with indexes on the left side shown. You can disable preview and expanded `<textarea>` features in *Boolean options* section of the editor.
+
 ### Additional themes
 Some additional Bootstrap 5 and ACE Editor themes were implemented, including dark ones (dark theme is set by default).
 
