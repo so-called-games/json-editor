@@ -1,3 +1,4 @@
+const defaultOutput = "{}"
 var defaultSchema = {
 	"type": "object"
 }
@@ -180,12 +181,14 @@ var aceConfig = {
 	showPrintMargin: false,
 	wrap: true
 }
+var holdOutput = false
 var outputTextarea = ace.edit("output-textarea", aceConfig)
 var schemaTextarea = ace.edit("schema-textarea", aceConfig)
 var ajvErrorsTextarea = ace.edit("ajv-errors-textarea", aceConfig)
 var jeErrorsTextarea = ace.edit("je-errors-textarea", aceConfig)
 ajvErrorsTextarea.setReadOnly(true)
 jeErrorsTextarea.setReadOnly(true)
+outputTextarea.setValue(defaultOutput)
 var ajvErrorsCount = document.querySelector("#ajv-errors-count")
 var jeErrorsCount = document.querySelector("#je-errors-count")
 var ajv = new AjvValidator()
@@ -1113,15 +1116,27 @@ var initJSONEditor = function(initialValue = undefined, expandPath = undefined)
 	})
 	jsonEditor.on("change", function()
 	{
-		var json = jsonEditor.getValue()
-		outputTextarea.setValue(replaceSpacings(JSON.stringify(json, null, 2)))
-		outputTextarea.clearSelection(1)
+		if (!holdOutput)
+		{
+			outputTextarea.setValue(replaceSpacings(JSON.stringify(jsonEditor.getValue(), null, 2)))
+			outputTextarea.clearSelection(1)
+		}
 		var validationErrors = jsonEditor.validate()
 		
 		if (validationErrors.length)
 			validateTextarea.value = replaceSpacings(JSON.stringify(validationErrors, null, 2))
 		else
 			validateTextarea.value = "valid"
+		
+		if (!data.options.disable_properties)
+		{
+			objectPropertyCheckboxes = Array.from(jsonEditorForm.querySelectorAll(".property-selector input[type=\"checkbox\"]"))
+			objectPropertyCheckboxes.forEach((checkboxElement) =>
+			{
+				checkboxElement.removeEventListener("change", function() { propertyCheckboxChanged(checkboxElement) })
+				checkboxElement.addEventListener("change", function() { propertyCheckboxChanged(checkboxElement) })
+			})
+		}
 		
 		if (!data.options.disable_properties_reorder)
 		{
@@ -1202,6 +1217,18 @@ var initJSONEditor = function(initialValue = undefined, expandPath = undefined)
 			})
 		}
 	})
+}
+
+function propertyCheckboxChanged(checkboxElement)
+{
+	if (checkboxElement.checked)
+	{
+		holdOutput = true
+		outputTextarea.setValue(replaceSpacings(JSON.stringify(jsonEditor.getValue(), null, 2)))
+		jsonEditor.setValue("")
+		jsonEditor.setValue(JSON.parse(outputTextarea.getValue()))
+		holdOutput = false
+	}
 }
 
 function reorderProperty(propertyRow, direction)
@@ -1559,10 +1586,11 @@ toggleOutput.addEventListener("click", function()
 setOutput.addEventListener("click", function()
 {
 	jsonEditor.setValue(JSON.parse(outputTextarea.getValue()))
+	
 })
 clearOutput.addEventListener("click", function()
 {
-	outputTextarea.setValue("{}")
+	outputTextarea.setValue(defaultOutput)
 	outputTextarea.clearSelection(1)
 	document.body.scrollIntoView(copyScrollOptions)
 })
@@ -1753,3 +1781,4 @@ libSelect.addEventListener("change", function()
 	refreshUI()
 })
 parseURL()
+document.body.scrollIntoView(copyScrollOptions)

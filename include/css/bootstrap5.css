@@ -120,7 +120,7 @@ div:last-child > .btn-group:has(.json-editor-btntype-delete, .json-editor-btntyp
 	border-radius: 4px !important;
 }
 
-.json-editor-btn-add:not(.row > div > .card .json-editor-btn-add)
+.json-editor-btn-add:not(.row > div > .card > .btn-group > .json-editor-btn-add)
 {
 	margin-top: -4px !important;
 	padding: 7px !important;
@@ -131,7 +131,19 @@ div:last-child > .btn-group:has(.json-editor-btntype-delete, .json-editor-btntyp
 	width: 100%;
 }
 
-.row > div > .card:has(> div > .je-object__container:last-child > .btn-group) .json-editor-btn-add
+.row > div > .card > div > .je-object__container > .btn-group:last-child > button:not([style*="display: none"]):first-child
+{
+	border-top-left-radius: 4px !important;
+	border-bottom-left-radius: 4px !important;
+}
+
+.row > div > .card > div > .je-object__container > .btn-group:last-child > button:has(+ button[style*="display: none"])
+{
+	border-top-right-radius: 4px !important;
+	border-bottom-right-radius: 4px !important;
+}
+
+.row > div > .card:has(> div > .je-object__container:last-child > .btn-group) > .btn-group > .json-editor-btn-add
 {
 	width: 100%;
 	margin-top: 16px !important;
