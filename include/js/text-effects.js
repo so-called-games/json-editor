@@ -28,9 +28,31 @@ const customTags = {
 		"freq": "number",
 		"sat": "number",
 		"val": "number",
+	},
+	"blink": {
+		"freq": "number",
+		"fade": "number"
+	},
+	"cursed": {
+		"level": "integer",
+		"offset": "integer"
+	},
+	"flicker": {
+		"freq": "number",
+		"clear": "number",
+		"dirty": "number",
+		"fixed": "boolean"
+	},
+	"shimmer": {
+		"freq": "number",
+		"color": "color",
+		"dim": "number",
+		"span": "integer"
 	}
 }
 const frequencySyncMultiplier = 1.875
+const characterFontSizeDivider = 25
+const colorRGBARegex = /rgb(?:a|)\((?<r>\d{1,3}),\s?(?<g>\d{1,3}),\s?(?<b>\d{1,3})(?:,\s?(?<a>\d\.(?:\d+|))|)\)/g
 var effectFPS
 var effectTagsCollection = []
 var effectTickTimer
@@ -66,6 +88,11 @@ function fract(value)
 	return value - Math.floor(value)
 }
 
+function clamp(value, min, max)
+{
+	return Math.min(Math.max(value, min), max)
+}
+
 function pingpong(value, length)
 {
 	return (length != 0) ? Math.abs(fract((value - length) / (length * 2)) * length * 2 - length) : 0
@@ -84,6 +111,11 @@ function inverse_lerp(from, to, weight)
 function remap(value, iStart, iStop, oStart, oStop)
 {
 	return lerp(oStart, oStop, inverse_lerp(iStart, iStop, value))
+}
+
+function randomInRange(min, max)
+{
+	return remap(Math.random(), 0, 1, min, max)
 }
 
 function multiplyColors(colorOne, colorTwo)
@@ -222,6 +254,18 @@ function parseEffects(container)
 	{
 		if (!effectTagsCollection.includes(tagElement))
 		{
+			if (tagElement.dataset.effect == "shake")
+			{
+				tagElement.RNGs = {}
+				tagElement.RNGs.currentRNG = 0
+				tagElement.RNGs.previousRNG = 0
+				rerollRandom(tagElement.RNGs)
+			}
+			else if (tagElement.dataset.effect == "flicker")
+			{
+				tagElement.delayLastTime = 0
+				tagElement.delayWait = false
+			}
 			effectTagsCollection.push(tagElement)
 			var constructedHTML = ""
 			var textContent = tagElement.textContent
@@ -269,7 +313,7 @@ function effectsTick()
 			{
 				characterElement.style.left = widthCounter + "px"
 				widthCounter += characterElement.offsetWidth
-				effectFunction(characterElement, Number(characterElement.dataset.index), contentLength, tagElement.dataset)
+				effectFunction(tagElement, characterElement, Number(characterElement.dataset.index), contentLength, tagElement.dataset)
 			})
 		}
 		else
@@ -285,6 +329,8 @@ function isValidEffectParameter(effect, parameter, value)
 		
 		switch(parameterType)
 		{
+			case "boolean":
+				return /^(true|false)$/i.test(value)
 			case "integer":
 				return /^(\-|)\d+$/.test(value)
 			case "number":
@@ -296,7 +342,7 @@ function isValidEffectParameter(effect, parameter, value)
 	return false
 }
 
-function effectFunction(characterElement, characterIndex, contentLength, effectData)
+function effectFunction(tagElement, characterElement, characterIndex, contentLength, effectData)
 {
 	switch(effectData.effect)
 	{
@@ -415,7 +461,7 @@ function effectFunction(characterElement, characterIndex, contentLength, effectD
 			}
 			else
 				proposedConnected = undefined
-			effectShake(characterElement, characterIndex, proposedRate, proposedLevel, proposedConnected)
+			effectShake(characterElement, characterIndex, tagElement.RNGs, proposedRate, proposedLevel, proposedConnected)
 			break
 		case "fade":
 			var proposedStart = effectData.start
@@ -473,6 +519,128 @@ function effectFunction(characterElement, characterIndex, contentLength, effectD
 				proposedValue = undefined
 			effectRainbow(characterElement, characterIndex, contentLength, proposedFrequency, proposedSaturation, proposedValue)
 			break
+		case "blink":
+			var proposedFrequency = effectData.freq
+			
+			if (isValidEffectParameter(effectData.effect, "freq", proposedFrequency))
+				proposedFrequency = Number(proposedFrequency)
+			else
+				proposedFrequency = undefined
+			var proposedFade = effectData.fade
+			
+			if (isValidEffectParameter(effectData.effect, "fade", proposedFade))
+			{
+				proposedFade = Number(proposedFade)
+				
+				if (proposedFade < 0 || proposedFade > 1)
+					proposedFade = undefined
+			}
+			else
+				proposedFade = undefined
+			effectBlink(characterElement, characterIndex, proposedFrequency, proposedFade)
+			break
+		case "cursed":
+			var proposedLevel = effectData.level
+			
+			if (isValidEffectParameter(effectData.effect, "level", proposedLevel))
+			{
+				proposedLevel = Number(proposedLevel)
+				
+				if (proposedLevel < 0)
+					proposedLevel = undefined
+			}
+			else
+				proposedLevel = undefined
+			var proposedOffset = effectData.offset
+			
+			if (isValidEffectParameter(effectData.effect, "offset", proposedOffset))
+			{
+				proposedOffset = Number(proposedOffset)
+				
+				if (proposedOffset < 0)
+					proposedOffset = undefined
+			}
+			else
+				proposedOffset = undefined
+			effectCursed(characterElement, characterIndex, tagElement.textContent[characterIndex], proposedLevel, proposedOffset)
+			break
+		case "flicker":
+			var proposedFrequency = effectData.freq
+			
+			if (isValidEffectParameter(effectData.effect, "freq", proposedFrequency))
+			{
+				proposedFrequency = Number(proposedFrequency)
+				
+				if (proposedFrequency < 0 || proposedFrequency > 100)
+					proposedFrequency = undefined
+			}
+			else
+				proposedFrequency = undefined
+			var proposedClear = effectData.clear
+			
+			if (isValidEffectParameter(effectData.effect, "clear", proposedClear))
+			{
+				proposedClear = Number(proposedClear)
+				
+				if (proposedClear < 0)
+					proposedClear = undefined
+			}
+			else
+				proposedClear = undefined
+			var proposedDirty = effectData.dirty
+			
+			if (isValidEffectParameter(effectData.effect, "dirty", proposedDirty))
+			{
+				proposedDirty = Number(proposedDirty)
+				
+				if (proposedDirty < 0)
+					proposedDirty = undefined
+			}
+			else
+				proposedDirty = undefined
+			var proposedFixed = effectData.fixed
+			
+			if (isValidEffectParameter(effectData.effect, "fixed", proposedFixed))
+				proposedFixed = (proposedFixed == "true")
+			else
+				proposedFixed = undefined
+			effectFlicker(characterElement, characterIndex, tagElement, proposedFrequency, proposedClear, proposedDirty, proposedFixed)
+			break
+		case "shimmer":
+			var proposedFrequency = effectData.freq
+			
+			if (isValidEffectParameter(effectData.effect, "freq", proposedFrequency))
+				proposedFrequency = Number(proposedFrequency)
+			else
+				proposedFrequency = undefined
+			var proposedColor = effectData.color
+			
+			if (!isValidEffectParameter(effectData.effect, "color", proposedColor))
+				proposedColor = undefined
+			var proposedDim = effectData.dim
+			
+			if (isValidEffectParameter(effectData.effect, "dim", proposedDim))
+			{
+				proposedDim = Number(proposedDim)
+				
+				if (proposedDim < 0 || proposedDim > 1)
+					proposedDim = undefined
+			}
+			else
+				proposedDim = undefined
+			var proposedSpan = effectData.span
+			
+			if (isValidEffectParameter(effectData.effect, "span", proposedSpan))
+			{
+				proposedSpan = Number(proposedSpan)
+				
+				if (proposedSpan <= 0)
+					proposedSpan = undefined
+			}
+			else
+				proposedSpan = undefined
+			effectShimmer(characterElement, characterIndex, proposedFrequency, proposedColor, proposedDim, proposedSpan)
+			break
 	}
 }
 
@@ -481,11 +649,10 @@ function effectPulse(characterElement, characterIndex, effectFrequency = 1, effe
 	effectFrequency *= frequencySyncMultiplier
 	var sinedTime = ease(pingpong(elapsedTime, 1 / effectFrequency) * effectFrequency, effectEase)
 	var inlineColor = getComputedStyle(characterElement).color
-	var matchRegex = /rgb(?:a|)\((?<r>\d{1,3}),\s?(?<g>\d{1,3}),\s?(?<b>\d{1,3})(?:,\s?(?<a>\d\.(?:\d+|))|)\)/g
 	
-	if (!matchRegex.test(inlineColor))
+	if (!colorRGBARegex.test(inlineColor))
 		inlineColor = "rgb(255, 255, 255)"
-	var match = matchRegex.exec(inlineColor)
+	var match = colorRGBARegex.exec(inlineColor)
 	var colorComponents
 	
 	if (match != null)
@@ -518,7 +685,18 @@ function effectPulse(characterElement, characterIndex, effectFrequency = 1, effe
 	characterElement.style.color = "rgba(" + Math.round(lerpedColor.r * 255) + ", " + Math.round(lerpedColor.g * 255) + ", " + Math.round(lerpedColor.b * 255) + ", " + lerpedColor.a + ")"
 }
 
-function effectWave(characterElement, characterIndex, contentLength, effectAmplitude = 1, effectFrequency = 1, effectConnected = 1)
+function rerollRandom(RNGs)
+{
+	RNGs.previousRNG = RNGs.currentRNG
+	RNGs.currentRNG = Math.random()
+}
+
+function offsetRandom(RNG, index)
+{
+	return (RNG >> (index % 64)) | (RNG << (64 - (index % 64)))
+}
+
+function effectWave(characterElement, characterIndex, contentLength, effectAmplitude = 50, effectFrequency = 1, effectConnected = 1)
 {
 	effectFrequency *= frequencySyncMultiplier
 	var calculatedIndex = Math.floor(characterIndex / effectConnected)
@@ -531,34 +709,34 @@ function effectTornado(characterElement, characterIndex, contentLength, effectRa
 	effectFrequency *= frequencySyncMultiplier
 	var calculatedIndex = Math.floor(characterIndex / effectConnected)
 	const trigonometryConstant = (calculatedIndex * 2) / contentLength + effectFrequency * elapsedTime
-	const radiusConstant = effectRadius * characterElement.offsetHeight / 25
+	const radiusConstant = effectRadius * characterElement.offsetHeight / characterFontSizeDivider
 	var calculatedX = Math.sin(trigonometryConstant) * radiusConstant
 	var calculatedY = Math.cos(trigonometryConstant) * radiusConstant
 	characterElement.style.marginLeft = calculatedX + "px"
 	characterElement.style.marginTop = calculatedY + "px"
 }
 
-/*
-function offsetRandom(RNG, index)
+function effectShake(characterElement, characterIndex, RNGs, effectRate = 1, effectLevel = 10, effectConnected = 1)
 {
-	return (RNG >> (index % 64)) | (RNG << (64 - (index % 64)))
-}
-*/
-
-function effectShake(characterElement, characterIndex, effectRate = 1, effectLevel = "#ffffff40", effectConnected = 1)
-{
+	var calculatedElapsedTime = calculatedElapsedTime % (1 / effectRate)
+	
+	if (elapsedTime > (1 / effectRate))
+	{
+		//console.log("Random rerolled!")
+		rerollRandom(RNGs)
+	}
 	var calculatedIndex = Math.floor(characterIndex / effectConnected)
-	var currentRNG = Math.random()
-	var characterCurrentRandom = offsetCurrentRandom(characterIndex)
-	var characterPreviousRandom = offsetPreviousRandom(characterIndex)
+	var characterCurrentRandom = offsetRandom(RNGs.currentRNG, characterIndex)
+	var characterPreviousRandom = offsetRandom(RNGs.previousRNG, characterIndex)
 	var maxRandom = 2147483647
 	var currentOffset = remap(characterCurrentRandom % maxRandom, 0, maxRandom, 0, 2 * Math.PI)
 	var previousOffset = remap(characterPreviousRandom % maxRandom, 0, maxRandom, 0, 2 * Math.PI)
 	var nTime = elapsedTime / (0.5 / effectRate)
 	nTime = (nTime > 1) ? 1 : nTime
-	var prev_off = Point2(lerp(Math.sin(previousOffset), Math.sin(currentOffset), nTime), lerp(Math.cos(previousOffset), Math.cos(currentOffset), nTime)) * effectLevel / 10
-	//var calculatedX = 
-	//var calculatedY = 
+	console.log(currentOffset)
+	console.log(previousOffset)
+	var calculatedX = lerp(Math.sin(previousOffset), Math.sin(currentOffset), nTime) * effectLevel / 10
+	var calculatedY = lerp(Math.cos(previousOffset), Math.cos(currentOffset), nTime) * effectLevel / 10
 	characterElement.style.marginLeft = calculatedX + "px"
 	characterElement.style.marginTop = calculatedY + "px"
 }
@@ -579,4 +757,94 @@ function effectRainbow(characterElement, characterIndex, contentLength, effectFr
 	effectFrequency *= frequencySyncMultiplier
 	var RGB = HSVToRGB((characterIndex / 4 + effectFrequency * elapsedTime) % 1, effectSaturation, effectValue)
 	characterElement.style.color = "rgb(" + RGB.r + ", " + RGB.g + ", " + RGB.b + ")"
+}
+
+function effectBlink(characterElement, characterIndex, effectFrequency = 2, effectFade = 0.25)
+{
+	const precision = 1000
+	effectFrequency = 1 / effectFrequency
+	
+	if (Math.floor(elapsedTime * precision) % Math.floor(effectFrequency * precision) < Math.floor(effectFrequency * precision) / 2)
+		characterElement.style.opacity = effectFade
+	else
+		characterElement.style.opacity = "inherit"
+}
+
+function effectCursed(characterElement, characterIndex, sourceCharacter, effectLevel = 2, effectOffset = 1)
+{
+	effectLevel += 1
+	
+	if (Math.floor(elapsedTime * 100) % effectLevel != 0)
+		characterElement.innerText = String.fromCharCode(randomInRange(33, 126))
+	else
+		characterElement.innerText = sourceCharacter
+	characterElement.style.marginLeft = randomInRange(-effectOffset, effectOffset) * characterElement.offsetHeight / characterFontSizeDivider + "px"
+	characterElement.style.marginTop = randomInRange(-effectOffset, effectOffset) * characterElement.offsetHeight / characterFontSizeDivider + "px"
+}
+
+function effectFlicker(characterElement, characterIndex, tagElement, effectFrequency = 15, effectClearTime = 4, effectDirtyTime = 0.5, effectFixed = false)
+{
+	if (!tagElement.delayWait)
+	{
+		tagElement.delay = effectFixed ? effectClearTime : randomInRange(0, effectClearTime)
+		tagElement.delayWait = true
+	}
+	var visible = true
+	var relativeElapsed = elapsedTime - tagElement.delayLastTime
+
+	if (relativeElapsed >= tagElement.delay)
+	{
+		var random = randomInRange(1, 100)
+		
+		if (random <= effectFrequency)
+			visible = false
+	
+		if (relativeElapsed >= tagElement.delay + effectDirtyTime)
+		{
+			tagElement.delayWait = false
+			tagElement.delayLastTime = elapsedTime
+		}
+	}
+	characterElement.style.opacity = visible ? "inherit" : "0"
+}
+
+function effectShimmer(characterElement, characterIndex, effectFrequency = 5, effectColor, effectDim = 0, effectSpan = 10)
+{
+	var inlineColor = getComputedStyle(characterElement).color
+	
+	if (!colorRGBARegex.test(inlineColor))
+		inlineColor = "rgb(255, 255, 255)"
+	var match = colorRGBARegex.exec(inlineColor)
+	var colorComponents
+	
+	if (match != null)
+		colorComponents = match.groups
+	else
+		colorComponents = {
+			r: 255,
+			g: 255,
+			b: 255
+		}
+	var currentColor = {
+		r: colorComponents["r"] / 255,
+		g: colorComponents["g"] / 255,
+		b: colorComponents["b"] / 255
+	}
+	var targetColor
+	
+	if (effectColor != undefined)
+	{
+		var hex = effectColor.replace(/^#/, "")
+		
+		if (effectColor.length == 7)
+			targetColor = HEXToRGB(hex)
+		else
+			return
+	}
+	else
+		targetColor = currentColor
+	var weight = Math.sin(elapsedTime * effectFrequency + (characterIndex / effectSpan)) * 0.5 + 0.5
+	var lerpedColor = lerpColors(currentColor, targetColor, weight)
+	lerpedColor.a = clamp(weight, 1 - effectDim, 1)
+	characterElement.style.color = "rgba(" + Math.round(lerpedColor.r * 255) + ", " + Math.round(lerpedColor.g * 255) + ", " + Math.round(lerpedColor.b * 255) + ", " + lerpedColor.a + ")"
 }

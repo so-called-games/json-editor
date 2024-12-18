@@ -933,7 +933,6 @@ function refreshPreview()
 	
 	if (useBBCode)
 	{
-		resetEffectsTimer()
 		preview.appendChild(renderBBCode(value))
 		preview.innerHTML = parseCustomBBCode(preview.innerHTML)
 		parseEffects(preview)
