@@ -8,17 +8,16 @@ const customTags = {
 	"wave": {
 		"amp": "number",
 		"freq": "number",
-		"connected": "integer"
+		"span": "integer"
 	},
 	"tornado": {
 		"radius": "number",
 		"freq": "number",
-		"connected": "integer"
+		"span": "integer"
 	},
 	"shake": {
 		"rate": "number",
-		"level": "integer",
-		"connected": "integer"
+		"level": "integer"
 	},
 	"fade": {
 		"start": "integer",
@@ -50,13 +49,59 @@ const customTags = {
 		"span": "integer"
 	}
 }
-const frequencySyncMultiplier = 1.875
-const characterFontSizeDivider = 25
+const maxRandom = 2147483647
+const characterFontSizeDivider = 35
 const colorRGBARegex = /rgb(?:a|)\((?<r>\d{1,3}),\s?(?<g>\d{1,3}),\s?(?<b>\d{1,3})(?:,\s?(?<a>\d\.(?:\d+|))|)\)/g
 var effectFPS
 var effectTagsCollection = []
 var effectTickTimer
+var startTime
 var elapsedTime
+
+function fract(value)
+{
+	return value - Math.floor(value)
+}
+
+function mod(a, b)
+{
+	let mod
+	
+	if (a < 0)
+		mod = -a
+	else
+		mod = a
+	
+	if (b < 0)
+		b = -b
+
+	while (mod >= b)
+		mod = mod - b
+	
+	if (a < 0)
+		return -mod
+	return mod
+}
+
+function clamp(value, min, max)
+{
+	return Math.min(Math.max(value, min), max)
+}
+
+function lerp(from, to, weight)
+{
+	return from + weight * (to - from)
+}
+
+function inverse_lerp(from, to, weight)
+{
+	return (weight - from) / (to - from)
+}
+
+function remap(value, iStart, iStop, oStart, oStop)
+{
+	return lerp(oStart, oStop, inverse_lerp(iStart, iStop, value))
+}
 
 function ease(x, curve)
 {
@@ -83,34 +128,9 @@ function ease(x, curve)
 		return 0
 }
 
-function fract(value)
-{
-	return value - Math.floor(value)
-}
-
-function clamp(value, min, max)
-{
-	return Math.min(Math.max(value, min), max)
-}
-
 function pingpong(value, length)
 {
 	return (length != 0) ? Math.abs(fract((value - length) / (length * 2)) * length * 2 - length) : 0
-}
-
-function lerp(from, to, weight)
-{
-	return from + weight * (to - from)
-}
-
-function inverse_lerp(from, to, weight)
-{
-	return (weight - from) / (to - from)
-}
-
-function remap(value, iStart, iStop, oStart, oStop)
-{
-	return lerp(oStart, oStop, inverse_lerp(iStart, iStop, value))
 }
 
 function randomInRange(min, max)
@@ -259,7 +279,7 @@ function parseEffects(container)
 				tagElement.RNGs = {}
 				tagElement.RNGs.currentRNG = 0
 				tagElement.RNGs.previousRNG = 0
-				rerollRandom(tagElement.RNGs)
+				tagElement.RNGs.randomRerolled = false
 			}
 			else if (tagElement.dataset.effect == "flicker")
 			{
@@ -278,6 +298,7 @@ function parseEffects(container)
 	
 	if (tagElementsList.length > 0)
 	{
+		startTime = Date.now()
 		effectsTick()
 		effectTickTimer = setInterval(effectsTick, 1000 / effectFPS)
 	}
@@ -296,8 +317,7 @@ function effectsTick()
 		resetEffectsTimer()
 		return
 	}
-	
-	elapsedTime += 1 / effectFPS
+	elapsedTime = (Date.now() - startTime) / 1000
 	
 	for (let i = 0; i < effectTagsCollection.length; i++)
 	{
@@ -383,18 +403,18 @@ function effectFunction(tagElement, characterElement, characterIndex, contentLen
 				proposedFrequency = Number(proposedFrequency)
 			else
 				proposedFrequency = undefined
-			var proposedConnected = effectData.connected
+			var proposedSpan = effectData.span
 			
-			if (isValidEffectParameter(effectData.effect, "connected", proposedConnected))
+			if (isValidEffectParameter(effectData.effect, "span", proposedSpan))
 			{
-				proposedConnected = Number(proposedConnected)
+				proposedSpan = Number(proposedSpan)
 				
-				if (proposedConnected <= 0)
-					proposedConnected = undefined
+				if (proposedSpan <= 0)
+					proposedSpan = undefined
 			}
 			else
-				proposedConnected = undefined
-			effectWave(characterElement, characterIndex, contentLength, proposedAmplitude, proposedFrequency, proposedConnected)
+				proposedSpan = undefined
+			effectWave(characterElement, characterIndex, contentLength, proposedAmplitude, proposedFrequency, proposedSpan)
 			break
 		case "tornado":
 			var proposedRadius = effectData.radius
@@ -414,18 +434,18 @@ function effectFunction(tagElement, characterElement, characterIndex, contentLen
 				proposedFrequency = Number(proposedFrequency)
 			else
 				proposedFrequency = undefined
-			var proposedConnected = effectData.connected
+			var proposedSpan = effectData.span
 			
-			if (isValidEffectParameter(effectData.effect, "connected", proposedConnected))
+			if (isValidEffectParameter(effectData.effect, "span", proposedSpan))
 			{
-				proposedConnected = Number(proposedConnected)
+				proposedSpan = Number(proposedSpan)
 				
-				if (proposedConnected <= 0)
-					proposedConnected = undefined
+				if (proposedSpan <= 0)
+					proposedSpan = undefined
 			}
 			else
-				proposedConnected = undefined
-			effectTornado(characterElement, characterIndex, contentLength, proposedRadius, proposedFrequency, proposedConnected)
+				proposedSpan = undefined
+			effectTornado(characterElement, characterIndex, contentLength, proposedRadius, proposedFrequency, proposedSpan)
 			break
 		case "shake":
 			var proposedRate = effectData.rate
@@ -450,18 +470,7 @@ function effectFunction(tagElement, characterElement, characterIndex, contentLen
 			}
 			else
 				proposedLevel = undefined
-			var proposedConnected = effectData.connected
-			
-			if (isValidEffectParameter(effectData.effect, "connected", proposedConnected))
-			{
-				proposedConnected = Number(proposedConnected)
-				
-				if (proposedConnected <= 0)
-					proposedConnected = undefined
-			}
-			else
-				proposedConnected = undefined
-			effectShake(characterElement, characterIndex, tagElement.RNGs, proposedRate, proposedLevel, proposedConnected)
+			effectShake(characterElement, characterIndex, tagElement.RNGs, proposedRate, proposedLevel)
 			break
 		case "fade":
 			var proposedStart = effectData.start
@@ -646,7 +655,6 @@ function effectFunction(tagElement, characterElement, characterIndex, contentLen
 
 function effectPulse(characterElement, characterIndex, effectFrequency = 1, effectColor = "#ffffff40", effectEase = 2)
 {
-	effectFrequency *= frequencySyncMultiplier
 	var sinedTime = ease(pingpong(elapsedTime, 1 / effectFrequency) * effectFrequency, effectEase)
 	var inlineColor = getComputedStyle(characterElement).color
 	
@@ -688,7 +696,8 @@ function effectPulse(characterElement, characterIndex, effectFrequency = 1, effe
 function rerollRandom(RNGs)
 {
 	RNGs.previousRNG = RNGs.currentRNG
-	RNGs.currentRNG = Math.random()
+	RNGs.currentRNG = randomInRange(0, maxRandom)
+	RNGs.randomRerolled = true
 }
 
 function offsetRandom(RNG, index)
@@ -696,19 +705,17 @@ function offsetRandom(RNG, index)
 	return (RNG >> (index % 64)) | (RNG << (64 - (index % 64)))
 }
 
-function effectWave(characterElement, characterIndex, contentLength, effectAmplitude = 50, effectFrequency = 1, effectConnected = 1)
+function effectWave(characterElement, characterIndex, contentLength, effectAmplitude = 10, effectFrequency = 1, effectSpan = 1)
 {
-	effectFrequency *= frequencySyncMultiplier
-	var calculatedIndex = Math.floor(characterIndex / effectConnected)
-	var calculatedValue = Math.sin((calculatedIndex * 2) / contentLength + effectFrequency * elapsedTime) * effectAmplitude * characterElement.offsetHeight / 250
+	var calculatedIndex = Math.floor(characterIndex / effectSpan)
+	var calculatedValue = Math.sin((calculatedIndex * 4) / contentLength + effectFrequency * elapsedTime) * effectAmplitude * characterElement.offsetHeight / 250
 	characterElement.style.marginTop = calculatedValue + "px"
 }
 
-function effectTornado(characterElement, characterIndex, contentLength, effectRadius = 10, effectFrequency = 1, effectConnected = 1)
+function effectTornado(characterElement, characterIndex, contentLength, effectRadius = 10, effectFrequency = 1, effectSpan = 1)
 {
-	effectFrequency *= frequencySyncMultiplier
-	var calculatedIndex = Math.floor(characterIndex / effectConnected)
-	const trigonometryConstant = (calculatedIndex * 2) / contentLength + effectFrequency * elapsedTime
+	var calculatedIndex = Math.floor(characterIndex / effectSpan)
+	const trigonometryConstant = (calculatedIndex * 4) / contentLength + effectFrequency * elapsedTime
 	const radiusConstant = effectRadius * characterElement.offsetHeight / characterFontSizeDivider
 	var calculatedX = Math.sin(trigonometryConstant) * radiusConstant
 	var calculatedY = Math.cos(trigonometryConstant) * radiusConstant
@@ -716,27 +723,24 @@ function effectTornado(characterElement, characterIndex, contentLength, effectRa
 	characterElement.style.marginTop = calculatedY + "px"
 }
 
-function effectShake(characterElement, characterIndex, RNGs, effectRate = 1, effectLevel = 10, effectConnected = 1)
+function effectShake(characterElement, characterIndex, RNGs, effectRate = 24, effectLevel = 10)
 {
-	var calculatedElapsedTime = calculatedElapsedTime % (1 / effectRate)
+	const rerollRandomPrecision = 0.025
+	var calculatedElapsedTime = mod(elapsedTime, (1 / effectRate))
 	
-	if (elapsedTime > (1 / effectRate))
-	{
-		//console.log("Random rerolled!")
+	if (!RNGs.randomRerolled && calculatedElapsedTime <= rerollRandomPrecision)
 		rerollRandom(RNGs)
-	}
-	var calculatedIndex = Math.floor(characterIndex / effectConnected)
+	else if (calculatedElapsedTime > rerollRandomPrecision)
+		RNGs.randomRerolled = false
 	var characterCurrentRandom = offsetRandom(RNGs.currentRNG, characterIndex)
 	var characterPreviousRandom = offsetRandom(RNGs.previousRNG, characterIndex)
-	var maxRandom = 2147483647
 	var currentOffset = remap(characterCurrentRandom % maxRandom, 0, maxRandom, 0, 2 * Math.PI)
 	var previousOffset = remap(characterPreviousRandom % maxRandom, 0, maxRandom, 0, 2 * Math.PI)
-	var nTime = elapsedTime / (0.5 / effectRate)
+	var nTime = calculatedElapsedTime / (0.5 / effectRate)
 	nTime = (nTime > 1) ? 1 : nTime
-	console.log(currentOffset)
-	console.log(previousOffset)
-	var calculatedX = lerp(Math.sin(previousOffset), Math.sin(currentOffset), nTime) * effectLevel / 10
-	var calculatedY = lerp(Math.cos(previousOffset), Math.cos(currentOffset), nTime) * effectLevel / 10
+	var offsetConstant = (effectLevel / 10) * characterElement.offsetHeight / characterFontSizeDivider
+	var calculatedX = lerp(Math.sin(previousOffset), Math.sin(currentOffset), nTime) * offsetConstant
+	var calculatedY = lerp(Math.cos(previousOffset), Math.cos(currentOffset), nTime) * offsetConstant
 	characterElement.style.marginLeft = calculatedX + "px"
 	characterElement.style.marginTop = calculatedY + "px"
 }
@@ -754,12 +758,11 @@ function effectFade(characterElement, characterIndex, effectStart = 0, effectLen
 
 function effectRainbow(characterElement, characterIndex, contentLength, effectFrequency = 1, effectSaturation = 1, effectValue = 1)
 {
-	effectFrequency *= frequencySyncMultiplier
 	var RGB = HSVToRGB((characterIndex / 4 + effectFrequency * elapsedTime) % 1, effectSaturation, effectValue)
 	characterElement.style.color = "rgb(" + RGB.r + ", " + RGB.g + ", " + RGB.b + ")"
 }
 
-function effectBlink(characterElement, characterIndex, effectFrequency = 2, effectFade = 0.25)
+function effectBlink(characterElement, characterIndex, effectFrequency = 1, effectFade = 0.25)
 {
 	const precision = 1000
 	effectFrequency = 1 / effectFrequency
@@ -775,11 +778,15 @@ function effectCursed(characterElement, characterIndex, sourceCharacter, effectL
 	effectLevel += 1
 	
 	if (Math.floor(elapsedTime * 100) % effectLevel != 0)
-		characterElement.innerText = String.fromCharCode(randomInRange(33, 126))
+		characterElement.textContent = String.fromCharCode(randomInRange(33, 126))
 	else
-		characterElement.innerText = sourceCharacter
-	characterElement.style.marginLeft = randomInRange(-effectOffset, effectOffset) * characterElement.offsetHeight / characterFontSizeDivider + "px"
-	characterElement.style.marginTop = randomInRange(-effectOffset, effectOffset) * characterElement.offsetHeight / characterFontSizeDivider + "px"
+		characterElement.textContent = sourceCharacter
+	
+	if (effectOffset > 0)
+	{
+		characterElement.style.marginLeft = randomInRange(-effectOffset, effectOffset) * characterElement.offsetHeight / characterFontSizeDivider + "px"
+		characterElement.style.marginTop = randomInRange(-effectOffset, effectOffset) * characterElement.offsetHeight / characterFontSizeDivider + "px"
+	}
 }
 
 function effectFlicker(characterElement, characterIndex, tagElement, effectFrequency = 15, effectClearTime = 4, effectDirtyTime = 0.5, effectFixed = false)
@@ -808,7 +815,7 @@ function effectFlicker(characterElement, characterIndex, tagElement, effectFrequ
 	characterElement.style.opacity = visible ? "inherit" : "0"
 }
 
-function effectShimmer(characterElement, characterIndex, effectFrequency = 5, effectColor, effectDim = 0, effectSpan = 10)
+function effectShimmer(characterElement, characterIndex, effectFrequency = 5, effectColor, effectDim = 0.75, effectSpan = 10)
 {
 	var inlineColor = getComputedStyle(characterElement).color
 	
