@@ -71,9 +71,19 @@ function pingpong(value, length)
 	return (length != 0) ? Math.abs(fract((value - length) / (length * 2)) * length * 2 - length) : 0
 }
 
-function lerp(a, b, weight)
+function lerp(from, to, weight)
 {
-	return a + weight * (b - a)
+	return from + weight * (to - from)
+}
+
+function inverse_lerp(from, to, weight)
+{
+	return (weight - from) / (to - from)
+}
+
+function remap(value, iStart, iStop, oStart, oStop)
+{
+	return lerp(oStart, oStop, inverse_lerp(iStart, iStop, value))
 }
 
 function multiplyColors(colorOne, colorTwo)
@@ -369,7 +379,7 @@ function effectFunction(characterElement, characterIndex, contentLength, effectD
 			}
 			else
 				proposedConnected = undefined
-			effectTornado(characterElement, characterIndex, proposedRadius, proposedFrequency, proposedConnected)
+			effectTornado(characterElement, characterIndex, contentLength, proposedRadius, proposedFrequency, proposedConnected)
 			break
 		case "shake":
 			var proposedRate = effectData.rate
@@ -512,21 +522,45 @@ function effectWave(characterElement, characterIndex, contentLength, effectAmpli
 {
 	effectFrequency *= frequencySyncMultiplier
 	var calculatedIndex = Math.floor(characterIndex / effectConnected)
-	var calculatedValue = Math.sin((calculatedIndex * 2) / contentLength + effectFrequency * elapsedTime) * (effectAmplitude / 250) * characterElement.offsetHeight
+	var calculatedValue = Math.sin((calculatedIndex * 2) / contentLength + effectFrequency * elapsedTime) * effectAmplitude * characterElement.offsetHeight / 250
 	characterElement.style.marginTop = calculatedValue + "px"
 }
 
-function effectTornado(characterElement, characterIndex, effectRadius = 1, effectFrequency = "#ffffff40", effectConnected = 1)
+function effectTornado(characterElement, characterIndex, contentLength, effectRadius = 10, effectFrequency = 1, effectConnected = 1)
 {
 	effectFrequency *= frequencySyncMultiplier
 	var calculatedIndex = Math.floor(characterIndex / effectConnected)
-	
+	const trigonometryConstant = (calculatedIndex * 2) / contentLength + effectFrequency * elapsedTime
+	const radiusConstant = effectRadius * characterElement.offsetHeight / 25
+	var calculatedX = Math.sin(trigonometryConstant) * radiusConstant
+	var calculatedY = Math.cos(trigonometryConstant) * radiusConstant
+	characterElement.style.marginLeft = calculatedX + "px"
+	characterElement.style.marginTop = calculatedY + "px"
 }
+
+/*
+function offsetRandom(RNG, index)
+{
+	return (RNG >> (index % 64)) | (RNG << (64 - (index % 64)))
+}
+*/
 
 function effectShake(characterElement, characterIndex, effectRate = 1, effectLevel = "#ffffff40", effectConnected = 1)
 {
 	var calculatedIndex = Math.floor(characterIndex / effectConnected)
-	
+	var currentRNG = Math.random()
+	var characterCurrentRandom = offsetCurrentRandom(characterIndex)
+	var characterPreviousRandom = offsetPreviousRandom(characterIndex)
+	var maxRandom = 2147483647
+	var currentOffset = remap(characterCurrentRandom % maxRandom, 0, maxRandom, 0, 2 * Math.PI)
+	var previousOffset = remap(characterPreviousRandom % maxRandom, 0, maxRandom, 0, 2 * Math.PI)
+	var nTime = elapsedTime / (0.5 / effectRate)
+	nTime = (nTime > 1) ? 1 : nTime
+	var prev_off = Point2(lerp(Math.sin(previousOffset), Math.sin(currentOffset), nTime), lerp(Math.cos(previousOffset), Math.cos(currentOffset), nTime)) * effectLevel / 10
+	//var calculatedX = 
+	//var calculatedY = 
+	characterElement.style.marginLeft = calculatedX + "px"
+	characterElement.style.marginTop = calculatedY + "px"
 }
 
 function effectFade(characterElement, characterIndex, effectStart = 0, effectLength = 10)
