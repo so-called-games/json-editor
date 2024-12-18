@@ -43,6 +43,9 @@ const defaultHides = {
 	errors: true
 }
 const defaultParseBBCode = false
+const defaultBBCodeFPS = 120
+const maxFontSize = 32
+const maxBBCodeFPS = 120
 const defaultExtras = {
 	output: "",
 	schema: ""
@@ -90,8 +93,9 @@ var currentTextarea
 var previewDiv = document.querySelector("#preview-div")
 var preview = document.querySelector("#preview")
 var previewOptionsDiv = document.querySelector("#preview-options-div")
-var previewParseBBCode = document.querySelector("#preview-parse-bbcode")
 var previewSeparator = document.querySelector("#preview-separator")
+var previewOptionsFontsDiv = document.querySelector("#preview-options-fonts-div")
+var previewFontSize = document.querySelector("#preview-font-size")
 var previewFontNormal = document.querySelector("#preview-font-normal")
 var previewFontBold = document.querySelector("#preview-font-bold")
 var previewFontItalic = document.querySelector("#preview-font-italic")
@@ -104,16 +108,28 @@ var previewFontFaceNormal
 var previewFontFaceBold
 var previewFontFaceItalic
 var previewFontFaceBoldItalic
-var previewFontSize = document.querySelector("#preview-font-size")
+var previewOptionsBBCodeDiv = document.querySelector("#preview-options-bbcode-div")
+var previewParseBBCode = document.querySelector("#preview-parse-bbcode")
+var previewBBCodeFPS = document.querySelector("#preview-bbcode-fps")
 const previewFontSizeMaskOptions = {
 	mask: Number,
 	scale: 0,
+	mapToRadix: ["."],
 	min: 0,
-	max: 32,
+	max: maxFontSize,
+	normalizeZeros: true,
+	autofix: true
+}
+const previewBBCodeFPSMaskOptions = {
+	mask: Number,
+	scale: 2,
+	min: 0,
+	max: maxBBCodeFPS,
 	normalizeZeros: true,
 	autofix: true
 }
 const previewFontSizeMask = IMask(previewFontSize, previewFontSizeMaskOptions)
+const previewBBCodeFPSMask = IMask(previewBBCodeFPS, previewBBCodeFPSMaskOptions)
 var mainDiv = document.querySelector("#main-div")
 var editorDiv = document.querySelector("#editor-div")
 var outputDiv = document.querySelector("#output-div")
@@ -131,6 +147,10 @@ var expandButton = document.querySelector("#expand")
 var expandButtonIcon = expandButton.querySelector("i")
 var previewOptionsButton = document.querySelector("#toggle-preview-options")
 var previewOptionsButtonIcon = previewOptionsButton.querySelector("i")
+var previewOptionsFontsButton = document.querySelector("#toggle-preview-options-fonts")
+var previewOptionsFontsButtonIcon = previewOptionsFontsButton.querySelector("i")
+var previewOptionsBBCodeButton = document.querySelector("#toggle-preview-options-bbcode")
+var previewOptionsBBCodeButtonIcon = previewOptionsBBCodeButton.querySelector("i")
 var outputAdditionalButton = document.querySelector("#toggle-output-additional")
 var outputAdditionalButtonIcon = outputAdditionalButton.querySelector("i")
 var outputAdditionalDiv = document.querySelector("#output-additional-div")
@@ -334,13 +354,14 @@ function setParsingMap()
 	parsingMap.set("h", "hide")
 	parsingMap.set("e", "errors")
 	parsingMap.set("p", "preview")
-	parsingMap.set("bb", "bbcode")
 	parsingMap.set("sr", "separator")
 	parsingMap.set("fs", "font_size")
 	parsingMap.set("fn", "font_normal")
 	parsingMap.set("fb", "font_bold")
 	parsingMap.set("fi", "font_italic")
 	parsingMap.set("fbi", "font_bold_italic")
+	parsingMap.set("bb", "bbcode")
+	parsingMap.set("af", "bbcode_fps")
 	parsingMap.set("f", "filenames")
 	parsingMap.set("u", "urls")
 	parsingMap.set("op", "options")
@@ -417,9 +438,6 @@ function makeLink(includeSchema = true)
 	if (isEmpty(modifiedData.hide))
 		delete modifiedData.hide
 	
-	if (modifiedData.preview.bbcode == defaultParseBBCode)
-		delete modifiedData.preview.bbcode
-	
 	if (modifiedData.preview.separator == "")
 		delete modifiedData.preview.separator
 	
@@ -437,6 +455,12 @@ function makeLink(includeSchema = true)
 	
 	if (modifiedData.preview.font_bold_italic == "")
 		delete modifiedData.preview.font_bold_italic
+	
+	if (modifiedData.preview.bbcode == defaultParseBBCode)
+		delete modifiedData.preview.bbcode
+	
+	if (modifiedData.preview.bbcode_fps == defaultBBCodeFPS)
+		delete modifiedData.preview.bbcode_fps
 	
 	if (isEmpty(modifiedData.preview))
 		delete modifiedData.preview
@@ -737,19 +761,16 @@ var parseURL = function()
 	
 	if ("preview" in data)
 	{
-		if ("bbcode" in data.preview)
-			previewParseBBCode.checked = (data.preview.bbcode != "false")
-		else
-		{
-			data.preview.bbcode = defaultParseBBCode
-			previewParseBBCode.checked = defaultParseBBCode
-		}
-		
 		if ("separator" in data.preview)
 			previewSeparator.value = data.preview.separator
 		
 		if ("font_size" in data.preview)
-			previewFontSize.value = Number(data.preview.font_size)
+		{
+			var proposedSize = Number(data.preview.font_size)
+			
+			if (proposedSize <= maxFontSize)
+				previewFontSize.value = proposedSize
+		}
 		
 		if ("font_normal" in data.preview)
 		{
@@ -773,6 +794,38 @@ var parseURL = function()
 		{
 			previewFontBoldItalic.value = data.preview.font_bold_italic
 			loadPreviewFontBoldItalic.click()
+		}
+		
+		if ("bbcode" in data.preview)
+			previewParseBBCode.checked = (data.preview.bbcode != "false")
+		else
+		{
+			data.preview.bbcode = defaultParseBBCode
+			previewParseBBCode.checked = defaultParseBBCode
+		}
+		
+		if ("bbcode_fps" in data.preview)
+		{
+			var proposedFPS = Number(data.preview.font_size)
+			
+			if (proposedFPS <= maxBBCodeFPS)
+			{
+				data.preview.bbcode_fps = proposedFPS
+				effectFPS = proposedFPS
+				previewBBCodeFPS.value = proposedFPS
+			}
+			else
+			{
+				data.preview.bbcode_fps = defaultBBCodeFPS
+				effectFPS = defaultBBCodeFPS
+				previewBBCodeFPS.value = defaultBBCodeFPS
+			}
+		}
+		else
+		{
+			data.preview.bbcode_fps = defaultBBCodeFPS
+			effectFPS = defaultBBCodeFPS
+			previewBBCodeFPS.value = defaultBBCodeFPS
 		}
 	}
 	else
@@ -861,11 +914,11 @@ function refreshPreview()
 			
 			if (i == 1)
 			{
-				indexedGutter = useBBCode ? "[c=preview-gutter]" + i + ":[/c] " : "<span class=\"preview-gutter\">" + i + ": </span>"
+				indexedGutter = useBBCode ? "[class=preview-gutter]" + i + ":[/class] " : "<span class=\"preview-gutter\">" + i + ": </span>"
 				value = value.substr(0, lastIndex) + indexedGutter + value.substr(lastIndex)
 				currentIndex += indexedGutter.length
 			}
-			indexedGutter = useBBCode ? "\n[c=preview-gutter]" + (i + 1) + ":[/c] " : "<br><span class=\"preview-gutter\">" + (i + 1) + ": </span>"
+			indexedGutter = useBBCode ? "\n[class=preview-gutter]" + (i + 1) + ":[/class] " : "<br><span class=\"preview-gutter\">" + (i + 1) + ": </span>"
 			value = value.substr(0, currentIndex) + indexedGutter + value.substr(currentIndex)
 			lastIndex = currentIndex + indexedGutter.length
 			value = value.slice(0, lastIndex) + value.slice(lastIndex + data.preview.separator.length)
@@ -879,7 +932,12 @@ function refreshPreview()
 	preview.innerHTML = ""
 	
 	if (useBBCode)
+	{
+		resetEffectsTimer()
 		preview.appendChild(renderBBCode(value))
+		preview.innerHTML = parseCustomBBCode(preview.innerHTML)
+		parseEffects(preview)
+	}
 	else
 		preview.innerHTML = value.replaceAll("\n", "<br>")
 }
@@ -1287,6 +1345,7 @@ overlay.addEventListener("click", function()
 		currentTextarea = undefined
 		expandedTextarea.value = ""
 		expandedTextareaPath.innerHTML = ""
+		resetEffectsTimer()
 	}
 	overlay.hidden = true
 })
@@ -1398,10 +1457,31 @@ previewOptionsButton.addEventListener("click", function()
 		previewOptionsButtonIcon.className = "fas fa-caret-right"
 	}
 })
-previewParseBBCode.addEventListener("change", function()
+previewOptionsFontsButton.addEventListener("click", function()
 {
-	data.preview.bbcode = previewParseBBCode.checked
-	refreshPreview()
+	if (previewOptionsFontsDiv.hidden)
+	{
+		previewOptionsFontsDiv.hidden = false
+		previewOptionsFontsButtonIcon.className = "fas fa-caret-down"
+	}
+	else
+	{
+		previewOptionsFontsDiv.hidden = true
+		previewOptionsFontsButtonIcon.className = "fas fa-caret-right"
+	}
+})
+previewOptionsBBCodeButton.addEventListener("click", function()
+{
+	if (previewOptionsBBCodeDiv.hidden)
+	{
+		previewOptionsBBCodeDiv.hidden = false
+		previewOptionsBBCodeButtonIcon.className = "fas fa-caret-down"
+	}
+	else
+	{
+		previewOptionsBBCodeDiv.hidden = true
+		previewOptionsBBCodeButtonIcon.className = "fas fa-caret-right"
+	}
 })
 previewSeparator.addEventListener("change", function()
 {
@@ -1522,6 +1602,28 @@ loadPreviewFontBoldItalic.addEventListener("click", function()
 	}
 	else
 		showMessage(messagePreviewFontNotSpecified)
+})
+previewParseBBCode.addEventListener("change", function()
+{
+	data.preview.bbcode = previewParseBBCode.checked
+	refreshPreview()
+})
+previewBBCodeFPS.addEventListener("change", function()
+{
+	if (previewBBCodeFPS.value != "")
+	{
+		try
+		{
+			var proposedFPS = parseFloat(previewBBCodeFPS.value.replace(",", "."))
+			data.preview.bbcode_fps = proposedFPS
+			effectFPS = proposedFPS
+		}
+		catch (e)
+		{
+			alert(e.message)
+		}
+	}
+	refreshPreview()
 })
 outputAdditionalButton.addEventListener("click", function()
 {

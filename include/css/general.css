@@ -114,7 +114,7 @@ tr
 #expanded-textarea
 {
 	width: 75vh;
-	height: 35vh;
+	height: 25vh;
 	min-width: 100%;
 	min-height: 64px;
 	max-width: calc(100vw - 128px);
@@ -128,6 +128,7 @@ tr
 
 #preview-div
 {
+	overflow: clip;
 	padding: 12px;
 	padding-top: 8px;
 	background-color: white;
@@ -166,14 +167,19 @@ tr
 	color: inherit !important;
 }
 
-#preview-separator, #preview-font-size
+#preview-options-div > input:not(:last-child), #preview-options-div :not(.input-group) > input:not(:last-child)
 {
 	margin-bottom: 16px;
 }
 
+#preview-options-div .card:not(:last-child),  #preview-options-div input:has( + span)
+{
+	margin-bottom: 12px !important;
+}
+
 #preview-parse-bbcode
 {
-	margin-top: 4px;
+	margin-top: 5px;
 	margin-right: 16px;
 }
 
@@ -255,6 +261,21 @@ tr
 	font-weight: bold;
 }
 
+.text-effect
+{
+	visibility: hidden;
+	position: relative;
+}
+
+.text-effect-char
+{
+	visibility: visible !important;
+	position: absolute;
+	top: -1.5px;
+	left: 0;
+	white-space: pre;
+}
+
 .font-url
 {
 	width: auto;
@@ -273,7 +294,7 @@ tr
 
 .small-button
 {
-	padding: 2px 8px !important;
+	padding: 4px 10px !important;
 }
 
 .action-button

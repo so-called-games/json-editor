@@ -10,6 +10,7 @@
 		<link id="iconlib-link" rel="stylesheet">
 		<script src="include/js/qrcode.js"></script>
 		<script src="include/js/bbcode.js"></script>
+		<script src="include/js/text-effects.js"></script>
 		<script src="include/js/assign.js"></script>
 		<script src="include/js/ajv-validator.js"></script>
 		<script src="https://cdn.jsdelivr.net/npm/@json-editor/json-editor@latest/dist/jsoneditor.min.js"></script>
@@ -35,36 +36,47 @@
 					<span class="h4">
 						<button id="toggle-preview-options" title="Toggle" class="btn btn-sm btn-secondary toggle-button" type="button"><i class="fas fa-caret-right"></i></button> <span>Options</span>
 					</span>
-					<div id="preview-options-div" class="card card-body mt-2 bg-light" hidden>
-						<div class="input-group mb-1">
-							<input id="preview-parse-bbcode" type="checkbox"></input>
-							<label>Parse BBCode</label>
-						</div>
-						<br>
+					<div id="preview-options-div" class="card card-body mt-3" hidden>
 						<label>Preview parts separator</label>
 						<input id="preview-separator" class="form-control" type="text"></input>
-						<br>
-						<label>Font size (in points)</label>
-						<input id="preview-font-size" class="form-control" type="text"></input>
-						<br>
-						<label>Сustom fonts URLs</label>
-						<div id="preview-options-fonts-div">
-							<div class="input-group font-url">
-								<input id="preview-font-normal" class="form-control" type="text" placeholder="Regular"></input>
-								<button id="load-preview-font-normal" class="btn btn-secondary m-0" title="Load custom refular font from URL"><i class="fas fa-download"></i></button>
+						<span class="h4 d-inline-block mt-1">
+							<button id="toggle-preview-options-fonts" title="Toggle" class="btn btn-sm btn-secondary small-button toggle-button" type="button"><i class="fas fa-caret-right"></i></button> <span>Fonts</span>
+						</span>
+						<div id="preview-options-fonts-div" class="card card-body mt-2" hidden>
+							<label>Font size (in points)</label>
+							<input id="preview-font-size" class="form-control" type="text"></input>
+							<br>
+							<label>Сustom fonts URLs</label>
+							<div id="preview-options-fonts-div">
+								<div class="input-group font-url">
+									<input id="preview-font-normal" class="form-control" type="text" placeholder="Regular"></input>
+									<button id="load-preview-font-normal" class="btn btn-secondary m-0" title="Load custom refular font from URL"><i class="fas fa-download"></i></button>
+								</div>
+								<div class="input-group font-url">
+									<input id="preview-font-bold" class="form-control" type="text" placeholder="Bold"></input>
+									<button id="load-preview-font-bold" class="btn btn-secondary m-0" title="Load custom bold font from URL"><i class="fas fa-download"></i></button>
+								</div>
+								<div class="input-group font-url">
+									<input id="preview-font-italic" class="form-control" type="text" placeholder="Italic"></input>
+									<button id="load-preview-font-italic" class="btn btn-secondary m-0" title="Load custom italic font from URL"><i class="fas fa-download"></i></button>
+								</div>
+								<div class="input-group font-url">
+									<input id="preview-font-bold-italic" class="form-control" type="text" placeholder="Bold-italic"></input>
+									<button id="load-preview-font-bold-italic" class="btn btn-secondary m-0" title="Load custom bold-italic font from URL"><i class="fas fa-download"></i></button>
+								</div>
 							</div>
-							<div class="input-group font-url">
-								<input id="preview-font-bold" class="form-control" type="text" placeholder="Bold"></input>
-								<button id="load-preview-font-bold" class="btn btn-secondary m-0" title="Load custom bold font from URL"><i class="fas fa-download"></i></button>
+						</div>
+						<span class="h4 d-inline-block mt-1 mb-0">
+							<button id="toggle-preview-options-bbcode" title="Toggle" class="btn btn-sm btn-secondary small-button toggle-button" type="button"><i class="fas fa-caret-right"></i></button> <span>BBCode</span>
+						</span>
+						<div id="preview-options-bbcode-div" class="card card-body mt-3" hidden>
+							<div class="input-group mb-1">
+								<input id="preview-parse-bbcode" type="checkbox"></input>
+								<label>Parse BBCode</label>
 							</div>
-							<div class="input-group font-url">
-								<input id="preview-font-italic" class="form-control" type="text" placeholder="Italic"></input>
-								<button id="load-preview-font-italic" class="btn btn-secondary m-0" title="Load custom italic font from URL"><i class="fas fa-download"></i></button>
-							</div>
-							<div class="input-group font-url">
-								<input id="preview-font-bold-italic" class="form-control" type="text" placeholder="Bold-italic"></input>
-								<button id="load-preview-font-bold-italic" class="btn btn-secondary m-0" title="Load custom bold-italic font from URL"><i class="fas fa-download"></i></button>
-							</div>
+							<br>
+							<label>Animated tags FPS</label>
+							<input id="preview-bbcode-fps" class="form-control" type="text"></input>
 						</div>
 					</div>
 				</div>
@@ -104,7 +116,7 @@
 					<span class="h4 d-inline-block mt-1">
 						<button id="toggle-output-additional" title="Toggle" class="btn btn-sm btn-secondary toggle-button" type="button"><i class="fas fa-caret-right"></i></button> <span>Extra options</span>
 					</span>
-					<div id="output-additional-div" class="card card-body mt-2 bg-light" hidden>
+					<div id="output-additional-div" class="card card-body mt-2" hidden>
 						<label>URL from which output will be loaded (also on opening copied link)</label>
 						<div class="input-group">
 							<input id="output-url" class="form-control" type="text"></input>
@@ -139,7 +151,7 @@
 					<span class="h4 d-inline-block mt-1">
 						<button id="toggle-schema-additional" title="Toggle" class="btn btn-sm btn-secondary toggle-button" type="button"><i class="fas fa-caret-right"></i></button> <span>Extra options</span>
 					</span>
-					<div id="schema-additional-div" class="card card-body mt-2 bg-light" hidden>
+					<div id="schema-additional-div" class="card card-body mt-2" hidden>
 						<label>URL from which schema will be loaded (also on opening copied link)</label>
 						<div class="input-group">
 							<input id="schema-url" class="form-control" type="text"></input>

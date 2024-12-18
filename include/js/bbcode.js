@@ -5,13 +5,13 @@ window.renderBBCode = (function()
 		/[=[\]]/,
 		/\]/
 	];
-	var tagList = ["*", "img", "url", "color", "size", "font", "c", "quote", "spoiler", "hr", "b", "i", "u", "s"];
+	var tagList = ["*", "img", "url", "color", "size", "font", "class", "quote", "spoiler", "hr", "b", "i", "u", "s"];
 	var whitelist = {
 	  "img": /^https?:\/\//, "url": /^(https?|ftps?|ircs?):\/\//, "color": /[A-Za-z]+|#(?:[0-9a-f]{3}){1,2}/, "font": "[1-7]"
 	};
 	var tagInfo = [
 		["li"],
-		["img", "src", {style: "max-width: 500px;", alt: "", border: 0}],
+		["img", "src", {alt: "", border: 0, style: "max-width: 500px;"}],
 		["a", "href", {rel: "noreferrer", target: "_blank"}],
 		["font", "color"],
 		["font", "size"],
@@ -23,7 +23,7 @@ window.renderBBCode = (function()
 			var tmp = document.createElement("p");
 			tmp.className = "sub";
 			tmp.innerHTML = "<b></b>";
-			tmp.firstChild.textContent = arg ? arg + " wrote:" : "Quotation:";
+			tmp.firstChild.textContent = arg ? arg + " wrote:" : "Quote:";
 			el.appendChild(tmp);
 			tmp = document.createElement("table");
 			tmp.className = "main";
@@ -215,7 +215,8 @@ window.renderBBCode = (function()
 				oldp = endedStartTag === -1 || openedTag ? text.length : text.indexOf("]", newp) + 1;
 				state = 0;
 			}
-		} while (oldp < text.length);
+		}
+		while (oldp < text.length);
 		
 		switch (state)
 		{
