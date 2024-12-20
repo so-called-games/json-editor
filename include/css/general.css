@@ -100,15 +100,28 @@ tr
 	border-radius: 6px;
 }
 
+#expanded-textarea-path-div
+{
+	background-color: white;
+	border-top-left-radius: 6px;
+	border-top-right-radius: 6px;
+}
+
 #expanded-textarea-path
 {
 	display: block;
 	width: 100%;
+	color: inherit;
 	margin: 0;
 	padding: 8px 12px;
-	background-color: white;
-	border-top-left-radius: 6px;
-	border-top-right-radius: 6px;
+	border-top-left-radius: 0;
+	border-top-right-radius: 0;
+}
+
+#expanded-textarea-path:has(+ .input-group-append[style*="display: none"])
+{
+	border-top-left-radius: 6px !important;
+	border-top-right-radius: 6px !important;
 }
 
 #expanded-textarea
@@ -124,6 +137,22 @@ tr
 	border-radius: 0;
 	border-top-left-radius: 0 !important;
 	border-top-right-radius: 0 !important;
+}
+
+#preview-previous, #preview-next
+{
+	border-bottom-left-radius: 0 !important;
+	border-bottom-right-radius: 0 !important;
+}
+
+#preview-previous
+{
+	border-top-right-radius: 0 !important;
+}
+
+#preview-next
+{
+	border-top-left-radius: 0 !important;
 }
 
 #preview-div
@@ -146,7 +175,7 @@ tr
 #preview
 {
 	font-family: "CustomFontRegular", var(--bs-body-font-family);
-	margin: 12px 0 20px 0;
+	margin: 12px 0 24px 0;
 }
 
 #preview b
@@ -245,6 +274,12 @@ tr
 {
 	border-bottom-left-radius: 6px !important;
 	border-bottom-right-radius: 6px !important;
+}
+
+.move-button
+{
+	display: inline;
+	height: 100%;
 }
 
 .tooltip-button

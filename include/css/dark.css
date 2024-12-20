@@ -94,7 +94,7 @@ input[type="number"]
 	box-shadow: 0 0 4px 2px rgba(0, 0, 0, 0.15) !important;
 }
 
-#expanded-textarea-path, #preview-div
+#expanded-textarea-path-div, #preview-div
 {
 	color: #888888;
 	background: #1a1a1a;
@@ -115,6 +115,21 @@ input[type="number"]
 	color: white !important;
 	background: #282828 !important;
 	box-shadow: none !important;
+}
+
+.move-button
+{
+	background: #282828 !important;
+}
+
+.move-button:hover, .move-button:visited
+{
+	background: #242424 !important;
+}
+
+.move-button:active
+{
+	background: #202020 !important;
 }
 
 .tooltip-button

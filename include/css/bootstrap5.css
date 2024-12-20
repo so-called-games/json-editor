@@ -20,7 +20,7 @@ option
 	flex-wrap: nowrap !important;
 }
 
-.input-group:not(:last-child, .font-url)
+.input-group:not(:last-child, #expanded-textarea-path-div, .font-url)
 {
 	margin-bottom: 16px;
 }

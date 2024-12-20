@@ -88,6 +88,10 @@ var QRCode = new QRCode(QRCodeContainer, {
 })
 var expandedTextareaDiv = document.querySelector("#expanded-textarea-div")
 var expandedTextareaPath = document.querySelector("#expanded-textarea-path")
+var previewPreviousDiv = document.querySelector("#preview-previous-div")
+var previewPrevious = document.querySelector("#preview-previous")
+var previewNextDiv = document.querySelector("#preview-next-div")
+var previewNext = document.querySelector("#preview-next")
 var expandedTextarea = document.querySelector("#expanded-textarea")
 var currentTextarea
 var previewDiv = document.querySelector("#preview-div")
@@ -485,6 +489,7 @@ function makeLink(includeSchema = true)
 	
 	if (wasSchemaFromURL || !includeSchema)
 		delete modifiedData.options.schema
+	//console.log(modifiedData)
 	
 	for (const [key, value] of Object.entries(modifiedData.options))
 		if (JSON.stringify(value) == JSON.stringify(defaultOptions[key]))
@@ -1330,11 +1335,38 @@ function expandTextarea(textareaElement)
 	sourcePath = sourcePath.replace(new RegExp("^root\\["), "").replace(new RegExp("\\]$"), "").replaceAll("\\]\\[", " / ")
 	expandedTextareaPath.innerHTML = sourcePath
 	refreshPreview()
+	
+	/*
+	var previousElementAvailable = checkSiblingElement(path, false)
+	var nextElementAvailable = checkSiblingElement(path, true)
+	
+	if (!previousElementAvailable && !nextElementAvailable)
+	{
+		previewPreviousDiv.style.display = "none"
+		previewNextDiv.style.display = "none"
+	}
+	else
+	{
+		previewPreviousDiv.style.display = ""
+		previewNextDiv.style.display = ""
+	}
+	
+	if (previousElementAvailable)
+		previewPrevious.disabled = false
+	else
+		previewPrevious.disabled = true
+	
+	if (nextElementAvailable)
+		previewNext.disabled = false
+	else
+		previewNext.disabled = true
+	*/
 	QRCodeDiv.hidden = true
 	overlay.hidden = false
 	expandedTextareaDiv.hidden = false
 }
-overlay.addEventListener("click", function()
+
+function closeExpandedTextarea()
 {
 	if (currentTextarea != undefined)
 	{
@@ -1346,6 +1378,15 @@ overlay.addEventListener("click", function()
 		expandedTextareaPath.innerHTML = ""
 		resetEffectsTimer()
 	}
+}
+
+function checkSiblingElement(path, direction)
+{
+	
+}
+overlay.addEventListener("click", function()
+{
+	closeExpandedTextarea()
 	overlay.hidden = true
 })
 QRCodeDiv.addEventListener("click", function(e)
@@ -1442,6 +1483,14 @@ expandButton.addEventListener("click", function()
 	schemaDiv.hidden = isHidden
 	optionsDiv.hidden = isHidden
 	isExpanded = !isExpanded
+})
+previewPrevious.addEventListener("click", function()
+{
+	
+})
+previewNext.addEventListener("click", function()
+{
+	
 })
 previewOptionsButton.addEventListener("click", function()
 {

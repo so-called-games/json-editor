@@ -6,8 +6,12 @@ window.renderBBCode = (function()
 		/\]/
 	];
 	var tagList = ["*", "img", "url", "color", "size", "font", "class", "quote", "spoiler", "hr", "b", "i", "u", "s"];
-	var whitelist = {
-	  "img": /^https?:\/\//, "url": /^(https?|ftps?|ircs?):\/\//, "color": /[A-Za-z]+|#(?:[0-9a-f]{3}){1,2}/, "font": "[1-7]"
+	var whitelist =
+	{
+	  "img": /^https?:\/\//,
+	  "url": /^(https?|ftps?|ircs?):\/\//,
+	  "color": /[A-Za-z]+|#(?:[0-9a-f]{3}){1,2}/,
+	  "font": "[1-7]"
 	};
 	var tagInfo = [
 		["li"],

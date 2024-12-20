@@ -28,7 +28,15 @@
 				<button id="save-qr-code" class="btn btn-primary image-button" title="Save QR code as PNG image with 1024x1024 resolution"><i class="fas fa-save"></i> <span>Save as PNG</span></button>
 			</div>	
 			<div id="expanded-textarea-div" hidden>
-				<span id="expanded-textarea-path" id="text" class="h5"></span>
+				<div id="expanded-textarea-path-div" class="input-group">
+					<div id="preview-previous-div" class="input-group-prepend">
+						<button id="preview-previous" title="Previous element" class="btn move-button" type="button"><i class="fas fa-caret-left"></i></button>
+					</div>
+					<span id="expanded-textarea-path" id="text" class="h5"></span>
+					<div id="preview-next-div" class="input-group-append">
+						<button id="preview-next" title="Next element" class="btn move-button" type="button"><i class="fas fa-caret-right"></i></button>
+					</div>
+				</div>
 				<textarea id="expanded-textarea" class="form-control" spellcheck="false"></textarea>
 				<div id="preview-div">
 					<span id="preview-header" class="h3">Preview</span>
@@ -246,7 +254,7 @@
 						<option value="never">Never</option>
 					</select>
 				</div>
-				<div hidden>
+				<div>
 					<br>
 					<label for="lib-select" title="It is recommended that you click the &quot;Copy link&quot; after changing these options">External Libraries</label><br>
 					<select multiple size="10" id="lib-select" class="form-control browser-default" title="It"s reccomended that you click the Direct Link after changing these options">
