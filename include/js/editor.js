@@ -53,8 +53,8 @@ const defaultExtras = {
 const titlePosfix = "JSON Editor"
 const titleSeparator = "-"
 var messageTimer
-const messageShowLength = 2
-const messageAnimationLength = 0.5
+const messageShowDuration = 2
+const messageAnimationDuration = 0.5
 const messageLinkCopied = "Direct link to this session was copied"
 const messageSchemaIsTooLong = "Schema is too long, so it will be removed from QR code"
 const messageOutputCopied = "JSON output was copied"
@@ -523,7 +523,15 @@ function MakeQRCode(includeSchema)
 	expandedTextareaDiv.hidden = true
 }
 
-function showMessage(message, duration = messageShowLength)
+function showTooltip()
+{
+	const charactersPerSecond = 20
+	var tooltipMessage = this.getAttribute("title")
+	var tooltipDuration = Math.ceil(tooltipMessage.length / charactersPerSecond)
+	showMessage(tooltipMessage, Math.max(tooltipDuration, messageShowDuration))
+}
+
+function showMessage(message, duration = messageShowDuration)
 {
 	if (messageDiv.innerHTML !== message)
 	{
@@ -538,16 +546,21 @@ function showMessage(message, duration = messageShowLength)
 			messageDiv.classList.remove("fade-in")
 			messageTimer = setTimeout(function()
 			{
-				messageDiv.classList.add("fade-out")
-				messageTimer = setTimeout(function()
-				{
-					messageDiv.hidden = true
-					messageDiv.innerHTML = ""
-					messageDiv.classList.remove("fade-out")
-				}, messageAnimationLength * 1000 - 10)
+				hideMessage()
 			}, duration * 1000)
-		}, messageAnimationLength * 1000)
+		}, messageAnimationDuration * 1000)
 	}
+}
+
+function hideMessage()
+{
+	messageDiv.classList.add("fade-out")
+	messageTimer = setTimeout(function()
+	{
+		messageDiv.hidden = true
+		messageDiv.innerHTML = ""
+		messageDiv.classList.remove("fade-out")
+	}, messageAnimationDuration * 1000 - 10)
 }
 
 function copyToClipboard(element)
@@ -1189,6 +1202,12 @@ var initJSONEditor = function(initialValue = undefined, expandPath = undefined)
 			validateTextarea.value = replaceSpacings(JSON.stringify(validationErrors, null, 2))
 		else
 			validateTextarea.value = "valid"
+		tooltipButtons = Array.from(jsonEditorForm.querySelectorAll("button[data-toggle=\"tooltip\"]"))
+		tooltipButtons.forEach((tooltipButton) =>
+		{
+			tooltipButton.removeEventListener("click", showTooltip)
+			tooltipButton.addEventListener("click", showTooltip)
+		})
 		
 		if (!data.options.disable_properties)
 		{
@@ -1384,6 +1403,12 @@ function checkSiblingElement(path, direction)
 {
 	
 }
+messageDiv.addEventListener("click", function()
+{
+	clearTimeout(messageTimer)
+	messageDiv.classList.remove("fade-in")
+	hideMessage()
+})
 overlay.addEventListener("click", function()
 {
 	closeExpandedTextarea()
