@@ -72,6 +72,7 @@ const jsonEditorInitDelay = 500
 const QRCodeDimensions = 384
 const QRCodeSaveDimensions = 1024
 const QRCodeSaveOffset = 42
+var expandedPath
 var jsonEditor = null
 var isExpanded = false
 var wasSchemaFromURL = false
@@ -391,8 +392,8 @@ function setParsingMap()
 	parsingMap.set("ch", "change")
 	parsingMap.set("al", "always")
 	parsingMap.set("ne", "never")
-	parsingMap.set("sl", "selectedLibs")
-	parsingMap.set("ul", "unselectedLibs")
+	parsingMap.set("sl", "selected_libs")
+	parsingMap.set("ul", "unselected_libs")
 	parsingMap.set("ae", "ace_editor")
 	parsingMap.set("ci", "choices")
 	parsingMap.set("sce", "sceditor")
@@ -429,6 +430,7 @@ function setParsingMap()
 function makeLink(includeSchema = true)
 {
 	var modifiedData = JSON.parse(JSON.stringify(data))
+	console.log(JSON.parse(JSON.stringify(data)))
 	
 	if (modifiedData.hide.output == defaultHides.output)
 		delete modifiedData.hide.output
@@ -489,7 +491,6 @@ function makeLink(includeSchema = true)
 	
 	if (wasSchemaFromURL || !includeSchema)
 		delete modifiedData.options.schema
-	//console.log(modifiedData)
 	
 	for (const [key, value] of Object.entries(modifiedData.options))
 		if (JSON.stringify(value) == JSON.stringify(defaultOptions[key]))
@@ -683,6 +684,9 @@ var parseURL = function()
 	data.filenames = Object.assign({}, defaultExtras)
 	data.urls = Object.assign({}, defaultExtras)
 	data.options = Object.assign({}, defaultOptions)
+	
+	//data.selected_libs = []
+	//data.unselected_libs = []
 	var url = window.location.search
 	var queryParamsString = url.substring(1, url.length)
 	var queryParams = queryParamsString.split("&")
@@ -1094,7 +1098,7 @@ var refreshUI = function()
 		},
 	}
 	
-	if (data.selectedLibs || data.unselectedLibs)
+	if (data.selected_libs || data.unselected_libs)
 	{
 		var booleanOptions = booleanOptionsSelect.children
 		
@@ -1110,9 +1114,9 @@ var refreshUI = function()
 		for (var i = 0; i < libSelectChildren.length; i++)
 		{
 			var child = libSelectChildren[i]
-			child.selected = data.selectedLibs.includes(child.value)
+			child.selected = data.selected_libs.includes(child.value)
 		}
-		data.unselectedLibs.forEach(function(selectedLib)
+		data.unselected_libs.forEach(function(selectedLib)
 		{
 			var concat = libMapping[selectedLib].js.concat(libMapping[selectedLib].css)
 			concat.forEach(function()
@@ -1124,7 +1128,7 @@ var refreshUI = function()
 					toRemove.parentNode.removeChild(toRemove)
 			})
 		})
-		data.selectedLibs.forEach(function(selectedLib)
+		data.selected_libs.forEach(function(selectedLib)
 		{
 			libMapping[selectedLib].js.forEach(function(js)
 			{
@@ -1159,10 +1163,17 @@ var initJSONEditor = function(initialValue = undefined, expandPath = undefined)
 	
 	jsonEditor.on("ready", function()
 	{
-		var rootName = jsonEditorForm.querySelectorAll(".je-object__container > .je-object__title > span")[0].innerText
+		var rootTitleSpan = jsonEditorForm.querySelectorAll(".je-object__container > .je-object__title > span")
 		
-		if (rootName != "root")
-			document.title = rootName + " " + titleSeparator + " " + titlePosfix
+		if (rootTitleSpan[0] != undefined)
+		{
+			var rootName = rootTitleSpan[0].innerText
+			
+			if (rootName != "root")
+				document.title = rootName + " " + titleSeparator + " " + titlePosfix
+			else
+				document.title = titlePosfix
+		}
 		else
 			document.title = titlePosfix
 		
@@ -1221,41 +1232,46 @@ var initJSONEditor = function(initialValue = undefined, expandPath = undefined)
 		
 		if (!data.options.disable_properties_reorder)
 		{
-			objectControlsList = Array.from(jsonEditorForm.querySelector(".je-object__container .card").querySelectorAll(".je-object__controls"))
-			objectControlsList.forEach((controlElement) =>
+			var rootObject = jsonEditorForm.querySelector(".je-object__container .card")
+			
+			if (rootObject != null)
 			{
-				reorderButtons = Array.from(controlElement.querySelectorAll(".json-editor-property-control-button"))
-				reorderButtons.forEach((reorderButton) =>
+				objectControlsList = Array.from(rootObject.querySelectorAll(".je-object__controls"))
+				objectControlsList.forEach((controlElement) =>
 				{
-					reorderButton.remove()
-				})
-				controlElement.querySelectorAll(".json-editor-property-control-button") == null
-				var comparedParent = controlElement.parentNode.parentNode
-				var generalParent = comparedParent.parentNode
-				
-				if (comparedParent.previousSibling != null && comparedParent.previousSibling.querySelector(".je-object__container") != null || comparedParent.nextSibling != null && comparedParent.nextSibling.querySelector(".je-object__container") != null)
-				{
-					for (let i = 0; i < 2; i++)
+					reorderButtons = Array.from(controlElement.querySelectorAll(".json-editor-property-control-button"))
+					reorderButtons.forEach((reorderButton) =>
 					{
-						var postfix = (i == 0) ? "up" : "down"
-						var moveButton = document.createElement("button")
-						moveButton.type = "button"
-						moveButton.title = "Move property " + postfix
-						moveButton.classList.add("btn", "btn-secondary", "btn-sm", "json-editor-property-control-button", "json-editor-btntype-move" + postfix)
-						moveButton.onclick = function()
+						reorderButton.remove()
+					})
+					controlElement.querySelectorAll(".json-editor-property-control-button") == null
+					var comparedParent = controlElement.parentNode.parentNode
+					var generalParent = comparedParent.parentNode
+					
+					if (comparedParent.previousSibling != null && comparedParent.previousSibling.querySelector(".je-object__container") != null || comparedParent.nextSibling != null && comparedParent.nextSibling.querySelector(".je-object__container") != null)
+					{
+						for (let i = 0; i < 2; i++)
 						{
-							reorderProperty(comparedParent, i)
+							var postfix = (i == 0) ? "up" : "down"
+							var moveButton = document.createElement("button")
+							moveButton.type = "button"
+							moveButton.title = "Move property " + postfix
+							moveButton.classList.add("btn", "btn-secondary", "btn-sm", "json-editor-property-control-button", "json-editor-btntype-move" + postfix)
+							moveButton.onclick = function()
+							{
+								reorderProperty(comparedParent, i)
+							}
+							var icon = document.createElement("i")
+							icon.classList.add("fas", "fa-caret-" + postfix)
+							moveButton.appendChild(icon)
+							controlElement.appendChild(moveButton)
+							
+							if ((generalParent.querySelectorAll(":scope > .row:first-child")[0] == comparedParent) && i == 0 || (generalParent.querySelectorAll(":scope > .row:last-child")[0] == comparedParent) && i == 1)
+								moveButton.classList.add("visually-hidden")
 						}
-						var icon = document.createElement("i")
-						icon.classList.add("fas", "fa-caret-" + postfix)
-						moveButton.appendChild(icon)
-						controlElement.appendChild(moveButton)
-						
-						if ((generalParent.querySelectorAll(":scope > .row:first-child")[0] == comparedParent) && i == 0 || (generalParent.querySelectorAll(":scope > .row:last-child")[0] == comparedParent) && i == 1)
-							moveButton.classList.add("visually-hidden")
 					}
-				}
-			})
+				})
+			}
 		}
 		
 		if (!data.options.disable_textarea_expanding)
@@ -1283,7 +1299,7 @@ var initJSONEditor = function(initialValue = undefined, expandPath = undefined)
 					inputGroup.appendChild(movedTextarea)
 					var expandTextareaButton = document.createElement("button")
 					expandTextareaButton.type = "button"
-					expandTextareaButton.title = "Expand to fullscreen"
+					expandTextareaButton.title = "Expand over the editor"
 					expandTextareaButton.classList.add("btn", "btn-sm", "btn-secondary", "expand-button")
 					expandTextareaButton.onclick = function()
 					{
@@ -1351,6 +1367,7 @@ function expandTextarea(textareaElement)
 	currentTextarea = textareaElement
 	expandedTextarea.value = textareaElement.value
 	var sourcePath = textareaElement.parentNode.parentNode.querySelector("label.form-label").getAttribute("for")
+	expandedPath = sourcePath.replaceAll(new RegExp("(\\]\\[|\\[)", ".")).replace(new RegExp("\\]$"), "")
 	sourcePath = sourcePath.replace(new RegExp("^root\\["), "").replace(new RegExp("\\]$"), "").replaceAll("\\]\\[", " / ")
 	expandedTextareaPath.innerHTML = sourcePath
 	refreshPreview()
@@ -1394,6 +1411,7 @@ function closeExpandedTextarea()
 		currentTextarea.dispatchEvent(event)
 		currentTextarea = undefined
 		expandedTextarea.value = ""
+		expandedPath = ""
 		expandedTextareaPath.innerHTML = ""
 		resetEffectsTimer()
 	}
@@ -1401,7 +1419,127 @@ function closeExpandedTextarea()
 
 function checkSiblingElement(path, direction)
 {
+	/*
+	const notFoundObject = { found: false, sibling: null }
+	const pathIndexesRegex = /(?:\.(\d+)\.|\.(\d+)$|^(\d+)\.)/g
+	var matchedIterables = [... path.matchAll(pathIndexesRegex)]
+	var indexes = []
+	var groupIndex
 	
+	for (let i = 0; i < matchedIterables.length; i++)
+	{
+		groupIndex = 1
+		
+		while (groupIndex <= 3)
+		{
+			if (matchedIterables[checkedIndex][groupIndex] != undefined)
+			{
+				indexes[i] = Number(matchedIterables[checkedIndex][groupIndex])
+				break
+			}
+			else
+				groupIndex++
+		}
+	}
+	
+	if (matchedIterables.length > 0)
+	{
+		var siblingPath = path
+		var checkedIndex = matchedIterables.length - 1
+		var searchSiblingMode = false
+		var foundSibling = false
+		
+		while (!foundSibling)
+		{
+			if (direction)
+				indexes[checkedIndex] += 1
+			else
+				indexes[checkedIndex] -= 1
+			
+			if (indexes[checkedIndex] < 0)
+			{
+				
+			}
+			else
+			{
+				const replaceIndex = matchedIterables[checkedIndex].index
+				var replacement
+				groupIndex = 1
+				
+				while (groupIndex <= 3)
+					if (matchedIterables[checkedIndex][groupIndex] == undefined)
+						groupIndex++
+				
+				switch (groupIndex)
+				{
+					case 1:
+						replacement = "." + indexes[checkedIndex] + "."
+						break
+					case 2:
+						replacement = "." + indexes[checkedIndex]
+						break
+					case 3:
+						replacement = indexes[checkedIndex] + "."
+						break
+				}
+				
+				if (searchSiblingMode)
+				{
+					if (direction)
+						siblingPath = path.slice(0, replaceIndex) + replacement
+				}
+				else
+					siblingPath = siblingPath.slice(0, replaceIndex) + replacement + siblingPath.slice(replaceIndex + matchedIterables[checkedIndex][0].length)
+				var siblingElement = jsonEditor.querySelector("div[data-schemapath=" + siblingPath + "]")
+				
+				if (siblingElement == null)
+				{
+					searchSiblingMode = true
+					
+					if (direction)
+					{
+						if (checkedIndex > 0)
+						{
+							checkedIndex--
+							continue
+						}
+						else
+							return notFoundObject
+					}
+					else
+						return notFoundObject
+				}
+				else
+				{
+					if (checkedIndex < matchedIterables.length - 1)
+					{
+						searchSiblingMode = false
+						
+						if (direction)
+						{
+							var nulledIndex = checkedIndex + 1
+							
+							while (nulledIndex < matchedIterables.length - 1)
+							{
+								indexes[nulledIndex] = 0
+								nulledIndex++
+							}
+							checkedIndex = matchedIterables.length - 1
+							continue
+						}
+					}
+					else
+					{
+						foundSibling = true
+						return { found: true, sibling: siblingElement.parentNode }
+					}
+				}
+			}
+		}
+	}
+	else
+		return notFoundObject
+	*/
 }
 messageDiv.addEventListener("click", function()
 {
@@ -1515,7 +1653,11 @@ previewPrevious.addEventListener("click", function()
 })
 previewNext.addEventListener("click", function()
 {
-	
+	if (checkSiblingElement(path, true))
+	{
+		closeExpandedTextarea()
+		jsonEditor.querySelector()
+	}
 })
 previewOptionsButton.addEventListener("click", function()
 {
@@ -1942,16 +2084,16 @@ booleanOptionsSelect.addEventListener("change", function()
 })
 libSelect.addEventListener("change", function()
 {
-	data.selectedLibs = []
-	data.unselectedLibs = []
+	data.selected_libs = []
+	data.unselected_libs = []
 	var libs = this.children
 	
 	for (var i = 0; i < libs.length; i++)
 	{
 		if (libs[i].selected)
-			data.selectedLibs.push(libs[i].value)
+			data.selected_libs.push(libs[i].value)
 		else
-			data.unselectedLibs.push(libs[i].value)
+			data.unselected_libs.push(libs[i].value)
 	}
 	refreshUI()
 })
