@@ -1155,6 +1155,8 @@ var refreshUI = function()
 
 var initJSONEditor = function(initialValue = undefined, expandPath = undefined)
 {
+	console.warn = () => {}
+	
 	if (jsonEditor)
 		jsonEditor.destroy()
 	var modifiedOptions = Object.assign({}, data.options)
@@ -1367,7 +1369,7 @@ function expandTextarea(textareaElement)
 	currentTextarea = textareaElement
 	expandedTextarea.value = textareaElement.value
 	var sourcePath = textareaElement.parentNode.parentNode.querySelector("label.form-label").getAttribute("for")
-	expandedPath = sourcePath.replaceAll(new RegExp("(\\]\\[|\\[)", ".")).replace(new RegExp("\\]$"), "")
+	expandedPath = sourcePath.replaceAll(new RegExp("(\\]\\[|\\[)", "g"), ".").replace(new RegExp("\\]$"), "")
 	sourcePath = sourcePath.replace(new RegExp("^root\\["), "").replace(new RegExp("\\]$"), "").replaceAll("\\]\\[", " / ")
 	expandedTextareaPath.innerHTML = sourcePath
 	refreshPreview()
